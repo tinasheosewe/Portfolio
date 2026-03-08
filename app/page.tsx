@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, ArrowLeft, ExternalLink, Linkedin } from "lucide-react";
 import { projects, secondaryProjects } from "@/lib/projects";
 import type { Project } from "@/lib/projects";
@@ -145,36 +145,6 @@ function ProjectRow({ project, index, onSelect, mobile }: { project: typeof proj
           {mobile && <ArrowUpRight size={14} color={accentMap[project.slug] ?? "var(--accent)"} />}
         </div>
       </motion.div>
-    </div>
-  );
-}
-
-// ── Count-up stat ────────────────────────────────────────────────────────────
-function Stat({ value, suffix, label }: { value: number; suffix?: string; label: string }) {
-  const [count, setCount] = useState(0);
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
-  useEffect(() => {
-    if (!inView) return;
-    const dur = 1400;
-    const start = performance.now();
-    const tick = (now: number) => {
-      const p = Math.min((now - start) / dur, 1);
-      const ease = 1 - Math.pow(1 - p, 3);
-      setCount(Math.round(ease * value));
-      if (p < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }, [inView, value]);
-
-  return (
-    <div ref={ref} style={{ padding: "24px 0" }}>
-      <div style={{ fontSize: "clamp(2.2rem, 4vw, 3.4rem)", fontWeight: 700, letterSpacing: "-0.03em", color: "var(--accent)", lineHeight: 1 }}>
-        {count.toLocaleString()}{suffix}
-      </div>
-      <div style={{ fontSize: "0.72rem", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", marginTop: 6 }}>
-        {label}
-      </div>
     </div>
   );
 }
@@ -455,7 +425,7 @@ export default function Home() {
               transition={{ delay: 0.78, duration: 0.7 }}
               style={{ fontSize: "clamp(0.95rem, 1.5vw, 1.15rem)", color: "var(--text-secondary)", lineHeight: 1.8, maxWidth: 540, margin: "0 0 36px" }}
             >
-              I design and build software from architecture through interface — data intelligence, AI-driven products, and native mobile applications. Four products in production, each one conceived and delivered independently.
+              I design and build software from architecture through interface — enterprise AI platforms, data intelligence systems, and native mobile applications. By day I ship production software at scale; nights and weekends I build my own.
             </motion.p>
 
             <motion.div
@@ -507,7 +477,7 @@ export default function Home() {
               <h2 style={{ fontSize: "clamp(28px, 4vw, 52px)", fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>Case studies.</h2>
             </div>
             <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", maxWidth: 360, lineHeight: 1.7 }}>
-              Full-lifecycle products — from data infrastructure to native mobile. Each one designed, built, and deployed independently.
+              Enterprise platforms by day, independent products by night. Each case study below was designed, built, and deployed end to end.
             </p>
           </motion.div>
 
@@ -612,14 +582,24 @@ export default function Home() {
         <section style={{ borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", background: "var(--bg-card)" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto", padding: mobile ? "40px 20px" : "60px 40px", display: "grid", gridTemplateColumns: mobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: 0 }}>
             {[
-              { value: 14700, suffix: "+", label: "NYC listings analysed" },
-              { value: 15, label: "Quality dimensions per listing" },
-              { value: 4, label: "AI model integrations" },
-              { value: 4, label: "Products in production" },
+              { headline: "Enterprise", sub: "AI platforms in production" },
+              { headline: "Multi-LLM", sub: "Orchestration & guardrails" },
+              { headline: "Full stack", sub: "Backend to native mobile" },
+              { headline: "4 years", sub: "Professional engineering" },
             ].map((s, i) => (
-              <div key={i} style={{ borderLeft: mobile ? (i % 2 === 1 ? "1px solid var(--border)" : "none") : (i > 0 ? "1px solid var(--border)" : "none"), paddingLeft: mobile ? (i % 2 === 1 ? 24 : 0) : (i > 0 ? 40 : 0), borderTop: mobile && i >= 2 ? "1px solid var(--border)" : "none", paddingTop: mobile && i >= 2 ? 16 : 0 }}>
-                <Stat value={s.value} suffix={s.suffix} label={s.label} />
-              </div>
+              <motion.div key={i}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.08 }}
+                style={{ padding: mobile ? "20px 16px" : "28px 24px", borderLeft: mobile ? (i % 2 === 1 ? "1px solid var(--border)" : "none") : (i > 0 ? "1px solid var(--border)" : "none"), borderTop: mobile && i >= 2 ? "1px solid var(--border)" : "none" }}>
+                <div style={{ fontSize: "clamp(1.6rem, 3vw, 2.2rem)", fontWeight: 700, letterSpacing: "-0.03em", color: "var(--accent)", lineHeight: 1, marginBottom: 6 }}>
+                  {s.headline}
+                </div>
+                <div style={{ fontSize: "0.72rem", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)" }}>
+                  {s.sub}
+                </div>
+              </motion.div>
             ))}
           </div>
         </section>
@@ -663,10 +643,10 @@ export default function Home() {
                   Across the<br />full stack.
                 </h2>
                 <p style={{ color: "var(--text-secondary)", lineHeight: 1.85, fontSize: "0.95rem", margin: "0 0 18px" }}>
-                  Software engineer with deep experience across the entire product surface — Python services, React interfaces, native iOS, and AI-driven systems. I care about the architecture underneath as much as the experience on top.
+                  Software engineer building enterprise AI platforms, data intelligence systems, and native mobile applications. I care about the architecture underneath as much as the experience on top.
                 </p>
                 <p style={{ color: "var(--text-secondary)", lineHeight: 1.85, fontSize: "0.95rem", margin: 0 }}>
-                  Recent work spans AI systems, data intelligence platforms, real-time infrastructure, and native mobile — each one designed, built, and deployed independently.
+                  Professionally, I design and ship production systems at scale — multi-LLM orchestration, RAG pipelines, and financial infrastructure. Independently, I build and launch my own products end to end.
                 </p>
               </motion.div>
             </div>
