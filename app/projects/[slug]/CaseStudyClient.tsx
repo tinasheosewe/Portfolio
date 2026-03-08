@@ -7,7 +7,7 @@ import { projects } from "@/lib/projects";
 
 const accentColors: Record<string, string> = {
   apthunt: "#e8960c",
-  chatbot: "#a78bfa",
+  persona: "#a78bfa",
   concierge: "#e8960c",
   pantrychef: "#4ade80",
 };
@@ -20,7 +20,7 @@ const FadeUp = ({ children, delay = 0, style = {} }: { children: React.ReactNode
 
 export default function CaseStudyClient({ project }: { project: Project }) {
   const accent = accentColors[project.slug] ?? "var(--accent)";
-  const others = ["apthunt","chatbot","concierge","pantrychef"].filter(s => s !== project.slug);
+  const others = ["apthunt","persona","concierge","pantrychef"].filter(s => s !== project.slug);
 
   return (
     <main>
@@ -30,7 +30,7 @@ export default function CaseStudyClient({ project }: { project: Project }) {
         <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 55% 0%, ${accent}18 0%, transparent 60%)`, pointerEvents: "none" }} />
         {/* Huge bg number */}
         <div style={{ position: "absolute", right: -20, top: "50%", transform: "translateY(-60%)", fontSize: "clamp(160px,25vw,320px)", fontWeight: 900, letterSpacing: "-0.05em", color: `${accent}08`, pointerEvents: "none", userSelect: "none", lineHeight: 1 }}>
-          {String(["apthunt","chatbot","concierge","pantrychef"].indexOf(project.slug) + 1).padStart(2,"0")}
+          {String(["apthunt","persona","concierge","pantrychef"].indexOf(project.slug) + 1).padStart(2,"0")}
         </div>
 
         <div style={{ position: "relative", maxWidth: 1200, width: "100%" }}>

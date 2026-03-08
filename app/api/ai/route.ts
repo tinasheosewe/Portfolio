@@ -38,7 +38,7 @@ const tools: OpenAI.Chat.Completions.ChatCompletionTool[] = [
           slug: {
             type: "string",
             description:
-              "Project slug or title (case-insensitive). Main projects: apthunt (AptHunt), chatbot (Persona), concierge (Concierge), pantrychef (PantryChef). Secondary: movie-recommender, writing-assistant, travel-agent, blindduel, wavelength",
+              "Project slug or title (case-insensitive). Main projects: apthunt (AptHunt), persona (Persona), concierge (Concierge), pantrychef (PantryChef). Secondary: movie-recommender, writing-assistant, travel-agent, blindduel, wavelength",
           },
         },
         required: ["slug"],

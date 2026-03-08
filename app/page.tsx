@@ -77,7 +77,7 @@ function Marquee() {
 // ── Hover-reveal project row ─────────────────────────────────────────────────
 const accentMap: Record<string, string> = {
   apthunt: "var(--project-gold)",
-  chatbot: "var(--project-violet)",
+  persona: "var(--project-violet)",
   concierge: "var(--project-gold)",
   pantrychef: "var(--project-green)",
 };
@@ -85,7 +85,7 @@ const accentMap: Record<string, string> = {
 // Gradient mockups per project (appears on hover)
 const thumbGradients: Record<string, string> = {
   apthunt: "linear-gradient(135deg, color-mix(in srgb, var(--project-gold) 13%, transparent) 0%, color-mix(in srgb, var(--project-gold) 3%, transparent) 40%, transparent 70%)",
-  chatbot: "linear-gradient(135deg, color-mix(in srgb, var(--project-violet) 13%, transparent) 0%, color-mix(in srgb, var(--project-violet) 3%, transparent) 40%, transparent 70%)",
+  persona: "linear-gradient(135deg, color-mix(in srgb, var(--project-violet) 13%, transparent) 0%, color-mix(in srgb, var(--project-violet) 3%, transparent) 40%, transparent 70%)",
   concierge: "linear-gradient(135deg, color-mix(in srgb, var(--project-gold) 13%, transparent) 0%, color-mix(in srgb, var(--project-gold) 3%, transparent) 40%, transparent 70%)",
   pantrychef: "linear-gradient(135deg, color-mix(in srgb, var(--project-green) 13%, transparent) 0%, color-mix(in srgb, var(--project-green) 3%, transparent) 40%, transparent 70%)",
 };
@@ -184,7 +184,7 @@ function ProjectRow({ project, index, onSelect, mobile }: { project: typeof proj
 // ── Case study overlay (SPA) ─────────────────────────────────────────────────
 const accentColors: Record<string, string> = {
   apthunt: "var(--project-gold)",
-  chatbot: "var(--project-violet)",
+  persona: "var(--project-violet)",
   concierge: "var(--project-gold)",
   pantrychef: "var(--project-green)",
 };
@@ -267,7 +267,7 @@ function CaseStudyOverlay({ project, onClose, onSelectProject, mobile }: { proje
       <section style={{ position: "relative", minHeight: mobile ? "60vh" : "70vh", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: mobile ? "0 20px 48px" : "0 40px 72px", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 55% 0%, color-mix(in srgb, ${accent} 10%, transparent) 0%, transparent 60%)`, pointerEvents: "none" }} />
         <div style={{ position: "absolute", right: -20, top: "50%", transform: "translateY(-60%)", fontSize: "clamp(160px,25vw,320px)", fontWeight: 900, letterSpacing: "-0.05em", color: `color-mix(in srgb, ${accent} 3%, transparent)`, pointerEvents: "none", userSelect: "none", lineHeight: 1 }}>
-          {String(["apthunt","chatbot","concierge","pantrychef"].indexOf(project.slug) + 1).padStart(2,"0")}
+          {String(["apthunt","persona","concierge","pantrychef"].indexOf(project.slug) + 1).padStart(2,"0")}
         </div>
 
         <div style={{ position: "relative", maxWidth: 1200, width: "100%" }}>
