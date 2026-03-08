@@ -242,8 +242,18 @@ function sanitizeMermaidLabels(raw: string): string {
             label = label.replace(/[()]/g, (ch) => (ch === "(" ? " - " : ""));
             // Remove forward slashes
             label = label.replace(/\//g, " + ");
+            // Remove curly braces and angle brackets (also break Mermaid)
+            label = label.replace(/[{}<>]/g, " ");
+            // Remove pipe characters (used for link text, breaks node labels)
+            label = label.replace(/\|/g, " ");
+            // Remove semicolons (can terminate statements early)
+            label = label.replace(/;/g, ",");
+            // Strip quotes that could break syntax
+            label = label.replace(/["'`]/g, "");
             // Collapse multiple spaces/dashes
             label = label.replace(/\s+-\s*-\s+/g, " - ").replace(/\s{2,}/g, " ").trim();
+            // Truncate very long labels to prevent layout issues
+            if (label.length > 50) label = label.slice(0, 47) + "...";
             // Always use square brackets for safety
             result.push(`${id}[${label}]`);
             i = j + 1;
@@ -292,6 +302,11 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "Question is required" }, { status: 400 });
   }
 
+  // Guard against oversized payloads
+  if (question.length > 1000) {
+    return Response.json({ error: "Question is too long. Please keep it under 1,000 characters." }, { status: 400 });
+  }
+
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream({
@@ -317,11 +332,23 @@ export async function POST(req: NextRequest) {
 
         const MAX_ITERATIONS = 5;
         for (let i = 0; i < MAX_ITERATIONS; i++) {
-          const res = await openai.chat.completions.create({
-            model: "gpt-4.1-mini",
-            messages,
-            tools,
-          });
+          let res;
+          try {
+            res = await Promise.race([
+              openai.chat.completions.create({
+                model: "gpt-4.1-mini",
+                messages,
+                tools,
+              }),
+              new Promise<never>((_, reject) =>
+                setTimeout(() => reject(new Error("Agent call timed out")), 30_000)
+              ),
+            ]);
+          } catch (err) {
+            console.error("[Agent loop] OpenAI call failed:", err);
+            send({ type: "error", message: "The AI took too long to respond. Please try again." });
+            return;
+          }
 
           const msg = res.choices[0].message;
           messages.push(msg);
@@ -337,7 +364,13 @@ export async function POST(req: NextRequest) {
             } catch {
               /* empty args fallback */
             }
-            const result = execTool(tc.function.name, args);
+            let result: string;
+            try {
+              result = execTool(tc.function.name, args);
+            } catch (toolErr) {
+              console.error(`[Tool] ${tc.function.name} threw:`, toolErr);
+              result = JSON.stringify({ error: `Tool ${tc.function.name} failed` });
+            }
             messages.push({
               role: "tool",
               tool_call_id: tc.id,
@@ -368,26 +401,38 @@ export async function POST(req: NextRequest) {
         /* ── Phase 2: Composer call with structured JSON output ── */
         send({ type: "status", message: "Composing response…" });
 
-        const composerRes = await openai.chat.completions.create({
-          model: "gpt-4.1-mini",
-          messages: [
-            { role: "system", content: COMPOSER_SYSTEM },
-            {
-              role: "user",
-              content: [
-                `User question: ${question}`,
-                "",
-                "--- GATHERED DATA ---",
-                toolContext || "(no tool data gathered)",
-                "",
-                "--- AGENT NOTES ---",
-                agentNotes || "(none)",
-              ].join("\n"),
-            },
-          ],
-          response_format: { type: "json_object" },
-          temperature: 0.7,
-        });
+        let composerRes;
+        try {
+          composerRes = await Promise.race([
+            openai.chat.completions.create({
+              model: "gpt-4.1-mini",
+              messages: [
+                { role: "system", content: COMPOSER_SYSTEM },
+                {
+                  role: "user",
+                  content: [
+                    `User question: ${question}`,
+                    "",
+                    "--- GATHERED DATA ---",
+                    toolContext || "(no tool data gathered)",
+                    "",
+                    "--- AGENT NOTES ---",
+                    agentNotes || "(none)",
+                  ].join("\n"),
+                },
+              ],
+              response_format: { type: "json_object" },
+              temperature: 0.7,
+            }),
+            new Promise<never>((_, reject) =>
+              setTimeout(() => reject(new Error("Composer call timed out")), 30_000)
+            ),
+          ]);
+        } catch (err) {
+          console.error("[Composer] OpenAI call failed:", err);
+          send({ type: "error", message: "Response generation timed out. Please try again." });
+          return;
+        }
 
         const raw = composerRes.choices[0].message.content || "{}";
         let parsed: { prose?: string; blocks?: unknown[] };
@@ -430,7 +475,8 @@ export async function POST(req: NextRequest) {
                 block.mermaid = sanitizeMermaidLabels(block.mermaid as string);
               }
               return block;
-            });
+            })
+            .slice(0, 6); // Hard cap: max 6 blocks to prevent UI overload
           if (validBlocks.length > 0) {
             send({ type: "blocks", blocks: validBlocks });
           }

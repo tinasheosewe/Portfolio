@@ -32,6 +32,8 @@ export default function CommandPalette() {
   const [hasResult, setHasResult] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const proseRef = useRef("");
 
   /* ── Keyboard shortcut: ⌘K / Ctrl+K ── */
   useEffect(() => {
@@ -48,13 +50,14 @@ export default function CommandPalette() {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  /* ── Focus input when palette opens ── */
+  /* ── Focus input when palette opens; cancel requests on close ── */
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 100);
-      // Pause Lenis scroll when palette is open
       document.body.style.overflow = "hidden";
     } else {
+      // Cancel in-flight request when palette closes
+      abortRef.current?.abort();
       document.body.style.overflow = "";
     }
     return () => {
@@ -75,9 +78,16 @@ export default function CommandPalette() {
       const q = (text || query).trim();
       if (!q || loading) return;
 
+      // Cancel any in-flight request
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+      const timeout = setTimeout(() => controller.abort(), 60_000);
+
       setLoading(true);
       setStatus("Connecting…");
       setProse("");
+      proseRef.current = "";
       setBlocks([]);
       setError("");
       setHasResult(false);
@@ -87,6 +97,7 @@ export default function CommandPalette() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ question: q, history }),
+          signal: controller.signal,
         });
 
         if (!res.ok) {
@@ -123,6 +134,7 @@ export default function CommandPalette() {
                   break;
                 case "prose":
                   setProse(evt.content);
+                  proseRef.current = evt.content;
                   setStatus("");
                   setHasResult(true);
                   break;
@@ -140,22 +152,29 @@ export default function CommandPalette() {
           }
         }
 
-        // Update history
+        // Update history (use ref to avoid stale closure)
         setHistory((prev) => [
           ...prev.slice(-4),
           { role: "user", content: q },
-          { role: "assistant", content: prose || "(responded with blocks)" },
+          { role: "assistant", content: proseRef.current || "(responded with blocks)" },
         ]);
       } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : "Something went wrong.");
-        setStatus("");
+        if (err instanceof DOMException && err.name === "AbortError") {
+          // Request was cancelled (timeout or user closed) — don't show error
+          setStatus("");
+        } else {
+          setError(err instanceof Error ? err.message : "Something went wrong.");
+          setStatus("");
+        }
       } finally {
+        clearTimeout(timeout);
+        abortRef.current = null;
         setLoading(false);
         setQuery("");
         setTimeout(() => inputRef.current?.focus(), 0);
       }
     },
-    [query, loading, history, prose]
+    [query, loading, history]
   );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

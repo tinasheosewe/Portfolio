@@ -1,4 +1,5 @@
 "use client";
+import { Component, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import ReactMarkdown from "react-markdown";
@@ -7,6 +8,28 @@ import type { Block } from "@/lib/block-types";
 import { projects } from "@/lib/projects";
 
 const MermaidDiagram = dynamic(() => import("./MermaidDiagram"), { ssr: false });
+
+/* ── Error Boundary — isolates each block so one failure can't crash all ── */
+interface EBProps { children: ReactNode; blockType: string }
+interface EBState { hasError: boolean }
+class BlockErrorBoundary extends Component<EBProps, EBState> {
+  constructor(props: EBProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(err: Error) { console.error(`[BlockRenderer] ${this.props.blockType} crashed:`, err); }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: "12px 16px", borderRadius: 8, background: "rgba(255,59,48,0.06)", border: "1px solid rgba(255,59,48,0.15)", fontSize: "0.78rem", color: "var(--text-muted)" }}>
+          This block could not be rendered.
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 /* ── Stagger animation wrapper ── */
 const item = {
@@ -24,35 +47,42 @@ export default function BlockRenderer({ block, index }: { block: Block; index: n
       transition={{ delay: index * 0.1 }}
       style={{ width: "100%" }}
     >
-      {renderBlock(block)}
+      <BlockErrorBoundary blockType={block.type}>
+        {renderBlock(block)}
+      </BlockErrorBoundary>
     </motion.div>
   );
 }
 
 function renderBlock(block: Block) {
-  switch (block.type) {
-    case "prose":
-      return <ProseBlock content={block.content} />;
-    case "projectCard":
-      return <ProjectCardBlock slug={block.slug} emphasis={block.emphasis} />;
-    case "metricRow":
-      return <MetricRowBlock items={block.items} />;
-    case "diagram":
-      return <MermaidDiagram chart={block.mermaid} caption={block.caption} />;
-    case "codeBlock":
-      return <CodeBlockBlock language={block.language} code={block.code} caption={block.caption} />;
-    case "table":
-      return <TableBlock headers={block.headers} rows={block.rows} />;
-    case "callout":
-      return <CalloutBlock variant={block.variant} content={block.content} />;
-    case "skillCloud":
-      return <SkillCloudBlock skills={block.skills} highlight={block.highlight} />;
-    case "timeline":
-      return <TimelineBlock items={block.items} />;
-    case "beforeAfter":
-      return <BeforeAfterBlock title={block.title} left={block.left} right={block.right} />;
-    default:
-      return null;
+  try {
+    switch (block.type) {
+      case "prose":
+        return <ProseBlock content={block.content || ""} />;
+      case "projectCard":
+        return <ProjectCardBlock slug={block.slug || ""} emphasis={block.emphasis || ""} />;
+      case "metricRow":
+        return <MetricRowBlock items={Array.isArray(block.items) ? block.items : []} />;
+      case "diagram":
+        return <MermaidDiagram chart={block.mermaid || ""} caption={block.caption} />;
+      case "codeBlock":
+        return <CodeBlockBlock language={block.language || "text"} code={block.code || ""} caption={block.caption || ""} />;
+      case "table":
+        return <TableBlock headers={Array.isArray(block.headers) ? block.headers : []} rows={Array.isArray(block.rows) ? block.rows : []} />;
+      case "callout":
+        return <CalloutBlock variant={block.variant || "info"} content={block.content || ""} />;
+      case "skillCloud":
+        return <SkillCloudBlock skills={Array.isArray(block.skills) ? block.skills : []} highlight={Array.isArray(block.highlight) ? block.highlight : []} />;
+      case "timeline":
+        return <TimelineBlock items={Array.isArray(block.items) ? block.items : []} />;
+      case "beforeAfter":
+        return <BeforeAfterBlock title={block.title || ""} left={block.left || { heading: "", items: [] }} right={block.right || { heading: "", items: [] }} />;
+      default:
+        return null;
+    }
+  } catch (e) {
+    console.error(`[BlockRenderer] Failed to render ${block.type}:`, e);
+    return null;
   }
 }
 
@@ -118,6 +148,7 @@ function ProjectCardBlock({ slug, emphasis }: { slug: string; emphasis: string }
 
 /* ── Metric Row ── */
 function MetricRowBlock({ items }: { items: { label: string; value: string }[] }) {
+  if (!items.length) return null;
   return (
     <div className="cmd-block-metrics">
       {items.map((m, i) => (
@@ -151,6 +182,7 @@ function CodeBlockBlock({ language, code, caption }: { language: string; code: s
 
 /* ── Table ── */
 function TableBlock({ headers, rows }: { headers: string[]; rows: string[][] }) {
+  if (!headers.length) return null;
   return (
     <div className="cmd-block-table-wrap">
       <table className="cmd-block-table">
@@ -164,8 +196,8 @@ function TableBlock({ headers, rows }: { headers: string[]; rows: string[][] }) 
         <tbody>
           {rows.map((row, ri) => (
             <tr key={ri}>
-              {row.map((cell, ci) => (
-                <td key={ci}>{cell}</td>
+              {headers.map((_, ci) => (
+                <td key={ci}>{row[ci] ?? ""}</td>
               ))}
             </tr>
           ))}
@@ -208,6 +240,7 @@ function SkillCloudBlock({ skills, highlight }: { skills: string[]; highlight: s
 
 /* ── Timeline ── */
 function TimelineBlock({ items }: { items: { date: string; title: string; detail: string }[] }) {
+  if (!items.length) return null;
   return (
     <div className="cmd-block-timeline">
       {items.map((item, i) => (

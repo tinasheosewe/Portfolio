@@ -10,9 +10,17 @@ export default function MermaidDiagram({ chart, caption }: MermaidDiagramProps) 
   const containerRef = useRef<HTMLDivElement>(null);
   const [svg, setSvg] = useState<string>("");
   const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     let cancelled = false;
+
+    // Pre-validation: skip obviously broken charts
+    if (!chart || chart.trim().length < 10) {
+      setError(true);
+      setErrorMsg("Diagram too short or empty");
+      return;
+    }
 
     (async () => {
       try {
@@ -20,6 +28,7 @@ export default function MermaidDiagram({ chart, caption }: MermaidDiagramProps) 
         mermaid.initialize({
           startOnLoad: false,
           theme: "dark",
+          securityLevel: "strict",
           themeVariables: {
             primaryColor: "#1c1c1c",
             primaryTextColor: "#f2ede8",
@@ -32,11 +41,21 @@ export default function MermaidDiagram({ chart, caption }: MermaidDiagramProps) 
         });
 
         const id = `mermaid-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-        const { svg: rendered } = await mermaid.render(id, chart);
+
+        // Race render against a 8s timeout
+        const renderPromise = mermaid.render(id, chart);
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("Diagram render timed out")), 8000)
+        );
+
+        const { svg: rendered } = await Promise.race([renderPromise, timeoutPromise]);
         if (!cancelled) setSvg(rendered);
       } catch (e) {
         console.error("[Mermaid]", e);
-        if (!cancelled) setError(true);
+        if (!cancelled) {
+          setError(true);
+          setErrorMsg(e instanceof Error ? e.message : "Unknown render error");
+        }
       }
     })();
 
@@ -52,7 +71,7 @@ export default function MermaidDiagram({ chart, caption }: MermaidDiagramProps) 
           {chart}
         </pre>
         <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>
-          Diagram could not be rendered
+          Diagram could not be rendered{errorMsg ? ` — ${errorMsg}` : ""}
         </span>
       </div>
     );
