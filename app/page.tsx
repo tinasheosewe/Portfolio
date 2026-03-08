@@ -522,7 +522,7 @@ export default function Home() {
               transition={{ delay: 0.78, duration: 0.7 }}
               style={{ fontSize: "clamp(0.95rem, 1.5vw, 1.15rem)", color: "var(--text-secondary)", lineHeight: 1.8, maxWidth: 540, margin: "0 0 36px" }}
             >
-              I design and build software from architecture through interface — enterprise AI platforms, data intelligence systems, and native mobile applications. By day I ship production software at scale; nights and weekends I build my own.
+              I design and build software end to end — AI platforms, data intelligence systems, and native mobile applications. Production software at Goldman Sachs by day; independent projects by night.
             </motion.p>
 
             <motion.div
