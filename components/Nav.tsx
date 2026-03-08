@@ -56,12 +56,6 @@ export default function Nav() {
               onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}>
               <Linkedin size={16} />
             </a>
-            <a href="#contact"
-              style={{ padding: "7px 18px", borderRadius: 100, border: "1px solid var(--border-mid)", fontSize: "0.78rem", letterSpacing: "0.05em", color: "var(--text-secondary)", textDecoration: "none", transition: "border-color .2s, color .2s" }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--accent)"; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border-mid)"; e.currentTarget.style.color = "var(--text-secondary)"; }}>
-              Contact
-            </a>
           </div>
 
           {/* ── Hamburger button (mobile only) ── */}
