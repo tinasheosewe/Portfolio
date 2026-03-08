@@ -22,11 +22,11 @@
   --border: #d6d0c8;
   --border-mid: #c4bcb2;
   --text-primary: #1a1816;
-  --text-secondary: #5a5650;
-  --text-muted: #a09a92;
-  --accent: #c47e0a;
-  --accent-dim: rgba(196,126,10,0.12);
-  --accent-glow: rgba(196,126,10,0.20);
+  --text-secondary: #4a4640;
+  --text-muted: #9a948c;
+  --accent: #556b2f;
+  --accent-dim: rgba(85,107,47,0.10);
+  --accent-glow: rgba(85,107,47,0.18);
 }
 [data-theme="light"] .grain::after { opacity: 0.022; }
 [data-theme="light"] ::-webkit-scrollbar-track { background: var(--bg); }
