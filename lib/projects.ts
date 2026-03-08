@@ -27,28 +27,27 @@ export const projects: Project[] = [
   {
     slug: "apthunt",
     title: "AptHunt",
-    tagline: "14,700 NYC listings. Only the ones worth seeing.",
+    tagline: "NYC apartment intelligence. Only the listings worth seeing.",
     description:
-      "An apartment intelligence platform that ingests every active rental listing in New York City, scores each one across fifteen quality dimensions — from transit access to flood risk — and surfaces only the results worth your attention.",
+      "An apartment intelligence platform that aggregates NYC rental listings from public data sources, scores each one across fifteen quality dimensions — from transit access to flood risk — and surfaces only the results worth your attention.",
     liveUrl: "https://apthunt-web.onrender.com/",
     status: "live",
     statusLabel: "Live",
     tags: ["FastAPI", "Next.js 16", "React 19", "Python", "SQLite", "Geospatial", "NYC Open Data"],
     stats: [
-      { label: "Active NYC listings ingested", value: "14,700" },
       { label: "Quality dimensions per listing", value: "15" },
       { label: "Full sync time", value: "~4 min" },
       { label: "Block-level precision", value: "153 m" },
     ],
     heroGradient: "from-amber-500/20 via-transparent to-transparent",
     overview:
-      "AptHunt is built around one principle: decision compression. New York’s rental market is adversarial — paid placements, stale listings, information overload. AptHunt cuts through all of it by aggregating live listing data, evaluating each one across fifteen quality dimensions, and surfacing only the ones that warrant serious consideration.",
+      "AptHunt is built around one principle: decision compression. New York's rental market is adversarial — paid placements, stale listings, information overload. AptHunt cuts through all of it by aggregating public listing data, evaluating each one across fifteen quality dimensions, and surfacing only the ones that warrant serious consideration.",
     problem:
       "Finding an apartment in New York is overwhelming by design. Listings are manipulated, data decays quickly, and every platform is optimised to maximise engagement rather than match quality. AptHunt inverts that model — fewer results, dramatically higher signal.",
     features: [
       {
         title: "Automated data pipeline",
-        body: "Continuously ingests active listing data from across the New York rental market. Processes approximately 14,700 active listings with automated scheduling and built-in resilience — exponential backoff, request deduplication, and incremental sync.",
+        body: "Aggregates active rental listings from public NYC data sources with automated scheduling and built-in resilience — exponential backoff, request deduplication, and incremental sync.",
       },
       {
         title: "Multi-dimensional quality scoring",
@@ -68,7 +67,7 @@ export const projects: Project[] = [
       },
       {
         title: "Unified data model",
-        body: "Every data field in the system feeds at least one scoring model — cosmetic fields are excluded by design. Multiple listing sources normalise into one canonical schema, making the intelligence layer completely source-agnostic.",
+        body: "Every data field in the system feeds at least one scoring model — cosmetic fields are excluded by design. Listings normalise into one canonical schema, making the intelligence layer source-agnostic.",
       },
     ],
     techStack: [
