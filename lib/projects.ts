@@ -78,7 +78,7 @@ export const projects: Project[] = [
       { category: "Infrastructure", items: ["Docker", "Render"] },
     ],
     lessons:
-      "The hardest problem wasn’t data ingestion or scoring — it was deciding what not to include. Every data source carries noise. The discipline of requiring every schema field to feed a scoring model kept the system honest and the interface clean.",
+      "The unlock was making fifteen different quality signals directly comparable — crime rates in incidents per year, transit in walking minutes, noise in complaint density. Building a normalisation layer that converts every source into a common scale turned a pile of disparate datasets into a composable scoring engine. Good data architecture beats more data every time.",
   },
   {
     slug: "chatbot",
@@ -135,7 +135,7 @@ export const projects: Project[] = [
       { category: "Infrastructure", items: ["Docker", "Render", "Multi-stage build"] },
     ],
     lessons:
-      "Building provider-agnostic from day one forced much cleaner abstractions. The adapter pattern paid off immediately when switching between models for cost optimisation — the conversation logic never needed to change.",
+      "Retrieving less context often produces better answers. Early versions stuffed every relevant memory into the prompt and the model started hedging. The real failure mode turned out to be false retrieval — surfacing context that looks relevant but steers the answer wrong. Separating retrieval evaluation from generation evaluation was the only way to diagnose where quality was actually breaking down.",
   },
   {
     slug: "concierge",
@@ -187,7 +187,7 @@ export const projects: Project[] = [
       { category: "Infrastructure", items: ["Docker", "Render", "render.yaml one-click deploy"] },
     ],
     lessons:
-      "The most subtle challenge was conversation reliability. Long exchanges accumulate edge cases — orphan messages, broken pairs, context drift — that silently degrade the agent's reasoning. Building a robust sanitiser that runs before every inference call made the agent dramatically more stable.",
+      "The agent could handle complex multi-step scheduling from week one, but staying reliable over long conversations took another month of engineering. Reliability work — sanitising orphan messages, repairing broken context, recovering from drift — had more impact than any new feature. The other hard lesson was intent parsing: “not too late” means different things to different people, so the constraint system had to be flexible enough to ask rather than assume.",
   },
   {
     slug: "pantrychef",
@@ -238,7 +238,7 @@ export const projects: Project[] = [
       { category: "Build", items: ["XcodeGen", "project.yml", "TestFlight"] },
     ],
     lessons:
-      "Cook Mode required the most iteration — the challenge wasn’t the voice recognition, it was making the experience feel natural in a kitchen where your hands are occupied and you’re under time pressure. Forcing myself to actually cook with it caught a dozen UX issues that code review never would.",
+      "Each input method — manual entry, barcode scan, camera OCR, voice — maps to a distinct moment in the user’s day. Barcode when unpacking groceries, camera for a handwritten recipe card, voice when your hands are covered in flour. Designing around when each modality naturally occurs shaped the entire interaction model and made the multi-modal stack feel purposeful rather than gimmicky.",
   },
 ];
 
