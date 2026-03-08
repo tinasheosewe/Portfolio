@@ -683,7 +683,7 @@ export default function Home() {
             <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} style={{ textAlign: "center", marginBottom: 52 }}>
               <p style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 16 }}>Contact</p>
               <h2 className="velocity-skew" style={{ fontSize: "clamp(28px, 4vw, 52px)", fontWeight: 700, letterSpacing: "-0.025em", margin: "0 0 14px" }}>Let&#39;s talk.</h2>
-              <p style={{ color: "var(--text-secondary)", lineHeight: 1.7 }}>Available for full-time engineering roles and consulting engagements.</p>
+              <p style={{ color: "var(--text-secondary)", lineHeight: 1.7 }}>Open to compelling opportunities, collaborations, and consulting engagements.</p>
             </motion.div>
 
             {sent ? (
