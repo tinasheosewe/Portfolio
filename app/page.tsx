@@ -538,15 +538,25 @@ export default function Home() {
             <h2 style={{ fontSize: "clamp(22px, 3vw, 36px)", fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>More projects.</h2>
           </motion.div>
 
-          <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "repeat(auto-fill, minmax(300px, 1fr))", gap: 1, background: "var(--border)" }}>
-            {secondaryProjects.map((sp, i) => (
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+            {secondaryProjects.map((sp, i) => {
+              const isTopRow = i < 3;
+              const col = i % 3;
+              return (
               <motion.div
                 key={sp.title}
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.08 }}
-                style={{ padding: "32px 28px", background: "var(--bg)" }}
+                style={{
+                  padding: "32px 28px",
+                  background: "var(--bg)",
+                  width: mobile ? "100%" : "calc(33.333%)",
+                  flexShrink: 0,
+                  borderTop: (!mobile && !isTopRow) || (mobile && i > 0) ? "1px solid var(--border)" : "none",
+                  borderLeft: !mobile && col > 0 ? "1px solid var(--border)" : "none",
+                }}
               >
                 <h3 style={{ fontSize: "1.15rem", fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 10px", color: "var(--text-primary)" }}>
                   {sp.title}<span style={{ color: sp.accent }}>.</span>
@@ -562,7 +572,8 @@ export default function Home() {
                   ))}
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
