@@ -81,7 +81,7 @@ export const projects: Project[] = [
       "The unlock was making fifteen different quality signals directly comparable — crime rates in incidents per year, transit in walking minutes, noise in complaint density. Building a normalisation layer that converts every source into a common scale turned a pile of disparate datasets into a composable scoring engine. Good data architecture beats more data every time.",
   },
   {
-    slug: "chatbot",
+    slug: "persona",
     title: "Persona",
     tagline: "Conversational AI with deep memory. Provider-agnostic by design.",
     description:

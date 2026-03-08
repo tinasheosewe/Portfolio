@@ -72,16 +72,19 @@ const skills = {
 /* ── Tool functions ── */
 
 export function getProject(slug: string): string {
-  const main = projects.find((p) => p.slug === slug);
+  const key = slug.toLowerCase().replace(/\s+/g, "-");
+  const main = projects.find(
+    (p) => p.slug === key || p.title.toLowerCase().replace(/\s+/g, "-") === key
+  );
   if (main) return JSON.stringify(main, null, 2);
 
   // Check secondary projects by slugified title
   const sec = secondaryProjects.find(
-    (p) => p.title.toLowerCase().replace(/\s+/g, "-") === slug
+    (p) => p.title.toLowerCase().replace(/\s+/g, "-") === key
   );
   if (sec) return JSON.stringify(sec, null, 2);
 
-  return JSON.stringify({ error: `Project '${slug}' not found. Available: ${projects.map((p) => p.slug).join(", ")}, ${secondaryProjects.map((p) => p.title.toLowerCase().replace(/\s+/g, "-")).join(", ")}` });
+  return JSON.stringify({ error: `Project '${slug}' not found. Available: ${projects.map((p) => `${p.slug} (${p.title})`).join(", ")}, ${secondaryProjects.map((p) => p.title.toLowerCase().replace(/\s+/g, "-")).join(", ")}` });
 }
 
 export function getAllProjects(): string {
