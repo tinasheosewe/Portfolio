@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, ArrowLeft, ExternalLink, Linkedin, Mail } from "lucide-react";
+import { ArrowUpRight, ArrowLeft, ExternalLink, Linkedin } from "lucide-react";
 import { projects, secondaryProjects } from "@/lib/projects";
 import type { Project } from "@/lib/projects";
 
@@ -408,7 +408,7 @@ export default function Home() {
       if (!res.ok) throw new Error();
       setSent(true);
     } catch {
-      setFormError("Something went wrong. Email me at t.osewe1@gmail.com");
+      setFormError("Something went wrong. Try reaching out via LinkedIn instead.");
     } finally {
       setSending(false);
     }
@@ -729,11 +729,6 @@ export default function Home() {
                 onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
                 onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}>
                 <Linkedin size={15} /> LinkedIn
-              </a>
-              <a href="mailto:t.osewe1@gmail.com" style={{ display: "flex", alignItems: "center", gap: 7, fontSize: "0.82rem", color: "var(--text-muted)", textDecoration: "none", transition: "color .2s" }}
-                onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
-                onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}>
-                <Mail size={15} /> t.osewe1@gmail.com
               </a>
             </div>
           </div>
