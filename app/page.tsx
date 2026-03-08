@@ -606,7 +606,8 @@ export default function Home() {
             <h2 className="velocity-skew" style={{ fontSize: "clamp(22px, 3vw, 36px)", fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>More projects.</h2>
           </motion.div>
 
-          <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "repeat(6, 1fr)", gap: 1, background: "var(--border)" }}>
+          {/* Top row: 3 cards */}
+          <div style={{ display: "flex", flexWrap: mobile ? "wrap" : "nowrap", borderTop: "1px solid var(--border)" }}>
             {secondaryProjects.slice(0, 3).map((sp, i) => (
               <motion.div
                 key={sp.title}
@@ -614,7 +615,12 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.08 }}
-                style={{ padding: mobile ? "28px 20px" : "36px 32px", background: "var(--bg)", gridColumn: mobile ? undefined : "span 2" }}
+                style={{
+                  padding: mobile ? "28px 20px" : "36px 32px",
+                  width: mobile ? "100%" : "33.333%",
+                  borderBottom: "1px solid var(--border)",
+                  borderLeft: !mobile && i > 0 ? "1px solid var(--border)" : "none",
+                }}
               >
                 <h3 style={{ fontSize: "1.15rem", fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 10px", color: "var(--text-primary)" }}>
                   {sp.title}<span style={{ color: sp.accent }}>.</span>
@@ -631,6 +637,9 @@ export default function Home() {
                 </div>
               </motion.div>
             ))}
+          </div>
+          {/* Bottom row: 2 cards centered */}
+          <div style={{ display: "flex", justifyContent: "center", flexWrap: mobile ? "wrap" : "nowrap" }}>
             {secondaryProjects.slice(3).map((sp, i) => (
               <motion.div
                 key={sp.title}
@@ -638,7 +647,12 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: (i + 3) * 0.08 }}
-                style={{ padding: mobile ? "28px 20px" : "36px 32px", background: "var(--bg)", gridColumn: mobile ? undefined : (i === 0 ? "2 / 4" : "4 / 6") }}
+                style={{
+                  padding: mobile ? "28px 20px" : "36px 32px",
+                  width: mobile ? "100%" : "33.333%",
+                  borderBottom: "1px solid var(--border)",
+                  borderLeft: !mobile && i > 0 ? "1px solid var(--border)" : "none",
+                }}
               >
                 <h3 style={{ fontSize: "1.15rem", fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 10px", color: "var(--text-primary)" }}>
                   {sp.title}<span style={{ color: sp.accent }}>.</span>
