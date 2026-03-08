@@ -31,16 +31,16 @@
   --text-primary: #1a1816;
   --text-secondary: #4a4640;
   --text-muted: #9a948c;
-  --accent: #556b2f;
-  --accent-dim: rgba(85,107,47,0.10);
-  --accent-glow: rgba(85,107,47,0.18);
+  --accent: #4338ca;
+  --accent-dim: rgba(67,56,202,0.10);
+  --accent-glow: rgba(67,56,202,0.18);
   --cursor-ring: rgba(26,24,22,0.13);
-  --cursor-hover-bg: rgba(85,107,47,0.08);
+  --cursor-hover-bg: rgba(67,56,202,0.08);
   --btn-face: #ffffff;
   --hover-overlay: rgba(0,0,0,0.03);
-  --orb-primary: rgba(85,107,47,0.06);
-  --orb-secondary: rgba(85,107,47,0.03);
-  --orb-tertiary: rgba(85,107,47,0.03);
+  --orb-primary: rgba(67,56,202,0.06);
+  --orb-secondary: rgba(67,56,202,0.04);
+  --orb-tertiary: rgba(67,56,202,0.03);
 }
 [data-theme="light"] .grain::after { opacity: 0.022; }
 [data-theme="light"] ::-webkit-scrollbar-track { background: var(--bg); }
