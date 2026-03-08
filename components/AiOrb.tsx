@@ -1,77 +1,118 @@
 "use client";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
-/* ── Time-of-day context for prompt ── */
+/* ── Configuration ── */
+const CHAR_INTERVAL_MS = 35;
+const HOLD_DURATION_MS = 5000;
+const FIRST_DWELL_MS = 2000;
+const LONG_DWELL_MS = 25000;
+const MAX_WHISPERS_PER_SECTION = 2;
+const MAX_TOTAL_WHISPERS = 8;
+
+/* ── Time-of-day context ── */
 function getTimeContext(): string {
   const h = new Date().getHours();
   const day = new Date().toLocaleDateString("en-US", { weekday: "long" });
-  if (h >= 0 && h < 6) return `It's ${day}, ${h === 0 ? 12 : h}AM. Deep-night browsing.`;
-  if (h < 9) return `It's ${day} early morning.`;
-  if (h < 12) return `It's ${day} mid-morning.`;
-  if (h < 14) return `It's ${day} around lunch.`;
-  if (h < 17) return `It's ${day} afternoon.`;
-  if (h < 21) return `It's ${day} evening.`;
-  return `It's ${day}, ${h > 12 ? h - 12 : h}PM. Late night.`;
+  if (h < 6) return `It's deep night on a ${day}`;
+  if (h < 9) return `It's early ${day} morning`;
+  if (h < 12) return `It's ${day} mid-morning`;
+  if (h < 14) return `It's ${day} around midday`;
+  if (h < 17) return `It's ${day} afternoon`;
+  if (h < 21) return `It's ${day} evening`;
+  if (h < 23) return `It's late ${day} night`;
+  return `It's near midnight on a ${day}`;
 }
 
-/* ── Build behaviorally-aware prompt ── */
+/* ── Behaviorally-aware prompt builder ── */
 function buildPrompt(
   section: string,
-  scrollSpeed: "fast" | "slow" | "normal",
-  isDwell: boolean,
+  trigger: "enter" | "dwell" | "revisit" | "fast-scroll",
+  scrollSpeed: "fast" | "slow" | "idle",
   dwellSeconds: number | null,
   priorWhispers: string[],
 ): string {
   const time = getTimeContext();
   const prior = priorWhispers.length
-    ? `\nYou already said: ${priorWhispers.map((w) => `"${w}"`).join(", ")}. Don't repeat themes or structure.`
-    : "";
+    ? `\nYou already said: ${priorWhispers.slice(-3).map((w) => `"${w}"`).join(", ")}. Don't repeat themes — evolve the narrative.`
+    : "\nThis is your first observation this session.";
+
   const speed =
     scrollSpeed === "fast"
-      ? " They scrolled here fast — they're hunting."
+      ? " They've been scrolling quickly — hunting for something."
       : scrollSpeed === "slow"
-        ? " They scrolled slowly, reading carefully."
+        ? " They've been scrolling slowly, reading everything."
         : "";
-  const dwell =
-    isDwell && dwellSeconds
-      ? ` They've been on this section for ${Math.round(dwellSeconds)} seconds.`
-      : "";
 
-  const base: Record<string, string> = {
-    hero: "Visitor just landed. Confident, intriguing greeting. Be cool, not corporate.",
-    projects: "Visitor is viewing projects. Sharp observation about the work's calibre or range.",
-    about: "Visitor reading About. Something knowing about the finance-to-engineering arc.",
-    contact: "Visitor reached Contact. One compelling line to make them reach out.",
-  };
-  const dwellBase: Record<string, string> = {
-    hero: "They're still on the landing — impressed or studying the design.",
-    projects: "They're examining projects closely. Reference something specific about the depth.",
-    about: "They're lingering on About. Say something deeper about the person behind the work.",
-    contact: "They're sitting on Contact but haven't acted. Gentle nudge.",
+  const triggers: Record<string, string> = {
+    enter: `Visitor just arrived at the ${section} section.${speed}`,
+    dwell: `Visitor has been studying the ${section} section for ${dwellSeconds ?? "a while"} seconds — they're clearly engaged.`,
+    revisit: `Visitor scrolled BACK to the ${section} section. Something drew them back.`,
+    "fast-scroll": `Visitor is racing through the site at high speed, barely pausing. Currently passing ${section}.`,
   };
 
-  const prompt = isDwell ? dwellBase[section] || base[section] : base[section];
-  return `${time}${speed}${dwell} ${prompt}${prior}`.trim();
+  const sectionHints: Record<string, Record<string, string>> = {
+    hero: {
+      enter: "Confident, intriguing greeting. Be cool, not corporate.",
+      dwell: "They're lingering on the landing — impressed or studying the design.",
+      revisit: "They came back to the top. Say something about that.",
+    },
+    projects: {
+      enter: "Sharp observation about the calibre or range of work shown.",
+      dwell: "They're examining projects closely. Reference the depth.",
+      revisit: "They returned to projects. Something specific caught their eye.",
+    },
+    about: {
+      enter: "Something knowing about the finance-to-engineering arc.",
+      dwell: "They're deep in the About section. Say something about the person behind the work.",
+      revisit: "They came back to learn more. That's telling.",
+    },
+    contact: {
+      enter: "One compelling line to make them reach out. Be direct.",
+      dwell: "They're sitting on Contact but haven't acted. Gentle nudge.",
+      revisit: "They returned to Contact. They're serious.",
+    },
+  };
+
+  const hint =
+    sectionHints[section]?.[trigger] || sectionHints[section]?.enter || "";
+
+  return `${time}. ${triggers[trigger] || triggers.enter} ${hint}${prior}`.trim();
 }
 
 /* ══════════════════════════════════════════════════════════════════ */
 
 export default function AiOrb() {
-  const [displayText, setDisplayText] = useState("");
-  const [isRisen, setIsRisen] = useState(false);
-  const [streaming, setStreaming] = useState(false);
+  const [displayedChars, setDisplayedChars] = useState<string[]>([]);
+  const [orbState, setOrbState] = useState<"rest" | "thinking" | "speaking">(
+    "rest",
+  );
+  const [whisperVisible, setWhisperVisible] = useState(false);
   const [isTouch, setIsTouch] = useState(false);
 
-  const spokenRef = useRef<Set<string>>(new Set());
+  /* ── Behavioral tracking ── */
+  const currentSectionRef = useRef<string | null>(null);
+  const sectionEntryTimeRef = useRef<Record<string, number>>({});
+  const sectionWhisperCountRef = useRef<Map<string, number>>(new Map());
+  const totalWhispersRef = useRef(0);
   const priorWhispersRef = useRef<string[]>([]);
+  const visitedSectionsRef = useRef<Set<string>>(new Set());
+  const hasSpokenFastScrollRef = useRef(false);
+
+  /* ── Scroll speed ── */
+  const scrollSpeedRef = useRef<"fast" | "slow" | "idle">("idle");
+  const lastScrollYRef = useRef(0);
+  const scrollDeltasRef = useRef<number[]>([]);
+
+  /* ── Streaming ── */
+  const charBufferRef = useRef<string[]>([]);
+  const charIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const abortRef = useRef<AbortController | null>(null);
-  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const charQueueRef = useRef<string[]>([]);
-  const charTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const fullTextRef = useRef("");
-  const scrollEventsRef = useRef<number[]>([]);
-  const sectionEntryRef = useRef<Record<string, number>>({});
+  const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dwellTimersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>(
+    {},
+  );
+  const speakingRef = useRef(false);
 
   /* ── Touch detection ── */
   useEffect(() => {
@@ -82,86 +123,93 @@ export default function AiOrb() {
     return () => mq.removeEventListener("change", h);
   }, []);
 
-  /* ── Scroll-velocity tracker ── */
+  /* ── Scroll speed measurement ── */
   useEffect(() => {
-    const onScroll = () => {
-      scrollEventsRef.current.push(Date.now());
-      const cutoff = Date.now() - 2000;
-      scrollEventsRef.current = scrollEventsRef.current.filter((t) => t > cutoff);
+    if (isTouch) return;
+    let rafId: number;
+    const measure = () => {
+      const y = window.scrollY;
+      const delta = Math.abs(y - lastScrollYRef.current);
+      lastScrollYRef.current = y;
+      scrollDeltasRef.current.push(delta);
+      if (scrollDeltasRef.current.length > 10) scrollDeltasRef.current.shift();
+      const avg =
+        scrollDeltasRef.current.reduce((a, b) => a + b, 0) /
+        scrollDeltasRef.current.length;
+      scrollSpeedRef.current = avg > 40 ? "fast" : avg > 5 ? "slow" : "idle";
+      rafId = requestAnimationFrame(measure);
     };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    rafId = requestAnimationFrame(measure);
+    return () => cancelAnimationFrame(rafId);
+  }, [isTouch]);
 
-  function getScrollSpeed(): "fast" | "slow" | "normal" {
-    const n = scrollEventsRef.current.length;
-    if (n > 30) return "fast";
-    if (n < 8) return "slow";
-    return "normal";
-  }
-
-  /* ── Character drip: buffer SSE chunks → emit char-by-char ── */
-  const startCharDrip = useCallback(() => {
-    if (charTimerRef.current) clearInterval(charTimerRef.current);
-    charTimerRef.current = setInterval(() => {
-      if (charQueueRef.current.length > 0) {
-        const ch = charQueueRef.current.shift()!;
-        fullTextRef.current += ch;
-        setDisplayText(fullTextRef.current);
+  /* ── Character reveal interval ── */
+  const startCharReveal = useCallback(() => {
+    if (charIntervalRef.current) return;
+    charIntervalRef.current = setInterval(() => {
+      if (charBufferRef.current.length > 0) {
+        const char = charBufferRef.current.shift()!;
+        setDisplayedChars((prev) => [...prev, char]);
       }
-    }, 38); // 38ms per char — deliberate, visible pace
+    }, CHAR_INTERVAL_MS);
   }, []);
 
-  const stopCharDrip = useCallback(() => {
-    if (charTimerRef.current) {
-      clearInterval(charTimerRef.current);
-      charTimerRef.current = null;
+  const stopCharReveal = useCallback(() => {
+    if (charIntervalRef.current) {
+      clearInterval(charIntervalRef.current);
+      charIntervalRef.current = null;
     }
-    if (charQueueRef.current.length > 0) {
-      fullTextRef.current += charQueueRef.current.join("");
-      charQueueRef.current = [];
-      setDisplayText(fullTextRef.current);
+    if (charBufferRef.current.length > 0) {
+      setDisplayedChars((prev) => [...prev, ...charBufferRef.current]);
+      charBufferRef.current = [];
     }
   }, []);
 
   /* ── Cleanup on unmount ── */
   useEffect(() => {
     return () => {
-      if (charTimerRef.current) clearInterval(charTimerRef.current);
-      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+      if (charIntervalRef.current) clearInterval(charIntervalRef.current);
+      if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
+      Object.values(dwellTimersRef.current).forEach(clearTimeout);
       abortRef.current?.abort();
     };
   }, []);
 
   /* ── Stream a whisper from the API ── */
   const speak = useCallback(
-    async (section: string, isDwell = false) => {
-      const key = isDwell ? `${section}:dwell` : section;
-      if (spokenRef.current.has(key)) return;
-      spokenRef.current.add(key);
+    async (
+      section: string,
+      trigger: "enter" | "dwell" | "revisit" | "fast-scroll",
+    ) => {
+      if (speakingRef.current || totalWhispersRef.current >= MAX_TOTAL_WHISPERS)
+        return;
+      const count = sectionWhisperCountRef.current.get(section) ?? 0;
+      if (count >= MAX_WHISPERS_PER_SECTION) return;
 
-      // Cancel in-flight
+      speakingRef.current = true;
+      totalWhispersRef.current++;
+      sectionWhisperCountRef.current.set(section, count + 1);
+
       abortRef.current?.abort();
-      stopCharDrip();
-      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+      if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
 
-      // Reset state
-      fullTextRef.current = "";
-      charQueueRef.current = [];
-      setDisplayText("");
-      setStreaming(true);
-      setIsRisen(true);
-      startCharDrip();
+      charBufferRef.current = [];
+      setDisplayedChars([]);
+      setOrbState("thinking");
+      setWhisperVisible(true);
 
       abortRef.current = new AbortController();
 
-      const dwellSec = sectionEntryRef.current[section]
-        ? (Date.now() - sectionEntryRef.current[section]) / 1000
+      const dwellSec = sectionEntryTimeRef.current[section]
+        ? Math.round(
+            (Date.now() - sectionEntryTimeRef.current[section]) / 1000,
+          )
         : null;
+
       const prompt = buildPrompt(
         section,
-        getScrollSpeed(),
-        isDwell,
+        trigger,
+        scrollSpeedRef.current,
         dwellSec,
         priorWhispersRef.current,
       );
@@ -175,19 +223,25 @@ export default function AiOrb() {
         });
 
         if (!res.ok) {
-          setIsRisen(false);
-          setStreaming(false);
+          setOrbState("rest");
+          setWhisperVisible(false);
+          speakingRef.current = false;
           return;
         }
 
+        setOrbState("speaking");
+        startCharReveal();
+
         const reader = res.body?.getReader();
         if (!reader) {
-          setIsRisen(false);
-          setStreaming(false);
+          setOrbState("rest");
+          setWhisperVisible(false);
+          speakingRef.current = false;
           return;
         }
 
         const decoder = new TextDecoder();
+        let full = "";
 
         while (true) {
           const { done, value } = await reader.read();
@@ -200,7 +254,8 @@ export default function AiOrb() {
             try {
               const parsed = JSON.parse(payload);
               if (parsed.content) {
-                for (const ch of parsed.content) charQueueRef.current.push(ch);
+                full += parsed.content;
+                for (const c of parsed.content) charBufferRef.current.push(c);
               }
             } catch {
               continue;
@@ -208,93 +263,138 @@ export default function AiOrb() {
           }
         }
 
-        // Wait for the character queue to fully drain
+        // Wait for character buffer to drain
         await new Promise<void>((resolve) => {
           const check = setInterval(() => {
-            if (charQueueRef.current.length === 0) {
+            if (charBufferRef.current.length === 0) {
               clearInterval(check);
               resolve();
             }
           }, 50);
         });
 
-        stopCharDrip();
-        setStreaming(false);
-        priorWhispersRef.current.push(fullTextRef.current);
+        stopCharReveal();
+        priorWhispersRef.current.push(full.trim());
 
-        // Hold for reading, then descend
-        hideTimerRef.current = setTimeout(() => {
-          setIsRisen(false);
-          // Clear text after slide-down animation
+        // Hold the text, then dismiss
+        holdTimerRef.current = setTimeout(() => {
+          setWhisperVisible(false);
           setTimeout(() => {
-            setDisplayText("");
-            fullTextRef.current = "";
-          }, 700);
-        }, 5000);
+            setDisplayedChars([]);
+            setOrbState("rest");
+            speakingRef.current = false;
+          }, 800);
+        }, HOLD_DURATION_MS);
       } catch (err: unknown) {
         if (err instanceof Error && err.name === "AbortError") return;
-        setIsRisen(false);
-        setStreaming(false);
+        setOrbState("rest");
+        setWhisperVisible(false);
+        speakingRef.current = false;
       }
     },
-    [startCharDrip, stopCharDrip],
+    [startCharReveal, stopCharReveal],
   );
 
-  /* ── Observe sections entering viewport ── */
+  /* ── Section change handler ── */
+  const onSectionChange = useCallback(
+    (section: string, entering: boolean) => {
+      if (entering) {
+        const wasVisited = visitedSectionsRef.current.has(section);
+        const prevSection = currentSectionRef.current;
+        currentSectionRef.current = section;
+        sectionEntryTimeRef.current[section] = Date.now();
+        visitedSectionsRef.current.add(section);
+
+        const count = sectionWhisperCountRef.current.get(section) ?? 0;
+        if (count >= MAX_WHISPERS_PER_SECTION) return;
+
+        if (wasVisited && prevSection !== section) {
+          // Revisit
+          dwellTimersRef.current[`${section}:revisit`] = setTimeout(() => {
+            if (currentSectionRef.current === section) {
+              speak(section, "revisit");
+            }
+          }, 1500);
+        } else if (!wasVisited) {
+          // First visit — after dwell
+          dwellTimersRef.current[section] = setTimeout(() => {
+            if (currentSectionRef.current === section) {
+              speak(section, "enter");
+            }
+          }, FIRST_DWELL_MS);
+
+          // Long dwell — second whisper
+          dwellTimersRef.current[`${section}:dwell`] = setTimeout(() => {
+            if (currentSectionRef.current === section) {
+              speak(section, "dwell");
+            }
+          }, LONG_DWELL_MS);
+        }
+      } else {
+        // Leaving section — clear its timers
+        if (currentSectionRef.current === section) {
+          currentSectionRef.current = null;
+        }
+        clearTimeout(dwellTimersRef.current[section]);
+        clearTimeout(dwellTimersRef.current[`${section}:dwell`]);
+        clearTimeout(dwellTimersRef.current[`${section}:revisit`]);
+      }
+    },
+    [speak],
+  );
+
+  /* ── IntersectionObserver ── */
   useEffect(() => {
-    let observers: IntersectionObserver[] = [];
-    const dwellTimers: Record<string, ReturnType<typeof setTimeout>> = {};
-
+    if (isTouch) return;
+    const observers: IntersectionObserver[] = [];
     const timer = setTimeout(() => {
-      const sections = ["hero", "projects", "about", "contact"];
-
-      for (const id of sections) {
+      for (const id of ["hero", "projects", "about", "contact"]) {
         const el = document.getElementById(id);
         if (!el) continue;
-
+        const sid = id;
         const observer = new IntersectionObserver(
           (entries) => {
-            for (const entry of entries) {
-              if (entry.isIntersecting) {
-                if (!sectionEntryRef.current[id])
-                  sectionEntryRef.current[id] = Date.now();
-                if (!spokenRef.current.has(id)) speak(id);
-                // Dwell whisper after 25 seconds
-                if (!spokenRef.current.has(`${id}:dwell`)) {
-                  dwellTimers[id] = setTimeout(() => speak(id, true), 25000);
-                }
-              } else {
-                delete sectionEntryRef.current[id];
-                if (dwellTimers[id]) {
-                  clearTimeout(dwellTimers[id]);
-                  delete dwellTimers[id];
-                }
-              }
+            for (const e of entries) {
+              onSectionChange(sid, e.isIntersecting);
             }
           },
           { threshold: 0.3 },
         );
-
         observer.observe(el);
         observers.push(observer);
       }
     }, 2800);
-
     return () => {
       clearTimeout(timer);
       observers.forEach((o) => o.disconnect());
-      observers = [];
-      Object.values(dwellTimers).forEach((t) => clearTimeout(t));
     };
-  }, [speak]);
+  }, [isTouch, onSectionChange]);
+
+  /* ── Fast-scroll whisper ── */
+  useEffect(() => {
+    if (isTouch) return;
+    const check = setInterval(() => {
+      if (
+        scrollSpeedRef.current === "fast" &&
+        !hasSpokenFastScrollRef.current &&
+        !speakingRef.current &&
+        currentSectionRef.current &&
+        totalWhispersRef.current < MAX_TOTAL_WHISPERS
+      ) {
+        hasSpokenFastScrollRef.current = true;
+        speak(currentSectionRef.current, "fast-scroll");
+      }
+    }, 3000);
+    return () => clearInterval(check);
+  }, [isTouch, speak]);
 
   if (isTouch) return null;
 
   return (
     <>
-      {/* ── The Orb — always visible ── */}
+      {/* ── Orb — stays in place, color changes by state ── */}
       <div
-        className={`ai-orb${streaming ? " thinking" : ""}`}
+        className={`ai-orb ${orbState}`}
         style={{
           position: "fixed",
           bottom: 28,
@@ -313,52 +413,48 @@ export default function AiOrb() {
         <span className="ai-orb-core" />
       </div>
 
-      {/* ── Whisper text — rises from below, chars flow left from orb ── */}
-      <motion.div
-        animate={{ y: isRisen ? 0 : 50, opacity: isRisen ? 1 : 0 }}
-        transition={{ type: "spring", stiffness: 200, damping: 26 }}
-        style={{
-          position: "fixed",
-          bottom: 40,
-          right: 82,
-          zIndex: 9990,
-          pointerEvents: "none",
-        }}
-      >
-        <p
-          style={{
-            fontSize: "0.78rem",
-            lineHeight: 1.5,
-            color: "var(--text-secondary)",
-            margin: 0,
-            fontStyle: "italic",
-            letterSpacing: "0.01em",
-            textAlign: "right",
-            whiteSpace: "nowrap",
-            textShadow:
-              "0 1px 12px var(--bg), 0 0 30px var(--bg), 0 0 60px var(--bg)",
-          }}
-        >
-          {displayText}
-          {streaming && (
-            <motion.span
-              animate={{ opacity: [1, 0] }}
-              transition={{
-                duration: 0.4,
-                repeat: Infinity,
-                repeatType: "reverse",
-              }}
-              style={{
-                color: "var(--accent)",
-                marginLeft: 2,
-                fontStyle: "normal",
-              }}
-            >
-              ▎
-            </motion.span>
-          )}
-        </p>
-      </motion.div>
+      {/* ── Characters emerging from orb — grow leftward ── */}
+      <AnimatePresence>
+        {whisperVisible && displayedChars.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.8 } }}
+            style={{
+              position: "fixed",
+              bottom: 40,
+              right: 76,
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              maxWidth: "min(60vw, 620px)",
+              pointerEvents: "none",
+              zIndex: 9989,
+            }}
+          >
+            {displayedChars.map((char, i) => (
+              <motion.span
+                key={i}
+                initial={{ opacity: 0, x: 14, filter: "blur(4px)" }}
+                animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                style={{
+                  fontSize: "0.8rem",
+                  color: "var(--text-secondary)",
+                  fontStyle: "italic",
+                  letterSpacing: "0.01em",
+                  lineHeight: 1,
+                  textShadow:
+                    "0 0 20px var(--bg), 0 0 40px var(--bg), 0 0 60px var(--bg)",
+                  whiteSpace: "pre",
+                }}
+              >
+                {char}
+              </motion.span>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
