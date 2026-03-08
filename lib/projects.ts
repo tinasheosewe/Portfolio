@@ -20,48 +20,48 @@ export const projects: Project[] = [
   {
     slug: "apthunt",
     title: "AptHunt",
-    tagline: "14,700 NYC listings. We give you 3.",
+    tagline: "14,700 NYC listings. Only the ones worth seeing.",
     description:
-      "A signal-first apartment intelligence platform that compresses New York City's entire rental market into the listings that actually matter — scored across 15 dimensions from transit to flood risk.",
+      "An apartment intelligence platform that ingests every active rental listing in New York City, scores each one across fifteen quality dimensions\u2009\u2014\u2009from transit access to flood risk\u2009\u2014\u2009and surfaces only the results worth your attention.",
     liveUrl: "https://apthunt-web.onrender.com/",
     status: "live",
     statusLabel: "Live",
     tags: ["FastAPI", "Next.js 16", "React 19", "Python", "SQLite", "Geospatial", "NYC Open Data"],
     stats: [
       { label: "Active NYC listings ingested", value: "14,700" },
-      { label: "Scoring dimensions", value: "15" },
+      { label: "Quality dimensions per listing", value: "15" },
       { label: "Full sync time", value: "~4 min" },
-      { label: "GeoHash precision", value: "153 m" },
+      { label: "Block-level precision", value: "153 m" },
     ],
     heroGradient: "from-amber-500/20 via-transparent to-transparent",
     overview:
-      "AptHunt is built around one philosophy: decision compression. The NYC rental market is adversarial — paid placements, stale listings, landlord noise. AptHunt cuts through all of it by pulling live data from every major source, running each listing through a 15-dimension scoring engine, and surfacing only the ones worth your attention.",
+      "AptHunt is built around one principle: decision compression. New York\u2019s rental market is adversarial\u2009\u2014\u2009paid placements, stale listings, information overload. AptHunt cuts through all of it by aggregating live data from every major source, evaluating each listing across fifteen quality dimensions, and surfacing only the ones that warrant serious consideration.",
     problem:
-      "Finding an apartment in NYC is a full-time job. Listings are gamed, data is stale, and every platform is designed to maximise eyeballs rather than signal. AptHunt is the opposite: fewer results, more intelligence.",
+      "Finding an apartment in New York is overwhelming by design. Listings are manipulated, data decays quickly, and every platform is optimised to maximise engagement rather than match quality. AptHunt inverts that model\u2009\u2014\u2009fewer results, dramatically higher signal.",
     features: [
       {
-        title: "Reverse-engineered live scraper",
-        body: "Hits StreetEasy's internal Apollo GraphQL v6 endpoint — not the public API. Pulls ~14,700 active listings in ~74 requests with per-request identity rotation (Chrome UA + OS variant + Apollo client version hash), dual-mode proxy (rotating for search, sticky for sessions), and exponential backoff.",
+        title: "Real-time data pipeline",
+        body: "Ingests live listing data directly from StreetEasy\u2019s internal API\u2009\u2014\u2009not the public-facing version. Processes ~14,700 active listings in ~74 requests with per-request identity rotation (browser fingerprint + OS variant + client version hash), dual-mode proxy routing, and exponential backoff for resilience.",
       },
       {
-        title: "15-dimension atomic scoring engine",
-        body: "15 independent scorers registered in a pluggable engine: deal (z-score normalised against neighbourhood+bedroom comp sets), transit (MTA GTFS stops weighted by routes served), crime (NYPD complaint radius queries with felony×3/misdemeanor×1.5 severity weighting), noise (311 complaints within 300m), building violations (DOB/BBL join), parks, schools, rent stabilisation, flood risk (PLUTO FIRM flags), and more.",
+        title: "Multi-dimensional quality scoring",
+        body: "Each listing is evaluated against fifteen independent quality signals in a pluggable scoring engine: value (z-score normalised against neighbourhood and bedroom comparables), transit access (MTA GTFS stops weighted by route density), crime exposure (NYPD complaint data with severity weighting), noise (311 complaints within 300m), building violations, parks proximity, schools, rent stabilisation status, flood risk, and more.",
       },
       {
-        title: "User-weighted composite scoring",
-        body: "13 dimensions grouped into 5 categories. Top-2 priority groups get 3× weight, middle 2×, bottom 1×. Per-user weighting is a dot product computed at query time — the scoring pipeline runs once, weights are applied on the fly per user.",
+        title: "Personalised ranking",
+        body: "Users set their own priorities across five quality categories. Top-priority groups receive higher weight multipliers, and the final score is computed as a weighted dot product at query time\u2009\u2014\u2009the scoring pipeline runs once, personalisation is applied per user on the fly.",
       },
       {
-        title: "Cosine-similarity comparables engine",
-        body: "\"Similar listings\" uses cosine similarity over 5-dimensional group score vectors blended with Haversine geographic proximity and price proximity. \"Also Consider\" finds listings that match 4 groups but excel in a 5th — one recommendation per group.",
+        title: "Intelligent comparables",
+        body: "Recommends similar listings using vector similarity across quality dimensions, blended with geographic and price proximity. A separate \u2018Also Consider\u2019 engine finds listings that match on four dimensions but excel in a fifth\u2009\u2014\u2009surfacing options the user wouldn\u2019t have found otherwise.",
       },
       {
-        title: "GeoHash block quality cache",
-        body: "Block quality cached at pygeohash precision-7 (~153m cells). Queries Socrata SODA for crime, 311, DOB violations, parks, flood risk, and development trends per cell.",
+        title: "Neighbourhood quality index",
+        body: "Pre-computes neighbourhood quality at block level (~153m cells). Aggregates crime, noise complaints, building violations, park access, flood risk, and development trends per cell from NYC open data APIs.",
       },
       {
-        title: "Source-agnostic canonical schema",
-        body: "Every schema field feeds at least one scoring model. Cosmetic fields are explicitly excluded. StreetEasy, Craigslist, Listings Project, and manual sources all map to the same canonical form — the intelligence layer is source-agnostic.",
+        title: "Unified data model",
+        body: "Every data field in the system feeds at least one scoring model\u2009\u2014\u2009cosmetic fields are excluded by design. StreetEasy, Craigslist, Listings Project, and manual sources all normalise into one canonical schema, making the intelligence layer completely source-agnostic.",
       },
     ],
     techStack: [
@@ -72,110 +72,110 @@ export const projects: Project[] = [
       { category: "Infrastructure", items: ["Docker", "Render", "Dual-mode rotating/sticky proxy", "Browser fingerprint randomisation"] },
     ],
     lessons:
-      "The hardest problem wasn't scraping or scoring — it was deciding what not to include. Every data source has noise. The discipline of enforcing that every schema field feeds a scoring model kept the system honest and the UX clean.",
+      "The hardest problem wasn\u2019t data ingestion or scoring\u2009\u2014\u2009it was deciding what not to include. Every data source carries noise. The discipline of requiring every schema field to feed a scoring model kept the system honest and the interface clean.",
   },
   {
     slug: "chatbot",
-    title: "Character Chatbot",
-    tagline: "Any LLM. Any character. Hybrid RAG memory that actually recalls.",
+    title: "Persona",
+    tagline: "Conversational AI with deep memory. Provider-agnostic by design.",
     description:
-      "A truly LLM-agnostic character roleplay system with hybrid retrieval (dense + BM25), four-tier hierarchical memory, an agentic multi-pass context engine, and a full knowledge graph ingestion pipeline — served via a streaming Next.js UI.",
+      "A production-grade conversational AI platform with persistent memory, structured knowledge ingestion, and zero provider lock-in. Users interact through a streaming interface while the system maintains context across sessions using a four-tier memory architecture.",
     liveUrl: "https://chatbot-ui-rn18.onrender.com/",
     status: "live",
     statusLabel: "Live",
     tags: ["FastAPI", "LangChain", "ChromaDB", "Next.js", "PostgreSQL", "Neo4j", "RAG", "BM25"],
     stats: [
-      { label: "LLM providers supported", value: "4+" },
+      { label: "AI providers supported", value: "4+" },
       { label: "Memory tiers", value: "4" },
-      { label: "Retrieval passes (agentic)", value: "2" },
+      { label: "Retrieval passes", value: "2" },
       { label: "Storage backends", value: "Postgres + Neo4j" },
     ],
     heroGradient: "from-violet-500/20 via-transparent to-transparent",
     overview:
-      "The chatbot is three systems working in concert: a hybrid RAG chatbot backend (CHATBOT), a knowledge graph ingestion pipeline that turns raw documents into structured Postgres/Neo4j graphs (CHATBOT-KG), and a streaming Next.js UI (CHATBOT-UI). Together they form a production-grade character roleplay engine with no provider lock-in.",
+      "Persona is three systems working in concert: a conversational AI backend with hybrid memory retrieval, a knowledge graph pipeline that transforms raw documents into structured and queryable data, and a real-time streaming interface. Together they form a production-grade conversational platform with no dependency on any single AI provider.",
     problem:
-      "Most LLM chatbot demos are tied to one provider, forget context after a few turns, and can't be fed custom knowledge without a complete rewrite. This system solves all three: swap the LLM in one line, recall anything from session history via four independent memory mechanisms, and ingest arbitrary documents into a queryable knowledge graph.",
+      "Most conversational AI demos are locked to one provider, lose context after a few exchanges, and can\u2019t incorporate custom knowledge without a complete rebuild. Persona solves all three\u2009\u2014\u2009switch providers in one line, maintain recall across entire session histories, and ingest any document into a queryable knowledge structure.",
     features: [
       {
-        title: "Truly LLM-agnostic architecture",
-        body: "Abstract LLMWrapper interface with built-in adapters for OpenAI, Anthropic, Ollama, and Google Gemini. A factory + model registry selects the right adapter at runtime. Users inject their own LLM function — zero SDK lock-in at every level, including the agentic retrieval manager which can use a cheaper model for decisions.",
+        title: "Provider-independent AI layer",
+        body: "Abstract interface with built-in adapters for OpenAI, Anthropic, Ollama, and Google Gemini. A factory and model registry selects the right adapter at runtime. Users can inject their own model function\u2009\u2014\u2009zero vendor lock-in at every level, including the reasoning layer which can use a separate, cost-optimised model for retrieval decisions.",
       },
       {
-        title: "Hybrid retrieval engine",
-        body: "HybridRetrievalEngine combines ChromaDB semantic search (dense_k=4) with BM25 keyword search (keyword_k=3) via LangChain EnsembleRetriever. Results interleaved and deduplicated. Hybrid consistently outperforms pure dense or pure keyword in conversational recall.",
+        title: "Hybrid memory retrieval",
+        body: "Combines semantic search (ChromaDB dense vectors) with keyword search (BM25) via an ensemble retrieval strategy. Results are interleaved and deduplicated. The hybrid approach consistently outperforms either method alone in conversational recall benchmarks.",
       },
       {
-        title: "4-tier hierarchical memory",
-        body: "Recent dialogue buffer → BM25 keyword recall over past turns → semantic embedding similarity over session history → GraphRAG stub (ready to connect to the KG pipeline). The blend of BM25 + semantic over history is a non-trivial recall improvement over window-only approaches.",
+        title: "Four-tier contextual memory",
+        body: "Four independent recall mechanisms, from fastest to deepest: recent dialogue buffer, keyword recall over past exchanges, semantic similarity over full session history, and graph-based retrieval ready to connect to the knowledge pipeline. The combination of keyword and semantic search over history is a meaningful improvement over window-only approaches.",
       },
       {
-        title: "Knowledge graph ingestion pipeline",
-        body: "Concurrent LLM extraction (thread pool, max 4 workers) with sentence-boundary-aware overlapping batches. GPT-4o-mini in JSON mode extracts typed nodes (Character, Work, Event, Place, Concept, Principle) and relations. Fully idempotent — deterministic segment IDs from work_name + para_index + chunk_index mean re-ingestion is always safe.",
+        title: "Structured knowledge ingestion",
+        body: "Concurrent extraction pipeline (thread pool, up to 4 workers) with sentence-boundary-aware overlapping batches. Extracts typed entities (Character, Work, Event, Place, Concept, Principle) and their relationships in structured JSON. Fully idempotent\u2009\u2014\u2009deterministic segment IDs mean re-ingestion is always safe.",
       },
       {
-        title: "Agentic multi-pass retrieval",
-        body: "AgenticRetrievalManager with configurable max_passes (default 2). Decides whether the first retrieval pass was sufficient before generation; iterates if not. Separates the agentic reasoning model from the character generation model.",
+        title: "Self-correcting context retrieval",
+        body: "A reasoning layer that evaluates whether the initial retrieval was sufficient before generating a response. If context is lacking, it retrieves again with a refined query. The reasoning model is decoupled from the generation model, enabling independent cost and quality optimisation.",
       },
       {
-        title: "SSE streaming + document management UI",
-        body: "Next.js frontend consumes text/event-stream for token-by-token rendering. Full document management dashboard: upload (blocks until vectorisation completes), delete (triggers auto vector rebuild), view with size/timestamp metadata.",
+        title: "Real-time streaming interface",
+        body: "The frontend consumes a server-sent event stream for token-by-token rendering. Includes a full document management dashboard: upload (blocks until processing completes), delete (triggers automatic index rebuild), and browse with metadata.",
       },
     ],
     techStack: [
       { category: "Backend", items: ["FastAPI", "Uvicorn", "LangChain", "ChromaDB", "HuggingFace sentence-transformers", "BM25"] },
       { category: "Knowledge Graph", items: ["PostgreSQL", "SQLAlchemy", "Neo4j / Memgraph", "psycopg2", "GPT-4o-mini (JSON mode)"] },
       { category: "Frontend", items: ["Next.js 16", "React 19", "Tailwind CSS 4", "SSE streaming", "pnpm"] },
-      { category: "LLM Adapters", items: ["OpenAI", "Anthropic", "Ollama", "Google Gemini"] },
+      { category: "AI Adapters", items: ["OpenAI", "Anthropic", "Ollama", "Google Gemini"] },
       { category: "Infrastructure", items: ["Docker", "Render", "Multi-stage build"] },
     ],
     lessons:
-      "Building LLM-agnostic from day one forces much better abstractions. The provider wrapper pattern paid off immediately when switching between models for cost optimisation — the character logic never needed to change.",
+      "Building provider-agnostic from day one forced much cleaner abstractions. The adapter pattern paid off immediately when switching between models for cost optimisation\u2009\u2014\u2009the conversation logic never needed to change.",
   },
   {
     slug: "concierge",
     title: "Concierge",
     tagline: "Tell it what you want. It finds the table.",
     description:
-      "An AI-powered restaurant availability assistant. Describe your ideal dinner in natural language — the LangGraph ReAct agent interprets your constraints, monitors availability in real time, and notifies you the moment a match opens up.",
+      "An AI-powered reservation assistant for high-demand restaurants. Describe your ideal dinner in natural language\u2009\u2014\u2009neighbourhood, party size, time preferences\u2009\u2014\u2009and the system monitors availability continuously, notifying you the moment a match opens.",
     liveUrl: "https://resy-polling-api.onrender.com/",
     status: "live",
     statusLabel: "Live",
     tags: ["LangChain", "LangGraph", "FastAPI", "GPT-4.1-mini", "ReAct Agent", "PostgreSQL", "SQLAlchemy"],
     stats: [
-      { label: "Tool implementations", value: "1,074 lines" },
-      { label: "Poll presets", value: "3 intensities" },
-      { label: "Sniper burst interval", value: "0.5 s" },
+      { label: "Tool implementation lines", value: "1,074" },
+      { label: "Monitoring intensities", value: "3" },
+      { label: "Release-time check interval", value: "0.5 s" },
       { label: "Credential encryption", value: "Fernet AES" },
     ],
     heroGradient: "from-amber-500/20 via-transparent to-transparent",
     overview:
-      "Concierge is a conversational AI agent that understands natural language restaurant preferences and works in the background to surface availability that matches. Tell it 'dinner for 2 in the West Village, Friday or Saturday, not too late' — it parses the constraints, sets up monitoring jobs, and sends you a notification when something opens.",
+      "Concierge is a conversational AI agent that understands natural-language dining preferences and works in the background to act on them. Say \u2018dinner for two in the West Village, Friday or Saturday, not too late\u2019\u2009\u2014\u2009it interprets the constraints, sets up continuous monitoring, and alerts you when something opens.",
     problem:
-      "Availability at popular restaurants is fleeting and unpredictable. Manual refreshing is tedious and ineffective. Concierge solves this with an always-on intelligent agent that understands nuanced preferences and acts the moment opportunity appears.",
+      "Tables at sought-after restaurants appear and disappear unpredictably. Manual refreshing is tedious and rarely fast enough. Concierge replaces that with an always-on intelligent agent that understands nuanced preferences and acts the moment opportunity appears.",
     features: [
       {
-        title: "LangGraph ReAct conversational agent",
-        body: "Full LangChain + LangGraph ReAct loop powered by GPT-4.1-mini. Maintains conversation history with structured message sanitisation — strips orphan tool messages, drops trailing tool_call messages without responses. Context injected as ephemeral SystemMessage with venue hints. Intermediate reasoning preserved for LLM context but stripped from the rendered UI.",
+        title: "Conversational AI agent",
+        body: "Full conversational reasoning loop powered by GPT-4.1-mini with LangChain and LangGraph. Maintains conversation history with structured message sanitisation\u2009\u2014\u2009strips orphan messages, resolves broken exchange sequences. Context is injected as ephemeral system instructions with venue-specific hints. Internal reasoning is preserved for continuity but hidden from the user interface.",
       },
       {
-        title: "Natural language constraint engine",
-        body: "Expands ScheduleRule objects (weekdays + date ranges + explicit include/exclude overrides + time windows) into concrete PlannedDateCheck objects. AllowedWindow is an immutable value object of minute-of-day ranges. Handles excluded/included date overrides against range+weekday patterns. All parsed from free-form conversation.",
+        title: "Natural language interpretation",
+        body: "Parses free-form conversation into structured scheduling rules\u2009\u2014\u2009weekday patterns, date ranges, explicit overrides, and time windows. Handles complex constraints like \u2018Friday or Saturday, but not next weekend, between 7 and 9.\u2019 All scheduling logic is resolved into concrete date-time checks before monitoring begins.",
       },
       {
-        title: "Drop-time sniper mode",
-        body: "Sleeps until the exact second a restaurant releases inventory (e.g. 9:00 AM ET sharp), then burst-polls at 0.5s intervals for a configurable window. Designed for first-mover advantage at high-demand venues.",
+        title: "Precision release-time booking",
+        body: "Waits until the exact moment a restaurant releases its inventory (e.g., 9:00 AM sharp), then checks at half-second intervals for a configurable window. Designed for first-mover advantage at venues where tables disappear in seconds.",
       },
       {
-        title: "Encrypted credential store",
-        body: "User credentials encrypted at rest with Fernet symmetric encryption (AES-128-CBC). Credential IDs stored in the database; secrets decrypted only at notification time. SQLite locally, PostgreSQL in production.",
+        title: "Encrypted credential management",
+        body: "User credentials encrypted at rest with Fernet symmetric encryption (AES-128-CBC). Credential identifiers stored in the database; secrets decrypted only at the moment of use. Supports both local and production database backends.",
       },
       {
-        title: "Browser-impersonating HTTP client",
-        body: "All API calls made via curl_cffi which mimics browser TLS fingerprints and HTTP/2 behaviour — significantly harder to detect than vanilla requests or httpx. Combined with rotating proxy for polling and sticky proxy for authenticated requests.",
+        title: "Stealth HTTP layer",
+        body: "All external requests use a client that replicates browser TLS fingerprints and HTTP/2 behaviour\u2009\u2014\u2009significantly harder to distinguish from genuine browser traffic than standard HTTP libraries. Combined with rotating proxy for monitoring and sticky proxy for authenticated sessions.",
       },
       {
-        title: "Poll-intensity presets",
-        body: "Configurable poll intensity: eager (120s), standard (300s), relaxed (900s). ThreadPoolExecutor for concurrent venue availability checks. Monitoring jobs persist across restarts via SQLAlchemy-backed JobManager.",
+        title: "Adaptive monitoring intensity",
+        body: "Three monitoring modes\u2009\u2014\u2009eager (every two minutes), standard (every five), and relaxed (every fifteen). Concurrent venue checking with thread pooling. Monitoring jobs persist across service restarts via database-backed job management.",
       },
     ],
     techStack: [
@@ -186,16 +186,16 @@ export const projects: Project[] = [
       { category: "Infrastructure", items: ["Docker", "Render", "render.yaml one-click deploy"] },
     ],
     lessons:
-      "The message sanitisation for the ReAct loop was the trickiest part — LangGraph's message history can accumulate orphan tool_call/tool_response pairs that break subsequent LLM calls. Building a robust sanitiser before every inference call made the agent dramatically more stable.",
+      "The most subtle challenge was message sanitisation for the AI reasoning loop\u2009\u2014\u2009conversation history can accumulate broken exchange sequences that cause downstream failures. Building a robust sanitiser that runs before every inference call made the agent dramatically more reliable.",
   },
   {
     slug: "pantrychef",
     title: "PantryChef",
-    tagline: "Scan your pantry. GPT-4o tells you what to cook.",
+    tagline: "Scan your pantry. AI tells you what to cook.",
     description:
-      "A full-featured iOS kitchen AI app. Scan receipts with Vision OCR, look up ingredients by barcode, get GPT-4o recipe suggestions and substitutions, and cook hands-free with voice-controlled Cook Mode.",
+      "A native iOS kitchen companion. Capture ingredients via receipt scanning, barcode lookup, or camera\u2009\u2014\u2009then let AI suggest recipes, substitutions, and meal plans based on what you actually have on hand.",
     status: "ios",
-    statusLabel: "iOS App — TestFlight Coming Soon",
+    statusLabel: "iOS App \u2014 TestFlight Coming Soon",
     tags: ["Swift", "SwiftUI", "GPT-4o", "Vision OCR", "SFSpeechRecognizer", "iOS 17", "Supabase"],
     stats: [
       { label: "Platform", value: "iOS 17+" },
@@ -205,29 +205,29 @@ export const projects: Project[] = [
     ],
     heroGradient: "from-emerald-500/20 via-transparent to-transparent",
     overview:
-      "PantryChef is a native iOS kitchen management app that combines Apple's on-device AI (Vision, Speech) with GPT-4o to turn what's in your fridge into what's on your table. The architecture is built for production — Supabase-ready service layer with migration SQL included, XcodeGen build, protocol-driven storage.",
+      "PantryChef is a native iOS app that bridges the gap between what\u2019s in your kitchen and what ends up on your table. It combines Apple\u2019s on-device intelligence (Vision for text recognition, Speech for hands-free control) with GPT-4o to turn a photo of your fridge into a dinner plan. The architecture is production-ready\u2009\u2014\u2009database migrations written, service layer abstracted, build system automated.",
     problem:
-      "Most recipe apps show you recipes regardless of what you have. PantryChef works backwards from your actual pantry, showing match percentages, flagging expiring items, and letting AI suggest what to cook with leftovers.",
+      "Most recipe apps ignore what you already have. PantryChef inverts the model\u2009\u2014\u2009it starts from your actual pantry, surfaces recipes ranked by ingredient match, flags items approaching expiry, and lets AI suggest what to do with what\u2019s left.",
     features: [
       {
-        title: "Multi-source pantry input",
-        body: "Add ingredients manually, by barcode scan (Open Food Facts API lookup), or by photographing receipts and cookbooks via Apple Vision OCR. Expiry date tracking with visual urgency warnings. Every recipe card shows pantry match percentage.",
+        title: "Intelligent ingredient capture",
+        body: "Add ingredients manually, by barcode scan (Open Food Facts API), or by photographing receipts and cookbooks via on-device text recognition. Expiry date tracking with visual urgency indicators. Every recipe card shows a pantry match percentage.",
       },
       {
-        title: "GPT-4o AI layer",
-        body: "Ingredient substitution suggestions with confidence ratings. Natural language queries: 'What can I make with what I have?', 'Use up expiring items', 'What can I do with last night's leftovers?'. Recipe import from any URL with structured extraction.",
+        title: "AI-powered recipe intelligence",
+        body: "Substitution suggestions with confidence ratings. Natural language queries\u2009\u2014\u2009\u2018What can I make with what I have?\u2019, \u2018Use up what\u2019s expiring\u2019, \u2018What can I do with last night\u2019s leftovers?\u2019 Recipe import from any URL with structured extraction.",
       },
       {
-        title: "Cook Mode",
-        body: "Full-screen step-by-step guided cooking with per-step timers. Voice readout via AVSpeechSynthesizer. Voice commands ('next', 'repeat', 'start timer') via SFSpeechRecognizer. Dark UI designed for kitchen conditions — readable with wet hands.",
+        title: "Hands-free Cook Mode",
+        body: "Full-screen step-by-step guided cooking with per-step timers. Voice readout via system speech synthesis. Voice commands (\u2018next\u2019, \u2018repeat\u2019, \u2018start timer\u2019) via on-device speech recognition. Dark interface designed for kitchen conditions\u2009\u2014\u2009readable with wet hands.",
       },
       {
-        title: "Meal planning",
-        body: "Weekly calendar view with breakfast/lunch/dinner slots. Auto-generate a complete shopping list from the full week's meal plan. Plan against what you already have to minimise waste.",
+        title: "Meal planning and waste reduction",
+        body: "Weekly calendar view with breakfast, lunch, and dinner slots. Auto-generates a complete shopping list from the week\u2019s meal plan. Plans against what you already have to minimise waste and redundant purchases.",
       },
       {
-        title: "Production-ready architecture",
-        body: "MVVM with centralised AppState. StorageService is a protocol — swapping from in-memory to Supabase is a one-file change. Supabase migration SQL already written. XcodeGen build (no committed .xcodeproj). TestFlight distribution ready.",
+        title: "Production-grade architecture",
+        body: "MVVM with centralised application state. The storage layer is protocol-based\u2009\u2014\u2009swapping from in-memory to Supabase is a single-file change. Database migration SQL already written. Automated build via XcodeGen. TestFlight distribution ready.",
       },
     ],
     techStack: [
@@ -237,6 +237,6 @@ export const projects: Project[] = [
       { category: "Build", items: ["XcodeGen", "project.yml", "TestFlight"] },
     ],
     lessons:
-      "Cook Mode required the most iteration — the challenge wasn't the voice recognition, it was making the experience feel natural in a kitchen environment where your hands are occupied and you're under time pressure. Forcing myself to actually cook with it caught a dozen UX issues that code review never would.",
+      "Cook Mode required the most iteration\u2009\u2014\u2009the challenge wasn\u2019t the voice recognition, it was making the experience feel natural in a kitchen where your hands are occupied and you\u2019re under time pressure. Forcing myself to actually cook with it caught a dozen UX issues that code review never would.",
   },
 ];

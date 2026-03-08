@@ -162,7 +162,7 @@ export default function Home() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [formError, setFormError] = useState("");
-  const words = ["Full-stack", "engineer.", "AI", "products.", "Shipped."];
+  const words = ["Software", "engineer.", "Intelligent", "systems.", "Delivered."];
 
   async function handleContact(e: React.FormEvent) {
     e.preventDefault();
@@ -203,7 +203,7 @@ export default function Home() {
             transition={{ delay: 0.78, duration: 0.7 }}
             style={{ fontSize: "clamp(0.95rem, 1.5vw, 1.15rem)", color: "var(--text-secondary)", lineHeight: 1.8, maxWidth: 540, margin: "0 0 36px" }}
           >
-            I design and build production systems end-to-end — from LLM orchestration and scoring engines to real-time frontends and native iOS. Four live products. Zero hand-offs.
+            I design and build software from architecture through interface — data intelligence, AI-driven products, and native mobile applications. Four products in production, each one conceived and delivered independently.
           </motion.p>
 
           <motion.div
@@ -253,10 +253,10 @@ export default function Home() {
         >
           <div>
             <p style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 10 }}>Selected Work</p>
-            <h2 style={{ fontSize: "clamp(28px, 4vw, 52px)", fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>Things I&apos;ve built.</h2>
+            <h2 style={{ fontSize: "clamp(28px, 4vw, 52px)", fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>Case studies.</h2>
           </div>
           <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", maxWidth: 360, lineHeight: 1.7 }}>
-            End-to-end systems — from LLM pipelines to native iOS apps. Each one shipped and live.
+            Full-lifecycle products — from data infrastructure to native mobile. Each one designed, built, and deployed independently.
           </p>
         </motion.div>
 
@@ -299,7 +299,7 @@ export default function Home() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.25 }}
               style={{ fontSize: "1.05rem", lineHeight: 1.85, color: "var(--text-secondary)", maxWidth: 600, marginTop: 36 }}>
-              Every project starts with architecture. Data models, API contracts, and system boundaries before the first line of code. I build things I&apos;d want to maintain two years from now — tested, documented, and deployed.
+              Every project begins with the structure underneath — how data flows, where boundaries belong, what the system needs to endure over time. I write software I&apos;d want to inherit two years from now.
             </motion.p>
           </div>
         </div>
@@ -309,10 +309,10 @@ export default function Home() {
       <section style={{ borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", background: "var(--bg-card)" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "60px 40px", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 0 }}>
           {[
-            { value: 14700, suffix: "+", label: "NYC listings processed daily" },
-            { value: 15, label: "Scoring dimensions" },
-            { value: 4, label: "LLM providers supported" },
-            { value: 4, label: "Live products shipped" },
+            { value: 14700, suffix: "+", label: "NYC listings analysed" },
+            { value: 15, label: "Quality dimensions per listing" },
+            { value: 4, label: "AI model integrations" },
+            { value: 4, label: "Products in production" },
           ].map((s, i) => (
             <div key={i} style={{ borderLeft: i > 0 ? "1px solid var(--border)" : "none", paddingLeft: i > 0 ? 40 : 0 }}>
               <Stat value={s.value} suffix={s.suffix} label={s.label} />
@@ -330,10 +330,10 @@ export default function Home() {
           </motion.p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 1, background: "var(--border)" }}>
             {[
-              { num: "01", title: "Research", desc: "Deep-dive the domain. Map the data landscape. Understand what exists and what\u2019s missing before writing a line of code." },
-              { num: "02", title: "Architect", desc: "System design first. Data models, API contracts, pipeline topology. Every boundary deliberate, every decision documented." },
-              { num: "03", title: "Build", desc: "Full-stack implementation with tests at every layer. Backend, frontend, infra — no hand-offs, no gaps, no shortcuts." },
-              { num: "04", title: "Ship & Iterate", desc: "Deploy to production. Instrument. Monitor. Iterate ruthlessly based on real usage. If it\u2019s not live, it\u2019s not real." },
+              { num: "01", title: "Research", desc: "Understand the domain deeply. Study existing solutions, identify gaps, map user behaviour. Nothing gets built until the territory is clear." },
+              { num: "02", title: "Architect", desc: "Design the system before writing a single line of code. Define boundaries, data flow, and interfaces. Every structural decision is deliberate and documented." },
+              { num: "03", title: "Build", desc: "Implement across the entire surface \u2014 backend, frontend, infrastructure \u2014 with tests at every layer. One engineer, no seams." },
+              { num: "04", title: "Ship & Iterate", desc: "Deploy, instrument, and monitor. Iterate based on how real users actually behave \u2014 not assumptions. Software that isn\u2019t running isn\u2019t finished." },
             ].map((step, i) => (
               <motion.div key={step.num}
                 initial={{ opacity: 0, y: 20 }}
@@ -357,13 +357,13 @@ export default function Home() {
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
               <p style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 16 }}>About</p>
               <h2 style={{ fontSize: "clamp(26px, 3.5vw, 44px)", fontWeight: 700, letterSpacing: "-0.025em", lineHeight: 1.15, margin: "0 0 28px" }}>
-                I build things<br />that work.
+                Across the<br />full stack.
               </h2>
               <p style={{ color: "var(--text-secondary)", lineHeight: 1.85, fontSize: "0.95rem", margin: "0 0 18px" }}>
-                Full-stack engineer with deep experience across the entire stack — Python backends, React frontends, native iOS, and AI systems. I care about the architecture as much as the shipping.
+                Software engineer with deep experience across the entire product surface — Python services, React interfaces, native iOS, and AI-driven systems. I care about the architecture underneath as much as the experience on top.
               </p>
               <p style={{ color: "var(--text-secondary)", lineHeight: 1.85, fontSize: "0.95rem", margin: 0 }}>
-                My work spans LLM pipelines (RAG, agents, knowledge graphs), data engineering (ETL, scoring engines, geospatial), scraping infrastructure, and native iOS development.
+                Recent work spans AI systems, data intelligence platforms, real-time infrastructure, and native mobile — each one designed, built, and deployed independently.
               </p>
             </motion.div>
           </div>
@@ -399,7 +399,7 @@ export default function Home() {
           <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} style={{ textAlign: "center", marginBottom: 52 }}>
             <p style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 16 }}>Contact</p>
             <h2 style={{ fontSize: "clamp(28px, 4vw, 52px)", fontWeight: 700, letterSpacing: "-0.025em", margin: "0 0 14px" }}>Let&apos;s talk.</h2>
-            <p style={{ color: "var(--text-secondary)", lineHeight: 1.7 }}>Open to full-time engineering roles, interesting contracts, and hard problems.</p>
+            <p style={{ color: "var(--text-secondary)", lineHeight: 1.7 }}>Available for full-time engineering roles and consulting engagements.</p>
           </motion.div>
 
           {sent ? (
