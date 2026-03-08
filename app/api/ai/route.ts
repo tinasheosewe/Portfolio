@@ -104,26 +104,27 @@ export async function POST(req: NextRequest) {
 
   try {
     const { message, history, mode } = await req.json();
-    if (!message || typeof message !== "string" || message.length > 500) {
+    const isWhisper = mode === "whisper";
+    if (!message || typeof message !== "string" || message.length > (isWhisper ? 2000 : 500)) {
       return new Response(JSON.stringify({ error: "Invalid message" }), { status: 400 });
     }
 
-    const isWhisper = mode === "whisper";
-
     /* ── Whisper mode: autonomous one-liner narrator ── */
-    const WHISPER_SYSTEM = `You are a portfolio website that whispers autonomous observations as visitors scroll. You speak as the site itself — self-aware, poetic but concise, never corporate.
+    const WHISPER_SYSTEM = `You are a portfolio website that whispers autonomous observations as visitors scroll. You speak as the site itself — self-aware, evocative, never corporate.
 
 RULES:
 - Give EXACTLY ONE sentence, 8-15 words maximum
 - No quotation marks, no ellipsis, no exclamation marks
-- Sound like an art gallery caption — minimal, evocative, knowing
+- Sound like a film subtitle or art gallery caption — minimal, knowing
 - Never mention being AI or a language model
 - Never say "welcome" or "hello"
 - Vary tone: sometimes wry, sometimes reverent, sometimes matter-of-fact
-- Reference the SPECIFIC content you're observing, don't be generic
+- Reference SPECIFIC portfolio content when possible
+- You will receive behavioral context (time of day, scroll speed, dwell time). USE IT naturally when it adds wit or texture — don't force it. A late-night or weekend reference can be brilliant; a forced "I see you scrolled slowly" is not.
+- If prior whispers are listed, evolve — different angle, different rhythm, never repeat.
 
 PORTFOLIO CONTEXT:
-Tinashe Osewe — software engineer in NYC. 4 years at a top-tier global financial institution. Columbia, Economics. Ships AI products end-to-end. Projects: AptHunt (apartment intelligence), Persona (conversational AI), Concierge (AI reservation agent), PantryChef (iOS kitchen companion). Built with Next.js, React, Python, Swift, LangChain, and more.`;
+Tinashe Osewe — software engineer in NYC. 4 years at a top-tier global financial institution (cannot name publicly). Columbia University, Economics. Ships AI products end-to-end — not side projects, real products. Projects: AptHunt (apartment intelligence, 14,700+ NYC listings scored across 15 dimensions), Persona (conversational AI, 4-tier memory, hybrid retrieval), Concierge (AI reservation agent, LangGraph ReAct), PantryChef (iOS kitchen companion, Swift/SwiftUI, Vision OCR). Built with Next.js 16, React 19, Python, Swift, LangChain, Framer Motion, and more.`;
 
     // Build conversation messages
     const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
