@@ -298,7 +298,7 @@ function CaseStudyOverlay({ project, onClose, onSelectProject, mobile }: { proje
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
               {project.liveUrl && (
                 <a href={project.liveUrl} target="_blank" rel="noopener noreferrer"
-                  style={{ padding: "12px 24px", borderRadius: 100, background: accent, color: "#080808", fontWeight: 700, fontSize: "0.82rem", letterSpacing: "0.04em", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  style={{ padding: "12px 24px", borderRadius: 100, background: accent, color: "var(--btn-face)", fontWeight: 700, fontSize: "0.82rem", letterSpacing: "0.04em", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}>
                   Live Demo <ExternalLink size={13} />
                 </a>
               )}
@@ -384,7 +384,7 @@ function CaseStudyOverlay({ project, onClose, onSelectProject, mobile }: { proje
         <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
           {project.liveUrl && (
             <a href={project.liveUrl} target="_blank" rel="noopener noreferrer"
-              style={{ padding: "13px 26px", borderRadius: 100, background: accent, color: "#080808", fontWeight: 700, fontSize: "0.85rem", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}>
+              style={{ padding: "13px 26px", borderRadius: 100, background: accent, color: "var(--btn-face)", fontWeight: 700, fontSize: "0.85rem", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}>
               Open live demo <ArrowUpRight size={14} />
             </a>
           )}
@@ -405,7 +405,7 @@ function CaseStudyOverlay({ project, onClose, onSelectProject, mobile }: { proje
               return (
                 <div key={p.slug} role="button" tabIndex={0} onClick={() => onSelectProject(p.slug)} onKeyDown={e => { if (e.key === "Enter") onSelectProject(p.slug); }}>
                   <motion.div
-                    whileHover={{ backgroundColor: "rgba(255,255,255,0.02)" }}
+                    whileHover={{ backgroundColor: "var(--hover-overlay)" }}
                     style={{ padding: "36px 32px", background: "var(--bg)", transition: "background .2s" }}>
                     <span style={{ fontSize: "0.65rem", letterSpacing: "0.08em", textTransform: "uppercase", color: nextAccent, display: "block", marginBottom: 12 }}>{p.statusLabel}</span>
                     <h3 style={{ fontSize: "clamp(1.2rem, 2vw, 1.6rem)", fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 8px", color: "var(--text-primary)" }}>
@@ -492,17 +492,17 @@ export default function Home() {
           <motion.div
             animate={{ x: [0, 30, -20, 0], y: [0, -40, 20, 0], scale: [1, 1.15, 0.95, 1] }}
             transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-            style={{ position: "fixed", top: "-15%", right: "-10%", width: 700, height: 700, borderRadius: "50%", background: "radial-gradient(circle, rgba(232,150,12,0.07) 0%, transparent 65%)", pointerEvents: "none", zIndex: 0, filter: "blur(40px)" }}
+            style={{ position: "fixed", top: "-15%", right: "-10%", width: 700, height: 700, borderRadius: "50%", background: "radial-gradient(circle, var(--orb-primary) 0%, transparent 65%)", pointerEvents: "none", zIndex: 0, filter: "blur(40px)" }}
           />
           <motion.div
             animate={{ x: [0, -25, 15, 0], y: [0, 30, -25, 0], scale: [1, 0.9, 1.1, 1] }}
             transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-            style={{ position: "fixed", top: "20%", left: "-12%", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(167,139,250,0.04) 0%, transparent 65%)", pointerEvents: "none", zIndex: 0, filter: "blur(50px)" }}
+            style={{ position: "fixed", top: "20%", left: "-12%", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, var(--orb-secondary) 0%, transparent 65%)", pointerEvents: "none", zIndex: 0, filter: "blur(50px)" }}
           />
           <motion.div
             animate={{ x: [0, 20, -15, 0], y: [0, -20, 30, 0] }}
             transition={{ duration: 26, repeat: Infinity, ease: "easeInOut", delay: 5 }}
-            style={{ position: "fixed", bottom: "5%", right: "15%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(232,150,12,0.04) 0%, transparent 65%)", pointerEvents: "none", zIndex: 0, filter: "blur(60px)" }}
+            style={{ position: "fixed", bottom: "5%", right: "15%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, var(--orb-tertiary) 0%, transparent 65%)", pointerEvents: "none", zIndex: 0, filter: "blur(60px)" }}
           />
 
           <div style={{ position: "relative", zIndex: 1 }}>
@@ -532,7 +532,7 @@ export default function Home() {
               style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}
             >
               <MagneticButton href="#projects"
-                style={{ padding: "13px 28px", borderRadius: 100, background: "var(--accent)", color: "#080808", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.04em", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, border: "none" }}>
+                style={{ padding: "13px 28px", borderRadius: 100, background: "var(--accent)", color: "var(--btn-face)", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.04em", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, border: "none" }}>
                 View work <ArrowUpRight size={15} />
               </MagneticButton>
               <MagneticButton href="#contact"
@@ -830,7 +830,7 @@ export default function Home() {
                   onBlur={e => (e.target.style.borderColor = "var(--border)")}
                 />
                 {formError && <p style={{ fontSize: "0.8rem", color: "#f87171" }}>{formError}</p>}
-                <MagneticButton type="submit" disabled={sending} style={{ marginTop: 4, padding: "15px 32px", borderRadius: 100, background: "var(--accent)", color: "#080808", fontWeight: 700, fontSize: "0.875rem", border: "none", transition: "opacity .2s", opacity: sending ? 0.65 : 1 }}>
+                <MagneticButton type="submit" disabled={sending} style={{ marginTop: 4, padding: "15px 32px", borderRadius: 100, background: "var(--accent)", color: "var(--btn-face)", fontWeight: 700, fontSize: "0.875rem", border: "none", transition: "opacity .2s", opacity: sending ? 0.65 : 1 }}>
                   {sending ? "Sending\u2026" : "Send message"}
                 </MagneticButton>
               </form>

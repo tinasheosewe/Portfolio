@@ -58,7 +58,7 @@ export default function Cursor() {
           dot.current.style.height = "8px";
           dot.current.style.borderRadius = "50%";
           dot.current.style.background = "var(--accent)";
-          dot.current.style.mixBlendMode = "difference";
+          dot.current.style.mixBlendMode = "normal";
           const dotSize = isBtn ? 6 : 8;
           dot.current.style.transform = `translate(${x - dotSize / 2}px,${y - dotSize / 2}px) scale(${isBtn ? 0.5 : 1})`;
           dot.current.style.opacity = isBtn ? "0" : "1";
@@ -82,8 +82,8 @@ export default function Cursor() {
           ring.current.style.transform = `translate(${rp.current.x - s / 2}px,${rp.current.y - s / 2}px)`;
           ring.current.style.width = s + "px";
           ring.current.style.height = s + "px";
-          ring.current.style.borderColor = isBtn ? "var(--accent)" : "rgba(242,237,232,0.18)";
-          ring.current.style.background = isBtn ? "rgba(232,150,12,0.06)" : "transparent";
+          ring.current.style.borderColor = isBtn ? "var(--accent)" : "var(--cursor-ring)";
+          ring.current.style.background = isBtn ? "var(--cursor-hover-bg)" : "transparent";
           ring.current.style.backdropFilter = isBtn ? "blur(2px)" : "none";
         }
       }
@@ -97,8 +97,8 @@ export default function Cursor() {
 
   return (
     <>
-      <div ref={dot} style={{ position:"fixed",top:0,left:0,width:8,height:8,borderRadius:"50%",background:"var(--accent)",pointerEvents:"none",zIndex:9999,transition:"opacity .25s ease, transform .15s ease, width .3s cubic-bezier(.23,1,.32,1), height .3s cubic-bezier(.23,1,.32,1), border-radius .3s ease",mixBlendMode:"difference" }} />
-      <div ref={ring} style={{ position:"fixed",top:0,left:0,width:32,height:32,borderRadius:"50%",border:"1.5px solid rgba(242,237,232,0.18)",pointerEvents:"none",zIndex:9998,transition:"width .4s cubic-bezier(.23,1,.32,1),height .4s cubic-bezier(.23,1,.32,1),border-color .3s ease,background .3s ease,backdrop-filter .3s ease,opacity .3s ease" }} />
+      <div ref={dot} style={{ position:"fixed",top:0,left:0,width:8,height:8,borderRadius:"50%",background:"var(--accent)",pointerEvents:"none",zIndex:9999,transition:"opacity .25s ease, transform .15s ease, width .3s cubic-bezier(.23,1,.32,1), height .3s cubic-bezier(.23,1,.32,1), border-radius .3s ease" }} />
+      <div ref={ring} style={{ position:"fixed",top:0,left:0,width:32,height:32,borderRadius:"50%",border:"1.5px solid var(--cursor-ring)",pointerEvents:"none",zIndex:9998,transition:"width .4s cubic-bezier(.23,1,.32,1),height .4s cubic-bezier(.23,1,.32,1),border-color .3s ease,background .3s ease,backdrop-filter .3s ease,opacity .3s ease" }} />
     </>
   );
 }

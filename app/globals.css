@@ -12,6 +12,13 @@
   --accent: #e8960c;
   --accent-dim: rgba(232,150,12,0.12);
   --accent-glow: rgba(232,150,12,0.25);
+  --cursor-ring: rgba(242,237,232,0.18);
+  --cursor-hover-bg: rgba(232,150,12,0.06);
+  --btn-face: #080808;
+  --hover-overlay: rgba(255,255,255,0.03);
+  --orb-primary: rgba(232,150,12,0.07);
+  --orb-secondary: rgba(167,139,250,0.04);
+  --orb-tertiary: rgba(232,150,12,0.04);
 }
 
 /* ── Light theme ──────────────────────────────────────────────────── */
@@ -27,6 +34,13 @@
   --accent: #556b2f;
   --accent-dim: rgba(85,107,47,0.10);
   --accent-glow: rgba(85,107,47,0.18);
+  --cursor-ring: rgba(26,24,22,0.13);
+  --cursor-hover-bg: rgba(85,107,47,0.08);
+  --btn-face: #ffffff;
+  --hover-overlay: rgba(0,0,0,0.03);
+  --orb-primary: rgba(85,107,47,0.06);
+  --orb-secondary: rgba(85,107,47,0.03);
+  --orb-tertiary: rgba(85,107,47,0.03);
 }
 [data-theme="light"] .grain::after { opacity: 0.022; }
 [data-theme="light"] ::-webkit-scrollbar-track { background: var(--bg); }
