@@ -594,78 +594,74 @@ export default function Home() {
         </section>
 
         {/* ── Other Work ── */}
-        <section style={{ padding: mobile ? "0 20px 60px" : "0 0 100px", maxWidth: mobile ? 1200 : "none", margin: "0 auto" }}>
+        <section style={{ padding: mobile ? "0 20px 60px" : "0 40px 100px", maxWidth: 1200, margin: "0 auto" }}>
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            style={{ maxWidth: 1200, margin: "0 auto 40px", paddingLeft: mobile ? 0 : 40, paddingRight: mobile ? 0 : 40 }}
+            style={{ marginBottom: 40 }}
           >
             <p style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 10 }}>Other Work</p>
             <h2 className="velocity-skew" style={{ fontSize: "clamp(22px, 3vw, 36px)", fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>More projects.</h2>
           </motion.div>
 
-          {mobile ? (
-            /* Mobile: vertical stack */
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              {secondaryProjects.map((sp, i) => (
-                <motion.div
-                  key={sp.title}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.08 }}
-                  style={{ padding: "32px 0", borderTop: i > 0 ? "1px solid var(--border)" : "none" }}
-                >
-                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 10px", color: "var(--text-primary)" }}>
-                    {sp.title}<span style={{ color: sp.accent }}>.</span>
-                  </h3>
-                  <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", lineHeight: 1.7, margin: "0 0 16px" }}>
-                    {sp.description}
-                  </p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                    {sp.tags.map(tag => (
-                      <span key={tag} style={{ fontSize: "0.6rem", letterSpacing: "0.06em", textTransform: "uppercase", padding: "2px 7px", borderRadius: 100, background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            /* Desktop: horizontal scroll strip */
-            <div className="h-scroll-wrapper" style={{ display: "flex", gap: 1, background: "var(--border)", paddingLeft: 40 }}>
-              {secondaryProjects.map((sp, i) => (
-                <motion.div
-                  key={sp.title}
-                  className="h-scroll-card"
-                  initial={{ opacity: 0, x: 40 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  style={{ width: 360, minWidth: 360, padding: "40px 36px", background: "var(--bg)", borderLeft: i > 0 ? "none" : undefined }}
-                >
-                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 10px", color: "var(--text-primary)" }}>
-                    {sp.title}<span style={{ color: sp.accent }}>.</span>
-                  </h3>
-                  <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", lineHeight: 1.7, margin: "0 0 16px" }}>
-                    {sp.description}
-                  </p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                    {sp.tags.map(tag => (
-                      <span key={tag} style={{ fontSize: "0.6rem", letterSpacing: "0.06em", textTransform: "uppercase", padding: "2px 7px", borderRadius: 100, background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </motion.div>
-              ))}
-              {/* Spacer to ensure last card is fully visible */}
-              <div style={{ minWidth: 40, flexShrink: 0, background: "var(--bg)" }} />
-            </div>
-          )}
+          <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "repeat(3, 1fr)", gap: 1, background: "var(--border)" }}>
+            {secondaryProjects.slice(0, 3).map((sp, i) => (
+              <motion.div
+                key={sp.title}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.08 }}
+                style={{ padding: mobile ? "28px 20px" : "36px 32px", background: "var(--bg)" }}
+              >
+                <h3 style={{ fontSize: "1.15rem", fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 10px", color: "var(--text-primary)" }}>
+                  {sp.title}<span style={{ color: sp.accent }}>.</span>
+                </h3>
+                <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", lineHeight: 1.7, margin: "0 0 16px" }}>
+                  {sp.description}
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                  {sp.tags.map(tag => (
+                    <span key={tag} style={{ fontSize: "0.6rem", letterSpacing: "0.06em", textTransform: "uppercase", padding: "2px 7px", borderRadius: 100, background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          {/* Bottom row — centered */}
+          <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "repeat(3, 1fr)", gap: 1, background: "var(--border)", borderTop: mobile ? "none" : undefined }}>
+            {/* Empty cell for centering */}
+            {!mobile && <div style={{ background: "var(--bg)" }} />}
+            {secondaryProjects.slice(3).map((sp, i) => (
+              <motion.div
+                key={sp.title}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: (i + 3) * 0.08 }}
+                style={{ padding: mobile ? "28px 20px" : "36px 32px", background: "var(--bg)" }}
+              >
+                <h3 style={{ fontSize: "1.15rem", fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 10px", color: "var(--text-primary)" }}>
+                  {sp.title}<span style={{ color: sp.accent }}>.</span>
+                </h3>
+                <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", lineHeight: 1.7, margin: "0 0 16px" }}>
+                  {sp.description}
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                  {sp.tags.map(tag => (
+                    <span key={tag} style={{ fontSize: "0.6rem", letterSpacing: "0.06em", textTransform: "uppercase", padding: "2px 7px", borderRadius: 100, background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+            {!mobile && <div style={{ background: "var(--bg)" }} />}
+          </div>
         </section>
 
         {/* ── Philosophy ── */}
