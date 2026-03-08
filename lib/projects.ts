@@ -268,7 +268,7 @@ export const secondaryProjects: SecondaryProject[] = [
     accent: "#f472b6",
   },
   {
-    title: "Persona",
+    title: "Wavelength",
     description: "Connects to Spotify, analyses your listening patterns across audio features, and maps them to a personality archetype with colour, aesthetic, and soundtrack.",
     tags: ["Python", "FastAPI", "Spotify API", "NumPy", "OAuth 2.0"],
     accent: "#a3e635",
