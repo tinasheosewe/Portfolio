@@ -1,4 +1,20 @@
-"use client";
+#!/usr/bin/env python3
+"""Writes homepage + case study page."""
+import os
+
+BASE = os.path.dirname(os.path.abspath(__file__))
+
+def w(path: str, content: str) -> None:
+    full = os.path.join(BASE, path)
+    os.makedirs(os.path.dirname(full), exist_ok=True)
+    with open(full, "w") as f:
+        f.write(content)
+    print(f"✓  {path}")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# app/page.tsx  — awwwards-style homepage
+# ─────────────────────────────────────────────────────────────────────────────
+w("app/page.tsx", """"use client";
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -10,6 +26,7 @@ function AnimWord({ word, delay }: { word: string; delay: number }) {
   return (
     <span style={{ overflow: "hidden", display: "inline-block", marginRight: "0.22em" }}>
       <motion.span
+        display="inline-block"
         initial={{ y: "110%", rotate: 3 }}
         animate={{ y: 0, rotate: 0 }}
         transition={{ duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] }}
@@ -399,3 +416,6 @@ export default function Home() {
     </main>
   );
 }
+""")
+
+print("\\n✓ All page files written.")
