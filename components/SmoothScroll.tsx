@@ -8,6 +8,10 @@ export default function SmoothScroll() {
       duration: 1.2,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
+      prevent: (node: HTMLElement) => {
+        // Don't hijack scroll inside case study overlay or mobile nav
+        return !!node.closest?.("[data-lenis-prevent]");
+      },
     });
     const raf = (t: number) => { lenis.raf(t); requestAnimationFrame(raf); };
     requestAnimationFrame(raf);

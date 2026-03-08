@@ -204,6 +204,7 @@ function CaseStudyOverlay({ project, onClose, onSelectProject, mobile }: { proje
   return (
     <motion.div
       ref={overlayRef}
+      data-lenis-prevent
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 40 }}
