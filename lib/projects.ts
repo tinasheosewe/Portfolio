@@ -16,6 +16,13 @@ export interface Project {
   lessons: string;
 }
 
+export interface SecondaryProject {
+  title: string;
+  description: string;
+  tags: string[];
+  accent: string;
+}
+
 export const projects: Project[] = [
   {
     slug: "apthunt",
@@ -35,13 +42,13 @@ export const projects: Project[] = [
     ],
     heroGradient: "from-amber-500/20 via-transparent to-transparent",
     overview:
-      "AptHunt is built around one principle: decision compression. New York\u2019s rental market is adversarial\u2009\u2014\u2009paid placements, stale listings, information overload. AptHunt cuts through all of it by aggregating live data from every major source, evaluating each listing across fifteen quality dimensions, and surfacing only the ones that warrant serious consideration.",
+      "AptHunt is built around one principle: decision compression. New York\u2019s rental market is adversarial\u2009\u2014\u2009paid placements, stale listings, information overload. AptHunt cuts through all of it by aggregating live listing data, evaluating each one across fifteen quality dimensions, and surfacing only the ones that warrant serious consideration.",
     problem:
       "Finding an apartment in New York is overwhelming by design. Listings are manipulated, data decays quickly, and every platform is optimised to maximise engagement rather than match quality. AptHunt inverts that model\u2009\u2014\u2009fewer results, dramatically higher signal.",
     features: [
       {
-        title: "Real-time data pipeline",
-        body: "Ingests live listing data directly from StreetEasy\u2019s internal API\u2009\u2014\u2009not the public-facing version. Processes ~14,700 active listings in ~74 requests with per-request identity rotation (browser fingerprint + OS variant + client version hash), dual-mode proxy routing, and exponential backoff for resilience.",
+        title: "Automated data pipeline",
+        body: "Continuously ingests active listing data from across the New York rental market. Processes approximately 14,700 active listings with automated scheduling and built-in resilience\u2009\u2014\u2009exponential backoff, request deduplication, and incremental sync.",
       },
       {
         title: "Multi-dimensional quality scoring",
@@ -61,15 +68,15 @@ export const projects: Project[] = [
       },
       {
         title: "Unified data model",
-        body: "Every data field in the system feeds at least one scoring model\u2009\u2014\u2009cosmetic fields are excluded by design. StreetEasy, Craigslist, Listings Project, and manual sources all normalise into one canonical schema, making the intelligence layer completely source-agnostic.",
+        body: "Every data field in the system feeds at least one scoring model\u2009\u2014\u2009cosmetic fields are excluded by design. Multiple listing sources normalise into one canonical schema, making the intelligence layer completely source-agnostic.",
       },
     ],
     techStack: [
       { category: "Backend", items: ["FastAPI", "Uvicorn", "SQLite (WAL mode)", "Pydantic"] },
       { category: "Frontend", items: ["Next.js 16", "React 19", "TypeScript", "Tailwind CSS 4", "Zustand", "React-Leaflet", "Recharts", "Framer Motion"] },
-      { category: "Data Sources", items: ["StreetEasy Apollo GraphQL v6", "NYC Open Data (Socrata SODA)", "MTA GTFS", "NYPD Complaints", "DOB/PLUTO", "NYC Parks"] },
+      { category: "Data", items: ["NYC Open Data (Socrata SODA)", "MTA GTFS", "NYPD Complaints", "DOB/PLUTO", "NYC Parks"] },
       { category: "Geospatial", items: ["pygeohash (precision-7)", "Haversine distance", "Socrata radius queries"] },
-      { category: "Infrastructure", items: ["Docker", "Render", "Dual-mode rotating/sticky proxy", "Browser fingerprint randomisation"] },
+      { category: "Infrastructure", items: ["Docker", "Render"] },
     ],
     lessons:
       "The hardest problem wasn\u2019t data ingestion or scoring\u2009\u2014\u2009it was deciding what not to include. Every data source carries noise. The discipline of requiring every schema field to feed a scoring model kept the system honest and the interface clean.",
@@ -142,10 +149,10 @@ export const projects: Project[] = [
     statusLabel: "Live",
     tags: ["LangChain", "LangGraph", "FastAPI", "GPT-4.1-mini", "ReAct Agent", "PostgreSQL", "SQLAlchemy"],
     stats: [
-      { label: "Tool implementation lines", value: "1,074" },
-      { label: "Monitoring intensities", value: "3" },
-      { label: "Release-time check interval", value: "0.5 s" },
-      { label: "Credential encryption", value: "Fernet AES" },
+      { label: "Agent tool functions", value: "6+" },
+      { label: "Monitoring modes", value: "3" },
+      { label: "Constraint types supported", value: "5+" },
+      { label: "Data encryption", value: "AES-128" },
     ],
     heroGradient: "from-amber-500/20 via-transparent to-transparent",
     overview:
@@ -162,16 +169,12 @@ export const projects: Project[] = [
         body: "Parses free-form conversation into structured scheduling rules\u2009\u2014\u2009weekday patterns, date ranges, explicit overrides, and time windows. Handles complex constraints like \u2018Friday or Saturday, but not next weekend, between 7 and 9.\u2019 All scheduling logic is resolved into concrete date-time checks before monitoring begins.",
       },
       {
-        title: "Precision release-time booking",
-        body: "Waits until the exact moment a restaurant releases its inventory (e.g., 9:00 AM sharp), then checks at half-second intervals for a configurable window. Designed for first-mover advantage at venues where tables disappear in seconds.",
+        title: "Intelligent availability monitoring",
+        body: "Monitors for the exact moment a restaurant releases new availability, then checks at high frequency for a configurable window. Designed for venues where tables are claimed within seconds of release.",
       },
       {
         title: "Encrypted credential management",
         body: "User credentials encrypted at rest with Fernet symmetric encryption (AES-128-CBC). Credential identifiers stored in the database; secrets decrypted only at the moment of use. Supports both local and production database backends.",
-      },
-      {
-        title: "Stealth HTTP layer",
-        body: "All external requests use a client that replicates browser TLS fingerprints and HTTP/2 behaviour\u2009\u2014\u2009significantly harder to distinguish from genuine browser traffic than standard HTTP libraries. Combined with rotating proxy for monitoring and sticky proxy for authenticated sessions.",
       },
       {
         title: "Adaptive monitoring intensity",
@@ -182,7 +185,6 @@ export const projects: Project[] = [
       { category: "AI Agent", items: ["LangChain", "LangGraph", "GPT-4.1-mini", "ReAct architecture", "StructuredTool"] },
       { category: "Backend", items: ["FastAPI", "Uvicorn", "SQLAlchemy", "SQLite / PostgreSQL", "python-dateutil"] },
       { category: "Security", items: ["Fernet symmetric encryption", "cryptography lib", "Credential store"] },
-      { category: "HTTP", items: ["curl_cffi (TLS fingerprinting)", "Rotating + sticky proxy", "ThreadPoolExecutor"] },
       { category: "Infrastructure", items: ["Docker", "Render", "render.yaml one-click deploy"] },
     ],
     lessons:
@@ -238,5 +240,26 @@ export const projects: Project[] = [
     ],
     lessons:
       "Cook Mode required the most iteration\u2009\u2014\u2009the challenge wasn\u2019t the voice recognition, it was making the experience feel natural in a kitchen where your hands are occupied and you\u2019re under time pressure. Forcing myself to actually cook with it caught a dozen UX issues that code review never would.",
+  },
+];
+
+export const secondaryProjects: SecondaryProject[] = [
+  {
+    title: "TravelAgent",
+    description: "Flight comparison engine that resolves airports, dispatches searches across multiple booking platforms, and scores offers by value, duration, and layover quality.",
+    tags: ["Python", "FastAPI", "Pydantic", "Amadeus API", "Kiwi API"],
+    accent: "#38bdf8",
+  },
+  {
+    title: "BlindDuel",
+    description: "An iOS spatial audio game where players navigate and compete using only sound, head-gesture input, and haptic feedback. All audio assets procedurally generated.",
+    tags: ["Swift", "iOS 15+", "Spatial Audio", "Core Haptics", "XcodeGen"],
+    accent: "#f472b6",
+  },
+  {
+    title: "Archetype",
+    description: "Connects to Spotify, analyses your listening patterns across audio features, and maps them to a personality archetype with colour, aesthetic, and soundtrack.",
+    tags: ["Python", "FastAPI", "Spotify API", "NumPy", "OAuth 2.0"],
+    accent: "#a3e635",
   },
 ];
