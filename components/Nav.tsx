@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { Github } from "lucide-react";
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -30,6 +31,12 @@ export default function Nav() {
               {label}
             </Link>
           ))}
+          <a href="https://github.com/tinasheosewe" target="_blank" rel="noopener noreferrer"
+            style={{ color: "var(--text-muted)", textDecoration: "none", transition: "color .2s", display: "flex", alignItems: "center" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
+            onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}>
+            <Github size={16} />
+          </a>
           <a href="mailto:tinashe.osewe@gmail.com"
             style={{ padding: "7px 18px", borderRadius: 100, border: "1px solid var(--border-mid)", fontSize: "0.78rem", letterSpacing: "0.05em", color: "var(--text-secondary)", textDecoration: "none", transition: "border-color .2s, color .2s" }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--accent)"; }}

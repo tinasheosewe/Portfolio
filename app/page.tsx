@@ -186,17 +186,6 @@ export default function Home() {
         <div style={{ position: "fixed", top: "-10%", right: "-5%", width: 700, height: 700, borderRadius: "50%", background: "radial-gradient(circle, rgba(232,150,12,0.06) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
 
         <div style={{ position: "relative", zIndex: 1 }}>
-          {/* Available pill */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 32, padding: "5px 14px", borderRadius: 100, border: "1px solid var(--border-mid)", background: "var(--bg-card)" }}
-          >
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#4ade80", boxShadow: "0 0 6px #4ade80", display: "inline-block" }} />
-            <span style={{ fontSize: "0.7rem", letterSpacing: "0.1em", color: "var(--text-secondary)", textTransform: "uppercase" }}>Available for work</span>
-          </motion.div>
-
           {/* Big headline */}
           <h1 style={{ fontSize: "clamp(48px, 8.5vw, 120px)", fontWeight: 700, lineHeight: 1.0, letterSpacing: "-0.03em", margin: "0 0 32px" }}>
             <div>{words.slice(0, 2).map((w, i) => <AnimWord key={i} word={w} delay={0.35 + i * 0.08} />)}</div>
@@ -207,6 +196,15 @@ export default function Home() {
               </span>
             </div>
           </h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.78, duration: 0.7 }}
+            style={{ fontSize: "clamp(0.95rem, 1.5vw, 1.15rem)", color: "var(--text-secondary)", lineHeight: 1.8, maxWidth: 540, margin: "0 0 36px" }}
+          >
+            I design and build production systems end-to-end — from LLM orchestration and scoring engines to real-time frontends and native iOS. Four live products. Zero hand-offs.
+          </motion.p>
 
           <motion.div
             initial={{ opacity: 0 }}
@@ -277,6 +275,36 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── Philosophy ── */}
+      <section style={{ padding: "120px 40px", borderTop: "1px solid var(--border)" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+            style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 48 }}>
+            Philosophy
+          </motion.p>
+          <div style={{ maxWidth: 900 }}>
+            {["I don\u2019t build features.", "I build systems."].map((line, i) => (
+              <motion.h2 key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] }}
+                style={{ fontSize: "clamp(32px, 6vw, 72px)", fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1.1, margin: 0, color: i === 1 ? "var(--accent)" : "var(--text-primary)" }}>
+                {line}
+              </motion.h2>
+            ))}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.25 }}
+              style={{ fontSize: "1.05rem", lineHeight: 1.85, color: "var(--text-secondary)", maxWidth: 600, marginTop: 36 }}>
+              Every project starts with architecture. Data models, API contracts, and system boundaries before the first line of code. I build things I&apos;d want to maintain two years from now — tested, documented, and deployed.
+            </motion.p>
+          </div>
+        </div>
+      </section>
+
       {/* ── Stats ── */}
       <section style={{ borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", background: "var(--bg-card)" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "60px 40px", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 0 }}>
@@ -290,6 +318,35 @@ export default function Home() {
               <Stat value={s.value} suffix={s.suffix} label={s.label} />
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ── Process ── */}
+      <section style={{ padding: "100px 40px", borderTop: "1px solid var(--border)" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+            style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 48 }}>
+            Process
+          </motion.p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 1, background: "var(--border)" }}>
+            {[
+              { num: "01", title: "Research", desc: "Deep-dive the domain. Map the data landscape. Understand what exists and what\u2019s missing before writing a line of code." },
+              { num: "02", title: "Architect", desc: "System design first. Data models, API contracts, pipeline topology. Every boundary deliberate, every decision documented." },
+              { num: "03", title: "Build", desc: "Full-stack implementation with tests at every layer. Backend, frontend, infra — no hand-offs, no gaps, no shortcuts." },
+              { num: "04", title: "Ship & Iterate", desc: "Deploy to production. Instrument. Monitor. Iterate ruthlessly based on real usage. If it\u2019s not live, it\u2019s not real." },
+            ].map((step, i) => (
+              <motion.div key={step.num}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.08 }}
+                style={{ padding: "36px 32px", background: "var(--bg)" }}>
+                <span style={{ fontSize: "2.4rem", fontWeight: 700, color: "var(--accent)", letterSpacing: "-0.03em", opacity: 0.35, lineHeight: 1 }}>{step.num}</span>
+                <h3 style={{ fontSize: "1.1rem", fontWeight: 700, letterSpacing: "-0.01em", margin: "16px 0 12px", color: "var(--text-primary)" }}>{step.title}</h3>
+                <p style={{ fontSize: "0.85rem", lineHeight: 1.75, color: "var(--text-secondary)", margin: 0 }}>{step.desc}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 

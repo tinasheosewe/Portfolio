@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, ExternalLink, ArrowUpRight } from "lucide-react";
 import type { Project } from "@/lib/projects";
+import { projects } from "@/lib/projects";
 
 const accentColors: Record<string, string> = {
   apthunt: "#e8960c",
@@ -163,6 +164,34 @@ export default function CaseStudyClient({ project }: { project: Project }) {
           </Link>
         </div>
       </article>
+
+      {/* ── Next project ── */}
+      <section style={{ borderTop: "1px solid var(--border)", padding: "80px 40px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <p style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 32 }}>Next project</p>
+          <div style={{ display: "grid", gridTemplateColumns: `repeat(${others.length > 2 ? 3 : others.length}, 1fr)`, gap: 1, background: "var(--border)" }}>
+            {projects.filter(p => p.slug !== project.slug).map((p) => {
+              const nextAccent = accentColors[p.slug] ?? "var(--accent)";
+              return (
+                <Link key={p.slug} href={`/projects/${p.slug}`} style={{ textDecoration: "none" }}>
+                  <motion.div
+                    whileHover={{ backgroundColor: "rgba(255,255,255,0.02)" }}
+                    style={{ padding: "36px 32px", background: "var(--bg)", transition: "background .2s" }}>
+                    <span style={{ fontSize: "0.65rem", letterSpacing: "0.08em", textTransform: "uppercase", color: nextAccent, display: "block", marginBottom: 12 }}>{p.statusLabel}</span>
+                    <h3 style={{ fontSize: "clamp(1.2rem, 2vw, 1.6rem)", fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 8px", color: "var(--text-primary)" }}>
+                      {p.title}<span style={{ color: nextAccent }}>.</span>
+                    </h3>
+                    <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", margin: 0, lineHeight: 1.6 }}>{p.tagline}</p>
+                    <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 4, color: nextAccent, fontSize: "0.78rem", fontWeight: 600 }}>
+                      View case study <ArrowUpRight size={13} />
+                    </div>
+                  </motion.div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
