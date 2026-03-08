@@ -297,10 +297,10 @@ function CaseStudyOverlay({ project, onClose, onSelectProject, mobile }: { proje
             </p>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
               {project.liveUrl && (
-                <a href={project.liveUrl} target="_blank" rel="noopener noreferrer"
+                <MagneticButton href={project.liveUrl} target="_blank" rel="noopener noreferrer"
                   style={{ padding: "12px 24px", borderRadius: 100, background: accent, color: "var(--btn-face)", fontWeight: 700, fontSize: "0.82rem", letterSpacing: "0.04em", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}>
                   Live Demo <ExternalLink size={13} />
-                </a>
+                </MagneticButton>
               )}
             </div>
           </FadeUp>
@@ -383,15 +383,15 @@ function CaseStudyOverlay({ project, onClose, onSelectProject, mobile }: { proje
 
         <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
           {project.liveUrl && (
-            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer"
+            <MagneticButton href={project.liveUrl} target="_blank" rel="noopener noreferrer"
               style={{ padding: "13px 26px", borderRadius: 100, background: accent, color: "var(--btn-face)", fontWeight: 700, fontSize: "0.85rem", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}>
               Open live demo <ArrowUpRight size={14} />
-            </a>
+            </MagneticButton>
           )}
-          <button onClick={onClose}
-            style={{ padding: "13px 26px", borderRadius: 100, border: "1px solid var(--border-mid)", background: "none", color: "var(--text-secondary)", fontSize: "0.85rem", display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <MagneticButton onClick={onClose}
+            style={{ padding: "13px 26px", borderRadius: 100, border: "1px solid var(--border-mid)", background: "none", color: "var(--text-secondary)", fontSize: "0.85rem", display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
             <ArrowLeft size={14} /> All projects
-          </button>
+          </MagneticButton>
         </div>
       </article>
 

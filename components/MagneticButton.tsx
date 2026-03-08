@@ -52,7 +52,7 @@ export default function MagneticButton({ children, style, strength = 0.35, href,
         onMouseLeave={reset}
         animate={{ x: pos.x, y: pos.y }}
         transition={{ type: "spring", stiffness: 180, damping: 14, mass: 0.5 }}
-        style={{ display: "inline-block" }}
+        style={{ display: "inline-block", width: "fit-content" }}
         className={className}
       >
         <a href={href} target={target} rel={rel} onClick={onClick} style={wrapperStyle}>
@@ -69,7 +69,7 @@ export default function MagneticButton({ children, style, strength = 0.35, href,
       onMouseLeave={reset}
       animate={{ x: pos.x, y: pos.y }}
       transition={{ type: "spring", stiffness: 180, damping: 14, mass: 0.5 }}
-      style={{ display: "inline-block" }}
+      style={{ display: "inline-block", width: "fit-content" }}
       className={className}
     >
       <button type={type || "button"} onClick={onClick} disabled={disabled} style={wrapperStyle}>
