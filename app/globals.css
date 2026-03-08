@@ -23,12 +23,12 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
-a, button { cursor: none; }
+a, button, [role='button'], [data-cursor], input, textarea, select { cursor: none; }
 
 /* ── Touch / mobile: restore system cursor ──────────────────────────── */
 @media (pointer: coarse) {
   html { cursor: auto; }
-  a, button { cursor: auto; }
+  a, button, [role='button'], [data-cursor], input, textarea, select { cursor: auto; }
 }
 
 /* ── Responsive section padding ─────────────────────────────────────── */
@@ -70,14 +70,34 @@ a, button { cursor: none; }
 /* Selection */
 ::selection { background: var(--accent-glow); color: var(--text-primary); }
 
-/* Horizontal marquee */
+/* Scroll velocity defaults */
+:root {
+  --scroll-velocity: 0;
+  --scroll-direction: 1;
+}
+
+/* Horizontal marquee — speed responds to scroll velocity */
 .marquee-track {
   display: flex;
   gap: 0;
   animation: marquee 22s linear infinite;
   white-space: nowrap;
+  /* Accelerate marquee proportional to scroll speed */
+  animation-duration: calc(22s / (1 + var(--scroll-velocity, 0) * 0.3));
 }
 @keyframes marquee {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
+}
+
+/* Scroll-velocity skew — lean text into the scroll direction */
+.velocity-skew {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: skewY(calc(var(--scroll-direction, 1) * var(--scroll-velocity, 0) * -0.15deg));
+}
+
+/* Velocity-driven section entrance — subtle parallax offset */
+.velocity-shift {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(calc(var(--scroll-velocity, 0) * -0.5px));
 }

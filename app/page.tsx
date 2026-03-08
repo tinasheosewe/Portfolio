@@ -71,7 +71,7 @@ function ProjectRow({ project, index, onSelect, mobile }: { project: typeof proj
       tabIndex={0}
       onClick={onSelect}
       onKeyDown={e => { if (e.key === "Enter") onSelect(); }}
-      style={{ textDecoration: "none", cursor: "pointer" }}
+      style={{ textDecoration: "none" }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -190,7 +190,7 @@ function CaseStudyOverlay({ project, onClose, onSelectProject, mobile }: { proje
 
         <div style={{ position: "relative", maxWidth: 1200, width: "100%" }}>
           <FadeUp>
-            <button onClick={onClose} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: "0.75rem", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", marginBottom: 40, transition: "color .2s", padding: 0 }}
+            <button onClick={onClose} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: "0.75rem", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", background: "none", border: "none", marginBottom: 40, transition: "color .2s", padding: 0 }}
               onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
               onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}>
               <ArrowLeft size={12} /> All work
@@ -307,7 +307,7 @@ function CaseStudyOverlay({ project, onClose, onSelectProject, mobile }: { proje
             </a>
           )}
           <button onClick={onClose}
-            style={{ padding: "13px 26px", borderRadius: 100, border: "1px solid var(--border-mid)", background: "none", color: "var(--text-secondary)", fontSize: "0.85rem", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6 }}>
+            style={{ padding: "13px 26px", borderRadius: 100, border: "1px solid var(--border-mid)", background: "none", color: "var(--text-secondary)", fontSize: "0.85rem", display: "inline-flex", alignItems: "center", gap: 6 }}>
             <ArrowLeft size={14} /> All projects
           </button>
         </div>
@@ -321,7 +321,7 @@ function CaseStudyOverlay({ project, onClose, onSelectProject, mobile }: { proje
             {projects.filter(p => p.slug !== project.slug).map((p) => {
               const nextAccent = accentColors[p.slug] ?? "var(--accent)";
               return (
-                <div key={p.slug} role="button" tabIndex={0} onClick={() => onSelectProject(p.slug)} onKeyDown={e => { if (e.key === "Enter") onSelectProject(p.slug); }} style={{ cursor: "pointer" }}>
+                <div key={p.slug} role="button" tabIndex={0} onClick={() => onSelectProject(p.slug)} onKeyDown={e => { if (e.key === "Enter") onSelectProject(p.slug); }}>
                   <motion.div
                     whileHover={{ backgroundColor: "rgba(255,255,255,0.02)" }}
                     style={{ padding: "36px 32px", background: "var(--bg)", transition: "background .2s" }}>
@@ -474,7 +474,7 @@ export default function Home() {
           >
             <div>
               <p style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 10 }}>Selected Work</p>
-              <h2 style={{ fontSize: "clamp(28px, 4vw, 52px)", fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>Case studies.</h2>
+              <h2 className="velocity-skew" style={{ fontSize: "clamp(28px, 4vw, 52px)", fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>Case studies.</h2>
             </div>
             <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", maxWidth: 360, lineHeight: 1.7 }}>
               Enterprise platforms by day, independent products by night. Each case study below was designed, built, and deployed end to end.
@@ -506,7 +506,7 @@ export default function Home() {
             style={{ marginBottom: 40 }}
           >
             <p style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 10 }}>Other Work</p>
-            <h2 style={{ fontSize: "clamp(22px, 3vw, 36px)", fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>More projects.</h2>
+            <h2 className="velocity-skew" style={{ fontSize: "clamp(22px, 3vw, 36px)", fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>More projects.</h2>
           </motion.div>
 
           <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
@@ -562,6 +562,7 @@ export default function Home() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.7, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] }}
+                  className="velocity-skew"
                   style={{ fontSize: "clamp(32px, 6vw, 72px)", fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1.1, margin: 0, color: i === 1 ? "var(--accent)" : "var(--text-primary)" }}>
                   {line}
                 </motion.h2>
@@ -639,7 +640,7 @@ export default function Home() {
             <div>
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
                 <p style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 16 }}>About</p>
-                <h2 style={{ fontSize: "clamp(26px, 3.5vw, 44px)", fontWeight: 700, letterSpacing: "-0.025em", lineHeight: 1.15, margin: "0 0 28px" }}>
+                <h2 className="velocity-skew" style={{ fontSize: "clamp(26px, 3.5vw, 44px)", fontWeight: 700, letterSpacing: "-0.025em", lineHeight: 1.15, margin: "0 0 28px" }}>
                   Across the<br />full stack.
                 </h2>
                 <p style={{ color: "var(--text-secondary)", lineHeight: 1.85, fontSize: "0.95rem", margin: "0 0 18px" }}>
@@ -681,7 +682,7 @@ export default function Home() {
           <div style={{ maxWidth: 640, margin: "0 auto" }}>
             <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} style={{ textAlign: "center", marginBottom: 52 }}>
               <p style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 16 }}>Contact</p>
-              <h2 style={{ fontSize: "clamp(28px, 4vw, 52px)", fontWeight: 700, letterSpacing: "-0.025em", margin: "0 0 14px" }}>Let&#39;s talk.</h2>
+              <h2 className="velocity-skew" style={{ fontSize: "clamp(28px, 4vw, 52px)", fontWeight: 700, letterSpacing: "-0.025em", margin: "0 0 14px" }}>Let&#39;s talk.</h2>
               <p style={{ color: "var(--text-secondary)", lineHeight: 1.7 }}>Available for full-time engineering roles and consulting engagements.</p>
             </motion.div>
 
@@ -710,7 +711,7 @@ export default function Home() {
                   onBlur={e => (e.target.style.borderColor = "var(--border)")}
                 />
                 {formError && <p style={{ fontSize: "0.8rem", color: "#f87171" }}>{formError}</p>}
-                <button type="submit" disabled={sending} style={{ marginTop: 4, padding: "15px 32px", borderRadius: 100, background: "var(--accent)", color: "#080808", fontWeight: 700, fontSize: "0.875rem", border: "none", transition: "opacity .2s", opacity: sending ? 0.65 : 1, cursor: "pointer" }}>
+                <button type="submit" disabled={sending} style={{ marginTop: 4, padding: "15px 32px", borderRadius: 100, background: "var(--accent)", color: "#080808", fontWeight: 700, fontSize: "0.875rem", border: "none", transition: "opacity .2s", opacity: sending ? 0.65 : 1 }}>
                   {sending ? "Sending\u2026" : "Send message"}
                 </button>
               </form>
