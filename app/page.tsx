@@ -487,7 +487,7 @@ export default function Home() {
 
       <main>
         {/* ── Hero ── */}
-        <section style={{ minHeight: "100svh", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: mobile ? "80px 20px 48px" : "100px 40px 80px", maxWidth: 1200, margin: "0 auto", position: "relative", overflow: "hidden" }}>
+        <section id="hero" style={{ minHeight: "100svh", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: mobile ? "80px 20px 48px" : "100px 40px 80px", maxWidth: 1200, margin: "0 auto", position: "relative", overflow: "hidden" }}>
           {/* ── Animated gradient orbs ── */}
           <motion.div
             animate={{ x: [0, 30, -20, 0], y: [0, -40, 20, 0], scale: [1, 1.15, 0.95, 1] }}
