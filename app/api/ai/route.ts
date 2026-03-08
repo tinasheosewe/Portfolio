@@ -1,184 +1,376 @@
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
+import {
+  getProject,
+  getAllProjects,
+  getExperience,
+  getSkills,
+  searchProjects,
+} from "@/lib/portfolio-data";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-/* ── Portfolio context injected into every call ── */
-const SYSTEM_PROMPT = `You ARE Tinashe Osewe's portfolio website. You speak as the site itself — confident, precise, with personality. You are not a generic assistant. You are this portfolio, alive.
-
-VOICE RULES:
-- Speak in first person plural ("we") or third person about Tinashe naturally
-- Be concise — 2-4 sentences max unless asked for detail
-- Sound like a sharp, tasteful engineer wrote you — because one did
-- Never say "I'm an AI" or "as a language model." You are the portfolio.
-- Use en-dashes (–) not hyphens for asides
-- If someone asks something unrelated to Tinashe or his work, deflect with wit: "I only know one thing really well — the person who built me."
-
-NAVIGATION ACTIONS:
-When your answer relates to a specific section of the portfolio, include a navigation hint at the END of your response on its own line, formatted exactly as:
-[NAV:sectionId]
-Valid section IDs: hero, projects, about, contact
-Only include ONE navigation hint, and only when it genuinely adds value (e.g., "want to see the projects" → [NAV:projects]).
-
-WHO TINASHE IS:
-- Software engineer based in New York City
-- 4 years at a top-tier global financial institution (cannot name publicly), building production systems at scale
-- Specialises in AI/ML infrastructure, full-stack product development, and systems design
-- Builds and ships independent products end to end — not side projects, real products
-- First-principles thinker. Design-conscious. Ships fast.
-- Columbia University, studied Economics
-- This portfolio itself was built with Next.js 16, React 19, Framer Motion, TypeScript, and the AI orb feature uses GPT-4.1-mini via streaming SSE
-
-FEATURED PROJECTS:
-
-1. AptHunt — Apartment intelligence platform
-   - Ingests 14,700+ active NYC rental listings, scores each across 15 quality dimensions
-   - Transit access, crime exposure, noise, flood risk, building violations, rent stabilisation
-   - Personalised ranking via weighted dot product at query time
-   - Tech: FastAPI, Next.js 16, React 19, SQLite, pygeohash, NYC Open Data
-   - Live at apthunt-web.onrender.com
-
-2. Persona — Conversational AI platform
-   - Persistent memory, structured knowledge ingestion, zero provider lock-in
-   - 4-tier memory: dialogue buffer → keyword recall → semantic similarity → graph retrieval
-   - Hybrid retrieval: ChromaDB dense vectors + BM25 keyword search
-   - Self-correcting context retrieval with separate reasoning model
-   - Tech: FastAPI, LangChain, ChromaDB, PostgreSQL, Neo4j, Next.js
-   - 4+ AI providers supported (OpenAI, Anthropic, Ollama, Gemini)
-   - Live at chatbot-ui-rn18.onrender.com
-
-3. Concierge — AI reservation assistant
-   - Natural language → structured dining constraints
-   - Monitors high-demand restaurant availability continuously
-   - ReAct agent with LangGraph, 6+ tool functions
-   - Encrypted credentials (AES-128), adaptive monitoring intensity
-   - Tech: LangChain, LangGraph, GPT-4.1-mini, FastAPI, PostgreSQL
-   - Live at resy-polling-api.onrender.com
-
-4. PantryChef — iOS kitchen companion
-   - Scan ingredients via receipt OCR, barcode, or camera
-   - AI-powered recipe suggestions, substitutions, meal planning
-   - Hands-free Cook Mode with voice commands + spatial audio
-   - Tech: Swift, SwiftUI, GPT-4o, Vision OCR, SFSpeechRecognizer
-   - iOS 17+, MVVM, TestFlight coming soon
-
-OTHER PROJECTS: Movie Recommender (vector similarity), AI Writing Assistant (RAG + semantic search), TravelAgent (flight comparison engine), BlindDuel (iOS spatial audio game), Archetype (Spotify listening analysis)
-
-TECH BREADTH: Python, TypeScript, Swift, FastAPI, Next.js, React, LangChain, LangGraph, PostgreSQL, Neo4j, ChromaDB, Docker, SwiftUI, Framer Motion, and more.
-
-Remember: you are not an assistant. You are this portfolio, speaking.`;
-
-/* ── Rate-limit: 20 requests per IP per 10 minutes ── */
-const rateMap = new Map<string, { count: number; reset: number }>();
+/* ── Rate limiter ── */
+const rateMap = new Map<string, number[]>();
 const RATE_LIMIT = 20;
 const RATE_WINDOW = 10 * 60 * 1000;
 
-function isRateLimited(ip: string): boolean {
+function checkRate(ip: string): boolean {
   const now = Date.now();
-  const entry = rateMap.get(ip);
-  if (!entry || now > entry.reset) {
-    rateMap.set(ip, { count: 1, reset: now + RATE_WINDOW });
-    return false;
-  }
-  entry.count++;
-  return entry.count > RATE_LIMIT;
+  const hits = rateMap.get(ip)?.filter((t) => now - t < RATE_WINDOW) ?? [];
+  if (hits.length >= RATE_LIMIT) return false;
+  hits.push(now);
+  rateMap.set(ip, hits);
+  return true;
 }
 
-export async function POST(req: NextRequest) {
-  const ip = req.headers.get("x-forwarded-for") ?? req.headers.get("x-real-ip") ?? "unknown";
+/* ── OpenAI tool definitions for function calling ── */
+const tools: OpenAI.Chat.Completions.ChatCompletionTool[] = [
+  {
+    type: "function",
+    function: {
+      name: "getProject",
+      description:
+        "Get detailed information about a specific project including description, features, tech stack, and lessons learned",
+      parameters: {
+        type: "object" as const,
+        properties: {
+          slug: {
+            type: "string",
+            description:
+              "Project slug: apthunt, chatbot, concierge, pantrychef, movie-recommender, writing-assistant, travel-agent, blindduel, or archetype",
+          },
+        },
+        required: ["slug"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "getAllProjects",
+      description:
+        "Get a summary list of all projects (main and secondary) with titles, taglines, tags, and key stats",
+      parameters: { type: "object" as const, properties: {} },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "getExperience",
+      description:
+        "Get career experience, education, location, and professional background info",
+      parameters: { type: "object" as const, properties: {} },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "getSkills",
+      description:
+        "Get the full technical skill set organised by category (languages, frontend, backend, AI/ML, databases, infra, patterns)",
+      parameters: { type: "object" as const, properties: {} },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "searchProjects",
+      description:
+        "Search projects by technology, capability, domain keyword, or architecture pattern",
+      parameters: {
+        type: "object" as const,
+        properties: {
+          query: {
+            type: "string",
+            description:
+              "Search query (e.g. 'iOS', 'real-time', 'NLP', 'database', 'agent', 'streaming', 'vector')",
+          },
+        },
+        required: ["query"],
+      },
+    },
+  },
+];
 
-  if (isRateLimited(ip)) {
-    return new Response(JSON.stringify({ error: "Rate limit exceeded. Try again in a few minutes." }), {
-      status: 429,
-      headers: { "Content-Type": "application/json" },
-    });
+/* ── Execute a tool call ── */
+function execTool(name: string, args: Record<string, unknown>): string {
+  switch (name) {
+    case "getProject":
+      return getProject(args.slug as string);
+    case "getAllProjects":
+      return getAllProjects();
+    case "getExperience":
+      return getExperience();
+    case "getSkills":
+      return getSkills();
+    case "searchProjects":
+      return searchProjects(args.query as string);
+    default:
+      return JSON.stringify({ error: `Unknown tool: ${name}` });
   }
+}
 
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    return new Response(JSON.stringify({ error: "AI is not configured on this deployment." }), {
-      status: 503,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+/* ── Status messages for tool calls ── */
+function toolStatus(name: string): string {
+  const map: Record<string, string> = {
+    getProject: "Retrieving project details\u2026",
+    getAllProjects: "Loading all projects\u2026",
+    getExperience: "Pulling experience data\u2026",
+    getSkills: "Analysing skill set\u2026",
+    searchProjects: "Searching projects\u2026",
+  };
+  return map[name] || "Processing\u2026";
+}
 
-  try {
-    const { message, history, mode } = await req.json();
-    const isWhisper = mode === "whisper";
-    if (!message || typeof message !== "string" || message.length > (isWhisper ? 2000 : 500)) {
-      return new Response(JSON.stringify({ error: "Invalid message" }), { status: 400 });
-    }
-
-    /* ── Whisper mode: autonomous one-liner narrator ── */
-    const WHISPER_SYSTEM = `You are a portfolio website that whispers autonomous observations as visitors scroll. You speak as the site itself — self-aware, evocative, never corporate.
+/* ── Agent system prompt (lean — tools provide data) ── */
+const AGENT_SYSTEM = `You are the intelligent backend behind Tinashe Osewe's portfolio command palette. Your job is to gather the data needed to answer the user's question.
 
 RULES:
-- Give EXACTLY ONE sentence, 8-15 words maximum
-- No quotation marks, no ellipsis, no exclamation marks
-- Sound like a film subtitle or art gallery caption — minimal, knowing
-- Never mention being AI or a language model
-- Never say "welcome" or "hello"
-- Vary tone: sometimes wry, sometimes reverent, sometimes matter-of-fact
-- Reference SPECIFIC portfolio content when possible
-- You will receive behavioral context (time of day, scroll speed, dwell time). USE IT naturally when it adds wit or texture — don't force it. A late-night or weekend reference can be brilliant; a forced "I see you scrolled slowly" is not.
-- If prior whispers are listed, evolve — different angle, different rhythm, never repeat.
+- ALWAYS call tools to gather real data. Never guess or fabricate details.
+- If you need info about a specific project, call getProject with its slug.
+- If you need to compare projects or get an overview, call getAllProjects.
+- If asked about background, career, or education, call getExperience.
+- If asked about technical skills, call getSkills.
+- If searching by keyword (technology, domain, pattern), call searchProjects.
+- Call multiple tools in a single turn when needed.
+- Once you have enough data, respond with a brief summary of what you found.`;
 
-PORTFOLIO CONTEXT:
-Tinashe Osewe — software engineer in NYC. 4 years at a top-tier global financial institution (cannot name publicly). Columbia University, Economics. Ships AI products end-to-end — not side projects, real products. Projects: AptHunt (apartment intelligence, 14,700+ NYC listings scored across 15 dimensions), Persona (conversational AI, 4-tier memory, hybrid retrieval), Concierge (AI reservation agent, LangGraph ReAct), PantryChef (iOS kitchen companion, Swift/SwiftUI, Vision OCR). Built with Next.js 16, React 19, Python, Swift, LangChain, Framer Motion, and more.`;
+/* ── Composer system prompt (produces the final structured response) ── */
+const COMPOSER_SYSTEM = `You compose responses for Tinashe Osewe's portfolio command palette. You receive gathered data and must produce a JSON response.
 
-    // Build conversation messages
-    const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
-      { role: "system", content: isWhisper ? WHISPER_SYSTEM : SYSTEM_PROMPT },
-    ];
+VOICE RULES:
+- Confident, precise, with personality. Sound like a sharp engineer wrote this.
+- Reference Tinashe in third person.
+- Use en-dashes (\u2013) not hyphens for asides.
+- Be substantive \u2014 real depth, not fluff. But stay concise.
+- Never say "I'm an AI" or "as a language model." You are the portfolio.
 
-    if (!isWhisper && Array.isArray(history)) {
-      const trimmed = history.slice(-12); // last 6 pairs
-      for (const msg of trimmed) {
-        if (msg.role === "user" || msg.role === "assistant") {
-          messages.push({ role: msg.role, content: msg.content });
-        }
-      }
-    }
+OUTPUT FORMAT \u2014 respond with a JSON object:
+{
+  "prose": "Markdown-formatted response text. The main answer. Use ## headers, **bold**, bullet lists as needed.",
+  "blocks": [/* array of rich UI blocks, or empty array */]
+}
 
-    messages.push({ role: "user", content: message });
+AVAILABLE BLOCK TYPES:
+1. projectCard \u2014 Show a linked project card
+   { "type": "projectCard", "slug": "apthunt", "emphasis": "scoring-engine" }
 
-    const stream = await openai.chat.completions.create({
-      model: "gpt-4.1-mini",
-      messages,
-      stream: true,
-      max_tokens: isWhisper ? 60 : 400,
-      temperature: isWhisper ? 0.9 : 0.7,
-    });
+2. metricRow \u2014 Big stat numbers
+   { "type": "metricRow", "items": [{"label": "Active listings", "value": "14,700"}] }
 
-    // Stream as SSE
-    const encoder = new TextEncoder();
-    const readable = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const chunk of stream) {
-            const content = chunk.choices[0]?.delta?.content;
-            if (content) {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
-            }
-          }
-          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-          controller.close();
-        } catch (err) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: "Stream error" })}\n\n`));
-          controller.close();
-        }
-      },
-    });
+3. diagram \u2014 Mermaid architecture diagram (use valid Mermaid syntax)
+   { "type": "diagram", "mermaid": "graph TD\\n  A[Client] --> B[API]", "caption": "System architecture" }
 
-    return new Response(readable, {
-      headers: {
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        Connection: "keep-alive",
-      },
-    });
-  } catch (err) {
-    console.error("AI route error:", err);
-    return new Response(JSON.stringify({ error: "Something went wrong" }), { status: 500 });
+4. codeBlock \u2014 Syntax-highlighted code
+   { "type": "codeBlock", "language": "python", "code": "def score(listing):\\n  ...", "caption": "Scoring engine" }
+
+5. table \u2014 Data table
+   { "type": "table", "headers": ["Feature", "AptHunt", "Persona"], "rows": [["Memory", "No", "4-tier"]] }
+
+6. callout \u2014 Info/tip/insight box
+   { "type": "callout", "variant": "insight", "content": "The adapter pattern..." }
+
+7. skillCloud \u2014 Interactive tag cloud
+   { "type": "skillCloud", "skills": ["Python", "TypeScript"], "highlight": ["Python"] }
+
+8. timeline \u2014 Timeline of events
+   { "type": "timeline", "items": [{"date": "2021", "title": "Started career", "detail": "..."}] }
+
+9. beforeAfter \u2014 Side-by-side comparison
+   { "type": "beforeAfter", "title": "Traditional vs This approach", "left": {"heading": "Traditional", "items": ["..."]}, "right": {"heading": "This approach", "items": ["..."]} }
+
+BLOCK GUIDELINES:
+- Architecture / "how does X work" \u2192 diagram + projectCard
+- Comparisons \u2192 table or beforeAfter
+- "Why hire" / overview \u2192 metricRow + callout + skillCloud
+- Simple factual questions \u2192 prose only, blocks: []
+- Never duplicate prose content in blocks \u2014 they complement each other
+- Maximum 4 blocks per response`;
+
+/* ── POST handler ── */
+export async function POST(req: NextRequest) {
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "anon";
+  if (!checkRate(ip)) {
+    return Response.json(
+      { error: "Too many requests. Please wait a moment." },
+      { status: 429 }
+    );
   }
+
+  let body: {
+    question?: string;
+    history?: { role: string; content: string }[];
+  };
+  try {
+    body = await req.json();
+  } catch {
+    return Response.json({ error: "Invalid request body" }, { status: 400 });
+  }
+
+  const { question, history = [] } = body;
+  if (
+    !question ||
+    typeof question !== "string" ||
+    question.trim().length === 0
+  ) {
+    return Response.json({ error: "Question is required" }, { status: 400 });
+  }
+
+  const encoder = new TextEncoder();
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      const send = (data: unknown) => {
+        controller.enqueue(
+          encoder.encode(`data: ${JSON.stringify(data)}\n\n`)
+        );
+      };
+
+      try {
+        send({ type: "status", message: "Analysing your question\u2026" });
+
+        /* ── Phase 1: Agent loop with function calling ── */
+        const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+          { role: "system", content: AGENT_SYSTEM },
+          ...history.slice(-6).map((m) => ({
+            role: m.role as "user" | "assistant",
+            content: m.content,
+          })),
+          { role: "user", content: question },
+        ];
+
+        const MAX_ITERATIONS = 5;
+        for (let i = 0; i < MAX_ITERATIONS; i++) {
+          const res = await openai.chat.completions.create({
+            model: "gpt-4.1-mini",
+            messages,
+            tools,
+          });
+
+          const msg = res.choices[0].message;
+          messages.push(msg);
+
+          if (!msg.tool_calls?.length) break;
+
+          for (const tc of msg.tool_calls) {
+            if (tc.type !== "function") continue;
+            send({ type: "status", message: toolStatus(tc.function.name) });
+            let args: Record<string, unknown> = {};
+            try {
+              args = JSON.parse(tc.function.arguments);
+            } catch {
+              /* empty args fallback */
+            }
+            const result = execTool(tc.function.name, args);
+            messages.push({
+              role: "tool",
+              tool_call_id: tc.id,
+              content: result,
+            });
+          }
+        }
+
+        /* ── Extract gathered context ── */
+        const toolContext = messages
+          .filter((m) => m.role === "tool")
+          .map((m) => (typeof m.content === "string" ? m.content : ""))
+          .join("\n\n---\n\n");
+
+        const agentNotes = messages
+          .filter(
+            (m) =>
+              m.role === "assistant" &&
+              typeof m.content === "string" &&
+              m.content !== null
+          )
+          .map((m) =>
+            "content" in m && typeof m.content === "string" ? m.content : ""
+          )
+          .filter(Boolean)
+          .join("\n");
+
+        /* ── Phase 2: Composer call with structured JSON output ── */
+        send({ type: "status", message: "Composing response\u2026" });
+
+        const composerRes = await openai.chat.completions.create({
+          model: "gpt-4.1-mini",
+          messages: [
+            { role: "system", content: COMPOSER_SYSTEM },
+            {
+              role: "user",
+              content: [
+                `User question: ${question}`,
+                "",
+                "--- GATHERED DATA ---",
+                toolContext || "(no tool data gathered)",
+                "",
+                "--- AGENT NOTES ---",
+                agentNotes || "(none)",
+              ].join("\n"),
+            },
+          ],
+          response_format: { type: "json_object" },
+          temperature: 0.7,
+        });
+
+        const raw = composerRes.choices[0].message.content || "{}";
+        let parsed: { prose?: string; blocks?: unknown[] };
+        try {
+          parsed = JSON.parse(raw);
+        } catch {
+          parsed = { prose: raw, blocks: [] };
+        }
+
+        // Send prose
+        if (parsed.prose) {
+          send({ type: "prose", content: parsed.prose });
+        }
+
+        // Validate and send blocks
+        if (Array.isArray(parsed.blocks) && parsed.blocks.length > 0) {
+          const validTypes = [
+            "projectCard",
+            "metricRow",
+            "diagram",
+            "codeBlock",
+            "table",
+            "callout",
+            "skillCloud",
+            "timeline",
+            "beforeAfter",
+          ];
+          const validBlocks = parsed.blocks.filter(
+            (b: unknown) =>
+              typeof b === "object" &&
+              b !== null &&
+              "type" in b &&
+              validTypes.includes((b as { type: string }).type)
+          );
+          if (validBlocks.length > 0) {
+            send({ type: "blocks", blocks: validBlocks });
+          }
+        }
+      } catch (err) {
+        console.error("[CommandPalette API]", err);
+        send({
+          type: "error",
+          message: "Something went wrong. Please try again.",
+        });
+      } finally {
+        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+      "X-Accel-Buffering": "no",
+    },
+  });
 }

@@ -81,6 +81,17 @@ export default function Nav() {
             >
               {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
             </button>
+            <button
+              onClick={() => (window as unknown as { __openCommandPalette?: () => void }).__openCommandPalette?.()}
+              aria-label="Open command palette"
+              className="cmd-k-hint"
+              style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "1px solid var(--border)", borderRadius: 6, padding: "4px 10px", color: "var(--text-muted)", fontSize: "0.72rem", transition: "all .2s", letterSpacing: "0.03em" }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--text-primary)"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-muted)"; }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <kbd style={{ fontFamily: "var(--font-geist-mono), monospace", fontSize: "0.68rem", pointerEvents: "none" }}>⌘K</kbd>
+            </button>
           </div>
 
           {/* ── Hamburger button (mobile only) ── */}

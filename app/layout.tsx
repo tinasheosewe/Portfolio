@@ -5,7 +5,7 @@ import Nav from "@/components/Nav";
 import Cursor from "@/components/Cursor";
 import SmoothScroll from "@/components/SmoothScroll";
 import Preloader from "@/components/Preloader";
-import AiOrb from "@/components/AiOrb";
+import CommandPalette from "@/components/CommandPalette";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -28,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Cursor />
         <SmoothScroll />
         <Nav />
-        <AiOrb />
+        <CommandPalette />
         {children}
       </body>
     </html>

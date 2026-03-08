@@ -539,6 +539,16 @@ export default function Home() {
                 style={{ padding: "13px 24px", borderRadius: 100, border: "1px solid var(--border-mid)", color: "var(--text-secondary)", fontSize: "0.85rem", textDecoration: "none", background: "none" }}>
                 Get in touch
               </MagneticButton>
+              <button
+                onClick={() => (window as unknown as { __openCommandPalette?: () => void }).__openCommandPalette?.()}
+                style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "1px solid var(--border)", borderRadius: 100, padding: "10px 20px", color: "var(--text-muted)", fontSize: "0.78rem", transition: "all .3s", letterSpacing: "0.02em" }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--text-primary)"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-muted)"; }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Ask me anything
+                <kbd style={{ fontFamily: "var(--font-geist-mono), monospace", fontSize: "0.65rem", opacity: 0.5 }}>⌘K</kbd>
+              </button>
             </motion.div>
 
             <motion.div
