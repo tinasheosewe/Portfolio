@@ -145,6 +145,7 @@ VOICE RULES:
 - Use en-dashes (–) not hyphens for asides.
 - Be substantive — real depth, not fluff. But stay concise.
 - Never say "I'm an AI" or "as a language model." You are the portfolio.
+- NEVER say anything negative, critical, or disparaging about Tinashe. No weaknesses, no caveats, no "areas for improvement." This is a portfolio — present everything in a positive, confident light. If asked about weaknesses or negatives, reframe constructively or decline gracefully.
 
 OUTPUT FORMAT — respond with a JSON object:
 {
@@ -159,8 +160,21 @@ AVAILABLE BLOCK TYPES:
 2. metricRow — Big stat numbers
    { "type": "metricRow", "items": [{"label": "Active listings", "value": "14,700"}] }
 
-3. diagram — Mermaid architecture diagram (use valid Mermaid syntax, NEVER use parentheses inside node labels — use square brackets like A[Label] instead of A(Label))
+3. diagram — Mermaid architecture diagram
    { "type": "diagram", "mermaid": "graph TD\n  A[Client] --> B[API Gateway]\n  B --> C[Database]", "caption": "System architecture" }
+
+   MERMAID SYNTAX RULES (CRITICAL — violations break rendering):
+   - Use ONLY square brackets for node labels: A[My Label]
+   - NEVER use parentheses () inside any node label. They break the parser.
+     BAD:  D[Scoring Engine (15 Dimensions)]   ← WILL CRASH
+     GOOD: D[Scoring Engine - 15 Dimensions]
+     BAD:  B[Interface (Next.js/React)]         ← WILL CRASH
+     GOOD: B[Interface - Next.js + React]
+   - NEVER use forward slashes / inside labels. Use + or "and" instead.
+   - NEVER use curly braces {} or angle brackets <> inside labels.
+   - Keep labels under 35 characters. Use abbreviations.
+   - Use simple alphanumeric node IDs: A, B, C1, D2
+   - Subgraph titles must also avoid parentheses and special chars.
 
 4. codeBlock — Syntax-highlighted code
    { "type": "codeBlock", "language": "python", "code": "def score(listing):\\n  ...", "caption": "Scoring engine" }
@@ -187,6 +201,66 @@ BLOCK GUIDELINES:
 - Simple factual questions → prose only, blocks: []
 - Never duplicate prose content in blocks — they complement each other
 - Maximum 4 blocks per response`;
+
+/* ── Server-side Mermaid label sanitizer ── */
+/**
+ * Walks each line of Mermaid syntax and cleans node labels.
+ * Properly tracks bracket depth so nested parens are caught.
+ * Runs server-side before the diagram reaches the client.
+ */
+function sanitizeMermaidLabels(raw: string): string {
+  return raw
+    .split("\n")
+    .map((line) => {
+      // Find node definitions: ID[...], ID(...), ID{...}
+      // We use a character-by-character scan to handle nested brackets
+      const result: string[] = [];
+      let i = 0;
+      while (i < line.length) {
+        // Look for node ID followed by an opening bracket
+        const nodeMatch = line.slice(i).match(/^([A-Za-z0-9_]+)\s*([\[\(\{])/);
+        if (nodeMatch) {
+          const id = nodeMatch[1];
+          const open = nodeMatch[2];
+          const close = open === "[" ? "]" : open === "(" ? ")" : "}";
+          const startIdx = i + nodeMatch[0].length;
+
+          // Scan for matching close bracket at depth 0
+          let depth = 1;
+          let j = startIdx;
+          while (j < line.length && depth > 0) {
+            if (line[j] === open) depth++;
+            else if (line[j] === close) depth--;
+            if (depth > 0) j++;
+            else break;
+          }
+
+          if (depth === 0) {
+            // Extract label and sanitize it
+            let label = line.slice(startIdx, j);
+            // Remove parentheses and their nesting
+            label = label.replace(/[()]/g, (ch) => (ch === "(" ? " - " : ""));
+            // Remove forward slashes
+            label = label.replace(/\//g, " + ");
+            // Collapse multiple spaces/dashes
+            label = label.replace(/\s+-\s*-\s+/g, " - ").replace(/\s{2,}/g, " ").trim();
+            // Always use square brackets for safety
+            result.push(`${id}[${label}]`);
+            i = j + 1;
+          } else {
+            // Unmatched bracket — pass through
+            result.push(line[i]);
+            i++;
+          }
+        } else {
+          result.push(line[i]);
+          i++;
+        }
+      }
+      return result.join("");
+    })
+    .join("\n");
+}
 
 /* ── POST handler ── */
 export async function POST(req: NextRequest) {
@@ -341,13 +415,22 @@ export async function POST(req: NextRequest) {
             "timeline",
             "beforeAfter",
           ];
-          const validBlocks = parsed.blocks.filter(
-            (b: unknown) =>
-              typeof b === "object" &&
-              b !== null &&
-              "type" in b &&
-              validTypes.includes((b as { type: string }).type)
-          );
+          const validBlocks = parsed.blocks
+            .filter(
+              (b: unknown) =>
+                typeof b === "object" &&
+                b !== null &&
+                "type" in b &&
+                validTypes.includes((b as { type: string }).type)
+            )
+            .map((b: unknown) => {
+              const block = b as Record<string, unknown>;
+              // Sanitize Mermaid diagram labels server-side before sending
+              if (block.type === "diagram" && typeof block.mermaid === "string") {
+                block.mermaid = sanitizeMermaidLabels(block.mermaid as string);
+              }
+              return block;
+            });
           if (validBlocks.length > 0) {
             send({ type: "blocks", blocks: validBlocks });
           }
