@@ -8,7 +8,7 @@ import type { Block } from "@/lib/block-types";
 
 /* ── Suggested prompts ── */
 const SUGGESTIONS = [
-  "What distributed systems experience does he have?",
+
   "Compare AptHunt and Persona’s architectures",
   "Why should I hire Tinashe?",
   "Show me the tech stack",
