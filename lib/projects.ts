@@ -51,11 +51,11 @@ export const projects: Project[] = [
       },
       {
         title: "Multi-dimensional quality scoring",
-        body: "Each listing is evaluated against fifteen independent quality signals in a pluggable scoring engine: value (z-score normalised against neighbourhood and bedroom comparables), transit access (MTA GTFS stops weighted by route density), crime exposure (NYPD complaint data with severity weighting), noise (311 complaints within 300m), building violations, parks proximity, schools, rent stabilisation status, flood risk, and more.",
+        body: "Each listing is scored across fifteen independent quality signals — value relative to neighbourhood comparables, transit access, crime exposure, noise levels, building violations, parks, schools, rent stabilisation status, flood risk, and more. The scoring engine is pluggable: adding a new signal means writing one function.",
       },
       {
         title: "Personalised ranking",
-        body: "Users set their own priorities across five quality categories. Top-priority groups receive higher weight multipliers, and the final score is computed as a weighted dot product at query time — the scoring pipeline runs once, personalisation is applied per user on the fly.",
+        body: "Users set their own priorities across five quality categories. Higher-priority groups carry more weight in the final score. The scoring pipeline runs once; personalisation is applied per user on the fly.",
       },
       {
         title: "Intelligent comparables",
@@ -104,19 +104,19 @@ export const projects: Project[] = [
     features: [
       {
         title: "Provider-independent AI layer",
-        body: "Abstract interface with built-in adapters for OpenAI, Anthropic, Ollama, and Google Gemini. A factory and model registry selects the right adapter at runtime. Users can inject their own model function — zero vendor lock-in at every level, including the reasoning layer which can use a separate, cost-optimised model for retrieval decisions.",
+        body: "Supports OpenAI, Anthropic, Ollama, and Google Gemini through a common interface. Switching providers is a one-line change. The reasoning layer can use a separate, cost-optimised model for retrieval decisions — zero vendor lock-in at every level.",
       },
       {
         title: "Hybrid memory retrieval",
-        body: "Combines semantic search (ChromaDB dense vectors) with keyword search (BM25) via an ensemble retrieval strategy. Results are interleaved and deduplicated. The hybrid approach consistently outperforms either method alone in conversational recall benchmarks.",
+        body: "Combines two retrieval methods — semantic similarity (understanding meaning) and keyword matching (exact recall) — and interleaves the results. The hybrid approach consistently outperforms either method alone in conversational recall.",
       },
       {
         title: "Four-tier contextual memory",
-        body: "Four independent recall mechanisms, from fastest to deepest: recent dialogue buffer, keyword recall over past exchanges, semantic similarity over full session history, and graph-based retrieval ready to connect to the knowledge pipeline. The combination of keyword and semantic search over history is a meaningful improvement over window-only approaches.",
+        body: "Four recall layers, from fastest to deepest: recent conversation buffer, keyword search over past exchanges, semantic similarity across full session history, and graph-based retrieval from ingested documents. Together they give the AI far stronger memory than the typical sliding-window approach.",
       },
       {
         title: "Structured knowledge ingestion",
-        body: "Concurrent extraction pipeline (thread pool, up to 4 workers) with sentence-boundary-aware overlapping batches. Extracts typed entities (Character, Work, Event, Place, Concept, Principle) and their relationships in structured JSON. Fully idempotent — deterministic segment IDs mean re-ingestion is always safe.",
+        body: "Upload any document and the system extracts structured knowledge — people, places, events, concepts, and the relationships between them. Processing is concurrent and idempotent, so re-uploading is always safe. The extracted knowledge feeds directly into the retrieval layer.",
       },
       {
         title: "Self-correcting context retrieval",
@@ -142,52 +142,52 @@ export const projects: Project[] = [
     title: "Concierge",
     tagline: "Tell it what you want. It finds the table.",
     description:
-      "An AI-powered reservation assistant for high-demand restaurants. Describe your ideal dinner in natural language — neighbourhood, party size, time preferences — and the system monitors availability continuously, notifying you the moment a match opens.",
+      "An AI-powered dining assistant that turns natural-language preferences into reservation plans. Describe your ideal dinner — neighbourhood, party size, time window — and the agent interprets your constraints, evaluates options, and handles the rest.",
     liveUrl: "https://resy-polling-api.onrender.com/",
     status: "live",
     statusLabel: "Live",
     tags: ["LangChain", "LangGraph", "FastAPI", "GPT-4.1-mini", "ReAct Agent", "PostgreSQL", "SQLAlchemy"],
     stats: [
       { label: "Agent tool functions", value: "6+" },
-      { label: "Monitoring modes", value: "3" },
-      { label: "Constraint types supported", value: "5+" },
-      { label: "Data encryption", value: "AES-128" },
+      { label: "Scheduling constraint types", value: "5+" },
+      { label: "AI model", value: "GPT-4.1-mini" },
+      { label: "Architecture", value: "ReAct Agent" },
     ],
     heroGradient: "from-amber-500/20 via-transparent to-transparent",
     overview:
-      "Concierge is a conversational AI agent that understands natural-language dining preferences and works in the background to act on them. Say ‘dinner for two in the West Village, Friday or Saturday, not too late’ — it interprets the constraints, sets up continuous monitoring, and alerts you when something opens.",
+      "Concierge removes the friction from dining out. Instead of manually searching, filtering, and refreshing, you describe what you want in plain English — 'dinner for two in the West Village, Friday or Saturday, not too late' — and the AI agent interprets your constraints, evaluates your options, and works to make it happen.",
     problem:
-      "Tables at sought-after restaurants appear and disappear unpredictably. Manual refreshing is tedious and rarely fast enough. Concierge replaces that with an always-on intelligent agent that understands nuanced preferences and acts the moment opportunity appears.",
+      "Finding a table at a sought-after restaurant is tedious. Availability shifts constantly, preferences are nuanced, and the process rewards manual effort over clear intent. Concierge replaces all of that with an intelligent agent that understands what you actually want.",
     features: [
       {
         title: "Conversational AI agent",
-        body: "Full conversational reasoning loop powered by GPT-4.1-mini with LangChain and LangGraph. Maintains conversation history with structured message sanitisation — strips orphan messages, resolves broken exchange sequences. Context is injected as ephemeral system instructions with venue-specific hints. Internal reasoning is preserved for continuity but hidden from the user interface.",
+        body: "A full reasoning loop powered by GPT-4.1-mini that maintains conversation history across exchanges. The agent understands follow-ups, remembers context, and asks clarifying questions when a request is ambiguous — the same way a human concierge would.",
       },
       {
-        title: "Natural language interpretation",
-        body: "Parses free-form conversation into structured scheduling rules — weekday patterns, date ranges, explicit overrides, and time windows. Handles complex constraints like ‘Friday or Saturday, but not next weekend, between 7 and 9.’ All scheduling logic is resolved into concrete date-time checks before monitoring begins.",
+        title: "Natural language scheduling",
+        body: "Parses free-form requests into structured rules — weekday preferences, date ranges, time windows, and explicit exceptions. Handles complex constraints like 'any Friday or Saturday except next weekend, between 7 and 9' without requiring forms or filters.",
       },
       {
-        title: "Intelligent availability monitoring",
-        body: "Monitors for the exact moment a restaurant releases new availability, then checks at high frequency for a configurable window. Designed for venues where tables are claimed within seconds of release.",
+        title: "Autonomous tool use",
+        body: "The agent has access to six specialised tool functions it can call on its own during a conversation — searching venues, resolving scheduling conflicts, checking constraints, and refining results. It decides which tools to invoke based on what the conversation needs.",
       },
       {
-        title: "Encrypted credential management",
-        body: "User credentials encrypted at rest with Fernet symmetric encryption (AES-128-CBC). Credential identifiers stored in the database; secrets decrypted only at the moment of use. Supports both local and production database backends.",
+        title: "Conversation reliability",
+        body: "Long-running conversations can accumulate broken exchange sequences that cause AI failures. A structured message sanitiser runs before every inference call — stripping orphan messages, resolving broken pairs — keeping the agent stable over extended sessions.",
       },
       {
-        title: "Adaptive monitoring intensity",
-        body: "Three monitoring modes — eager (every two minutes), standard (every five), and relaxed (every fifteen). Concurrent venue checking with thread pooling. Monitoring jobs persist across service restarts via database-backed job management.",
+        title: "Production-grade backend",
+        body: "FastAPI with SQLAlchemy for persistent state. Encrypted storage for sensitive data. Jobs persist across service restarts via database-backed management. One-click deploy with Docker and Render.",
       },
     ],
     techStack: [
       { category: "AI Agent", items: ["LangChain", "LangGraph", "GPT-4.1-mini", "ReAct architecture", "StructuredTool"] },
       { category: "Backend", items: ["FastAPI", "Uvicorn", "SQLAlchemy", "SQLite / PostgreSQL", "python-dateutil"] },
-      { category: "Security", items: ["Fernet symmetric encryption", "cryptography lib", "Credential store"] },
+      { category: "Security", items: ["Fernet symmetric encryption", "cryptography lib"] },
       { category: "Infrastructure", items: ["Docker", "Render", "render.yaml one-click deploy"] },
     ],
     lessons:
-      "The most subtle challenge was message sanitisation for the AI reasoning loop — conversation history can accumulate broken exchange sequences that cause downstream failures. Building a robust sanitiser that runs before every inference call made the agent dramatically more reliable.",
+      "The most subtle challenge was conversation reliability. Long exchanges accumulate edge cases — orphan messages, broken pairs, context drift — that silently degrade the agent's reasoning. Building a robust sanitiser that runs before every inference call made the agent dramatically more stable.",
   },
   {
     slug: "pantrychef",
