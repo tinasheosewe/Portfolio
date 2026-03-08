@@ -76,18 +76,18 @@ function Marquee() {
 
 // ── Hover-reveal project row ─────────────────────────────────────────────────
 const accentMap: Record<string, string> = {
-  apthunt: "#e8960c",
-  chatbot: "#a78bfa",
-  concierge: "#e8960c",
-  pantrychef: "#4ade80",
+  apthunt: "var(--project-gold)",
+  chatbot: "var(--project-violet)",
+  concierge: "var(--project-gold)",
+  pantrychef: "var(--project-green)",
 };
 
 // Gradient mockups per project (appears on hover)
 const thumbGradients: Record<string, string> = {
-  apthunt: "linear-gradient(135deg, #e8960c22 0%, #e8960c08 40%, transparent 70%)",
-  chatbot: "linear-gradient(135deg, #a78bfa22 0%, #a78bfa08 40%, transparent 70%)",
-  concierge: "linear-gradient(135deg, #e8960c22 0%, #e8960c08 40%, transparent 70%)",
-  pantrychef: "linear-gradient(135deg, #4ade8022 0%, #4ade8008 40%, transparent 70%)",
+  apthunt: "linear-gradient(135deg, color-mix(in srgb, var(--project-gold) 13%, transparent) 0%, color-mix(in srgb, var(--project-gold) 3%, transparent) 40%, transparent 70%)",
+  chatbot: "linear-gradient(135deg, color-mix(in srgb, var(--project-violet) 13%, transparent) 0%, color-mix(in srgb, var(--project-violet) 3%, transparent) 40%, transparent 70%)",
+  concierge: "linear-gradient(135deg, color-mix(in srgb, var(--project-gold) 13%, transparent) 0%, color-mix(in srgb, var(--project-gold) 3%, transparent) 40%, transparent 70%)",
+  pantrychef: "linear-gradient(135deg, color-mix(in srgb, var(--project-green) 13%, transparent) 0%, color-mix(in srgb, var(--project-green) 3%, transparent) 40%, transparent 70%)",
 };
 
 function ProjectRow({ project, index, onSelect, mobile }: { project: typeof projects[0]; index: number; onSelect: () => void; mobile: boolean }) {
@@ -170,7 +170,7 @@ function ProjectRow({ project, index, onSelect, mobile }: { project: typeof proj
           )}
           <span style={{
             fontSize: "0.65rem", letterSpacing: "0.07em", textTransform: "uppercase",
-            color: project.status === "live" ? "#4ade80" : project.status === "ios" ? "#a78bfa" : "var(--accent)",
+            color: project.status === "live" ? "var(--status-live)" : project.status === "ios" ? "var(--status-ios)" : "var(--accent)",
           }}>
             {project.statusLabel}
           </span>
@@ -183,10 +183,10 @@ function ProjectRow({ project, index, onSelect, mobile }: { project: typeof proj
 
 // ── Case study overlay (SPA) ─────────────────────────────────────────────────
 const accentColors: Record<string, string> = {
-  apthunt: "#e8960c",
-  chatbot: "#a78bfa",
-  concierge: "#e8960c",
-  pantrychef: "#4ade80",
+  apthunt: "var(--project-gold)",
+  chatbot: "var(--project-violet)",
+  concierge: "var(--project-gold)",
+  pantrychef: "var(--project-green)",
 };
 
 const FadeUp = ({ children, delay = 0, style = {} }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties }) => (
@@ -265,8 +265,8 @@ function CaseStudyOverlay({ project, onClose, onSelectProject, mobile }: { proje
       )}
       {/* ── Full-bleed hero ── */}
       <section style={{ position: "relative", minHeight: mobile ? "60vh" : "70vh", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: mobile ? "0 20px 48px" : "0 40px 72px", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 55% 0%, ${accent}18 0%, transparent 60%)`, pointerEvents: "none" }} />
-        <div style={{ position: "absolute", right: -20, top: "50%", transform: "translateY(-60%)", fontSize: "clamp(160px,25vw,320px)", fontWeight: 900, letterSpacing: "-0.05em", color: `${accent}08`, pointerEvents: "none", userSelect: "none", lineHeight: 1 }}>
+        <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 55% 0%, color-mix(in srgb, ${accent} 10%, transparent) 0%, transparent 60%)`, pointerEvents: "none" }} />
+        <div style={{ position: "absolute", right: -20, top: "50%", transform: "translateY(-60%)", fontSize: "clamp(160px,25vw,320px)", fontWeight: 900, letterSpacing: "-0.05em", color: `color-mix(in srgb, ${accent} 3%, transparent)`, pointerEvents: "none", userSelect: "none", lineHeight: 1 }}>
           {String(["apthunt","chatbot","concierge","pantrychef"].indexOf(project.slug) + 1).padStart(2,"0")}
         </div>
 
@@ -345,7 +345,7 @@ function CaseStudyOverlay({ project, onClose, onSelectProject, mobile }: { proje
               <motion.div key={i}
                 initial={{ opacity: 0, x: -16 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.06 }}
                 style={{ padding: mobile ? "20px 18px" : "28px 32px", borderRadius: 14, background: "var(--bg-card)", border: "1px solid var(--border)", borderLeft: `3px solid ${accent}`, position: "relative", overflow: "hidden" }}>
-                <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", background: `linear-gradient(135deg, ${accent}05 0%, transparent 50%)`, pointerEvents: "none" }} />
+                <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", background: `linear-gradient(135deg, color-mix(in srgb, ${accent} 2%, transparent) 0%, transparent 50%)`, pointerEvents: "none" }} />
                 <h3 style={{ fontSize: "0.95rem", fontWeight: 600, color: "var(--text-primary)", margin: "0 0 10px" }}>{f.title}</h3>
                 <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", lineHeight: 1.8, margin: 0 }}>{f.body}</p>
               </motion.div>
@@ -623,7 +623,7 @@ export default function Home() {
                 }}
               >
                 <h3 style={{ fontSize: "1.15rem", fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 10px", color: "var(--text-primary)" }}>
-                  {sp.title}<span style={{ color: sp.accent }}>.</span>
+                  {sp.title}<span style={{ color: "var(--accent)" }}>.</span>
                 </h3>
                 <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", lineHeight: 1.7, margin: "0 0 16px" }}>
                   {sp.description}
@@ -655,7 +655,7 @@ export default function Home() {
                 }}
               >
                 <h3 style={{ fontSize: "1.15rem", fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 10px", color: "var(--text-primary)" }}>
-                  {sp.title}<span style={{ color: sp.accent }}>.</span>
+                  {sp.title}<span style={{ color: "var(--accent)" }}>.</span>
                 </h3>
                 <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", lineHeight: 1.7, margin: "0 0 16px" }}>
                   {sp.description}

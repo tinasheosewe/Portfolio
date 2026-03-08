@@ -19,6 +19,11 @@
   --orb-primary: rgba(232,150,12,0.07);
   --orb-secondary: rgba(167,139,250,0.04);
   --orb-tertiary: rgba(232,150,12,0.04);
+  --project-gold: #e8960c;
+  --project-violet: #a78bfa;
+  --project-green: #4ade80;
+  --status-live: #4ade80;
+  --status-ios: #a78bfa;
 }
 
 /* ── Light theme ──────────────────────────────────────────────────── */
@@ -31,16 +36,21 @@
   --text-primary: #1a1816;
   --text-secondary: #4a4640;
   --text-muted: #9a948c;
-  --accent: #4338ca;
-  --accent-dim: rgba(67,56,202,0.10);
-  --accent-glow: rgba(67,56,202,0.18);
+  --accent: #0a1045;
+  --accent-dim: rgba(10,16,69,0.10);
+  --accent-glow: rgba(10,16,69,0.18);
   --cursor-ring: rgba(26,24,22,0.13);
-  --cursor-hover-bg: rgba(67,56,202,0.08);
+  --cursor-hover-bg: rgba(10,16,69,0.08);
   --btn-face: #ffffff;
   --hover-overlay: rgba(0,0,0,0.03);
-  --orb-primary: rgba(67,56,202,0.06);
-  --orb-secondary: rgba(67,56,202,0.04);
-  --orb-tertiary: rgba(67,56,202,0.03);
+  --orb-primary: rgba(10,16,69,0.06);
+  --orb-secondary: rgba(10,16,69,0.04);
+  --orb-tertiary: rgba(10,16,69,0.03);
+  --project-gold: #996105;
+  --project-violet: #6d28d9;
+  --project-green: #15803d;
+  --status-live: #15803d;
+  --status-ios: #6d28d9;
 }
 [data-theme="light"] .grain::after { opacity: 0.022; }
 [data-theme="light"] ::-webkit-scrollbar-track { background: var(--bg); }
