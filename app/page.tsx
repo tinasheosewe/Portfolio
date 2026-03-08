@@ -541,13 +541,27 @@ export default function Home() {
               </MagneticButton>
               <button
                 onClick={() => (window as unknown as { __openCommandPalette?: () => void }).__openCommandPalette?.()}
-                style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "1px solid var(--border)", borderRadius: 100, padding: "10px 20px", color: "var(--text-muted)", fontSize: "0.78rem", transition: "all .3s", letterSpacing: "0.02em" }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--text-primary)"; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-muted)"; }}
+                style={{
+                  display: "flex", alignItems: "center", gap: 8,
+                  background: "var(--accent-dim)",
+                  border: "1px solid var(--accent-glow)",
+                  borderRadius: 100, padding: "11px 22px",
+                  color: "var(--accent)", fontSize: "0.8rem", fontWeight: 500,
+                  letterSpacing: "0.01em", cursor: "pointer",
+                  transition: "all .3s ease",
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = "var(--accent-glow)";
+                  e.currentTarget.style.transform = "translateY(-1px)";
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = "var(--accent-dim)";
+                  e.currentTarget.style.transform = "translateY(0)";
+                }}
               >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                Ask me anything
-                <kbd style={{ fontFamily: "var(--font-geist-mono), monospace", fontSize: "0.65rem", opacity: 0.5 }}>⌘K</kbd>
+                <span style={{ fontSize: "0.85rem", opacity: 0.7 }}>💬</span>
+                Chat with my portfolio
+                <span style={{ fontFamily: "var(--font-geist-mono), monospace", fontSize: "0.6rem", opacity: 0.4, border: "1px solid var(--accent-glow)", borderRadius: 4, padding: "1px 5px", marginLeft: 2 }}>⌘K</span>
               </button>
             </motion.div>
 
