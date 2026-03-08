@@ -181,7 +181,7 @@ export default function Home() {
   return (
     <main>
       {/* ── Hero ── */}
-      <section style={{ minHeight: "100svh", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "0 40px 80px", maxWidth: 1200, margin: "0 auto" }}>
+      <section style={{ minHeight: "100svh", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "100px 40px 80px", maxWidth: 1200, margin: "0 auto" }}>
         {/* Amber radial glow top-right */}
         <div style={{ position: "fixed", top: "-10%", right: "-5%", width: 700, height: 700, borderRadius: "50%", background: "radial-gradient(circle, rgba(232,150,12,0.06) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
 
