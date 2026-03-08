@@ -745,8 +745,8 @@ export default function Home() {
               {[
                 { num: "01", title: "Research", desc: "Understand the domain deeply. Study existing solutions, identify gaps, map user behaviour. Nothing gets built until the territory is clear." },
                 { num: "02", title: "Architect", desc: "Design the system before writing a single line of code. Define boundaries, data flow, and interfaces. Every structural decision is deliberate and documented." },
-                { num: "03", title: "Build", desc: "Implement across the entire surface \u2014 backend, frontend, infrastructure \u2014 with tests at every layer. One engineer, no seams." },
-                { num: "04", title: "Ship & Iterate", desc: "Deploy, instrument, and monitor. Iterate based on how real users actually behave \u2014 not assumptions. Software that isn\u2019t running isn\u2019t finished." },
+                { num: "03", title: "Build", desc: "Implement across the entire surface — backend, frontend, infrastructure — with tests at every layer. One engineer, no seams." },
+                { num: "04", title: "Ship & Iterate", desc: "Deploy, instrument, and monitor. Iterate based on how real users actually behave — not assumptions. Software that isn’t running isn’t finished." },
               ].map((step, i) => (
                 <motion.div key={step.num}
                   initial={{ opacity: 0, y: 20 }}
@@ -841,7 +841,7 @@ export default function Home() {
                 />
                 {formError && <p style={{ fontSize: "0.8rem", color: "#f87171" }}>{formError}</p>}
                 <MagneticButton type="submit" disabled={sending} style={{ marginTop: 4, padding: "15px 32px", borderRadius: 100, background: "var(--accent)", color: "var(--btn-face)", fontWeight: 700, fontSize: "0.875rem", border: "none", transition: "opacity .2s", opacity: sending ? 0.65 : 1 }}>
-                  {sending ? "Sending\u2026" : "Send message"}
+                  {sending ? "Sending…" : "Send message"}
                 </MagneticButton>
               </form>
             )}

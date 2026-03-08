@@ -114,13 +114,13 @@ function execTool(name: string, args: Record<string, unknown>): string {
 /* ── Status messages for tool calls ── */
 function toolStatus(name: string): string {
   const map: Record<string, string> = {
-    getProject: "Retrieving project details\u2026",
-    getAllProjects: "Loading all projects\u2026",
-    getExperience: "Pulling experience data\u2026",
-    getSkills: "Analysing skill set\u2026",
-    searchProjects: "Searching projects\u2026",
+    getProject: "Retrieving project details…",
+    getAllProjects: "Loading all projects…",
+    getExperience: "Pulling experience data…",
+    getSkills: "Analysing skill set…",
+    searchProjects: "Searching projects…",
   };
-  return map[name] || "Processing\u2026";
+  return map[name] || "Processing…";
 }
 
 /* ── Agent system prompt (lean — tools provide data) ── */
@@ -142,50 +142,50 @@ const COMPOSER_SYSTEM = `You compose responses for Tinashe Osewe's portfolio com
 VOICE RULES:
 - Confident, precise, with personality. Sound like a sharp engineer wrote this.
 - Reference Tinashe in third person.
-- Use en-dashes (\u2013) not hyphens for asides.
-- Be substantive \u2014 real depth, not fluff. But stay concise.
+- Use en-dashes (–) not hyphens for asides.
+- Be substantive — real depth, not fluff. But stay concise.
 - Never say "I'm an AI" or "as a language model." You are the portfolio.
 
-OUTPUT FORMAT \u2014 respond with a JSON object:
+OUTPUT FORMAT — respond with a JSON object:
 {
   "prose": "Markdown-formatted response text. The main answer. Use ## headers, **bold**, bullet lists as needed.",
   "blocks": [/* array of rich UI blocks, or empty array */]
 }
 
 AVAILABLE BLOCK TYPES:
-1. projectCard \u2014 Show a linked project card
+1. projectCard — Show a linked project card
    { "type": "projectCard", "slug": "apthunt", "emphasis": "scoring-engine" }
 
-2. metricRow \u2014 Big stat numbers
+2. metricRow — Big stat numbers
    { "type": "metricRow", "items": [{"label": "Active listings", "value": "14,700"}] }
 
-3. diagram \u2014 Mermaid architecture diagram (use valid Mermaid syntax, NEVER use parentheses inside node labels — use square brackets like A[Label] instead of A(Label))
+3. diagram — Mermaid architecture diagram (use valid Mermaid syntax, NEVER use parentheses inside node labels — use square brackets like A[Label] instead of A(Label))
    { "type": "diagram", "mermaid": "graph TD\n  A[Client] --> B[API Gateway]\n  B --> C[Database]", "caption": "System architecture" }
 
-4. codeBlock \u2014 Syntax-highlighted code
+4. codeBlock — Syntax-highlighted code
    { "type": "codeBlock", "language": "python", "code": "def score(listing):\\n  ...", "caption": "Scoring engine" }
 
-5. table \u2014 Data table
+5. table — Data table
    { "type": "table", "headers": ["Feature", "AptHunt", "Persona"], "rows": [["Memory", "No", "4-tier"]] }
 
-6. callout \u2014 Info/tip/insight box
+6. callout — Info/tip/insight box
    { "type": "callout", "variant": "insight", "content": "The adapter pattern..." }
 
-7. skillCloud \u2014 Interactive tag cloud
+7. skillCloud — Interactive tag cloud
    { "type": "skillCloud", "skills": ["Python", "TypeScript"], "highlight": ["Python"] }
 
-8. timeline \u2014 Timeline of events
+8. timeline — Timeline of events
    { "type": "timeline", "items": [{"date": "2021", "title": "Started career", "detail": "..."}] }
 
-9. beforeAfter \u2014 Side-by-side comparison
+9. beforeAfter — Side-by-side comparison
    { "type": "beforeAfter", "title": "Traditional vs This approach", "left": {"heading": "Traditional", "items": ["..."]}, "right": {"heading": "This approach", "items": ["..."]} }
 
 BLOCK GUIDELINES:
-- Architecture / "how does X work" \u2192 diagram + projectCard
-- Comparisons \u2192 table or beforeAfter
-- "Why hire" / overview \u2192 metricRow + callout + skillCloud
-- Simple factual questions \u2192 prose only, blocks: []
-- Never duplicate prose content in blocks \u2014 they complement each other
+- Architecture / "how does X work" → diagram + projectCard
+- Comparisons → table or beforeAfter
+- "Why hire" / overview → metricRow + callout + skillCloud
+- Simple factual questions → prose only, blocks: []
+- Never duplicate prose content in blocks — they complement each other
 - Maximum 4 blocks per response`;
 
 /* ── POST handler ── */
@@ -229,7 +229,7 @@ export async function POST(req: NextRequest) {
       };
 
       try {
-        send({ type: "status", message: "Analysing your question\u2026" });
+        send({ type: "status", message: "Analysing your question…" });
 
         /* ── Phase 1: Agent loop with function calling ── */
         const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
@@ -292,7 +292,7 @@ export async function POST(req: NextRequest) {
           .join("\n");
 
         /* ── Phase 2: Composer call with structured JSON output ── */
-        send({ type: "status", message: "Composing response\u2026" });
+        send({ type: "status", message: "Composing response…" });
 
         const composerRes = await openai.chat.completions.create({
           model: "gpt-4.1-mini",

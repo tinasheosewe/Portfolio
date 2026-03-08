@@ -109,7 +109,7 @@ function ProjectCardBlock({ slug, emphasis }: { slug: string; emphasis: string }
       </div>
       {emphasis && (
         <p style={{ margin: "8px 0 0", fontSize: "0.72rem", color: "var(--accent)", fontStyle: "italic" }}>
-          \u2192 {emphasis}
+          → {emphasis}
         </p>
       )}
     </a>
@@ -177,13 +177,13 @@ function TableBlock({ headers, rows }: { headers: string[]; rows: string[][] }) 
 
 /* ── Callout ── */
 function CalloutBlock({ variant, content }: { variant: "info" | "tip" | "insight"; content: string }) {
-  const icons: Record<string, string> = { info: "\u2139\uFE0F", tip: "\uD83D\uDCA1", insight: "\u2728" };
+  const icons: Record<string, string> = { info: "ℹ️", tip: "💡", insight: "✨" };
   const labels: Record<string, string> = { info: "Info", tip: "Tip", insight: "Insight" };
 
   return (
     <div className={`cmd-block-callout cmd-block-callout--${variant}`}>
       <div className="cmd-callout-header">
-        <span>{icons[variant] || "\u2139\uFE0F"}</span>
+        <span>{icons[variant] || "ℹ️"}</span>
         <span style={{ fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
           {labels[variant] || "Note"}
         </span>
