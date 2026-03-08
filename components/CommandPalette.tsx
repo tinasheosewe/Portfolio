@@ -217,7 +217,15 @@ export default function CommandPalette() {
                   spellCheck={false}
                   disabled={loading}
                 />
-                <kbd className="cmd-kbd">esc</kbd>
+                <button
+                  className="cmd-close"
+                  onClick={() => setOpen(false)}
+                  aria-label="Close"
+                  type="button"
+                >
+                  <span className="cmd-close-esc">esc</span>
+                  <span className="cmd-close-x">×</span>
+                </button>
               </div>
 
               {/* ── Results area ── */}
