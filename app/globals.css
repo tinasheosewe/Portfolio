@@ -25,6 +25,17 @@ body {
 }
 a, button { cursor: none; }
 
+/* ── Touch / mobile: restore system cursor ──────────────────────────── */
+@media (pointer: coarse) {
+  html { cursor: auto; }
+  a, button { cursor: auto; }
+}
+
+/* ── Responsive section padding ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .section-pad { padding-left: 20px !important; padding-right: 20px !important; }
+}
+
 /* Film grain */
 .grain::after {
   content: "";

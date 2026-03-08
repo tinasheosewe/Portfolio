@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function Cursor() {
   const dot = useRef<HTMLDivElement>(null);
@@ -8,8 +8,17 @@ export default function Cursor() {
   const rp = useRef({ x: -200, y: -200 });
   const raf = useRef<number>(0);
   const hov = useRef(false);
+  const [isTouch, setIsTouch] = useState(false);
 
   useEffect(() => {
+    // Hide custom cursor on touch devices
+    const mq = window.matchMedia("(pointer: coarse)");
+    setIsTouch(mq.matches);
+    const handleChange = (e: MediaQueryListEvent) => setIsTouch(e.matches);
+    mq.addEventListener("change", handleChange);
+
+    if (mq.matches) return () => mq.removeEventListener("change", handleChange);
+
     const move = (e: MouseEvent) => { mouse.current = { x: e.clientX, y: e.clientY }; };
     document.addEventListener("mousemove", move);
     const on = () => { hov.current = true; };
@@ -39,8 +48,10 @@ export default function Cursor() {
       raf.current = requestAnimationFrame(tick);
     };
     raf.current = requestAnimationFrame(tick);
-    return () => { document.removeEventListener("mousemove", move); mo.disconnect(); cancelAnimationFrame(raf.current); };
+    return () => { document.removeEventListener("mousemove", move); mo.disconnect(); cancelAnimationFrame(raf.current); mq.removeEventListener("change", handleChange); };
   }, []);
+
+  if (isTouch) return null;
 
   return (
     <>

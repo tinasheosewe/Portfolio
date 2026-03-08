@@ -5,6 +5,19 @@ import { ArrowUpRight, ArrowLeft, ExternalLink, Linkedin, Mail } from "lucide-re
 import { projects, secondaryProjects } from "@/lib/projects";
 import type { Project } from "@/lib/projects";
 
+// ── Mobile hook ──────────────────────────────────────────────────────────────
+function useIsMobile(breakpoint = 768) {
+  const [mobile, setMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${breakpoint}px)`);
+    setMobile(mq.matches);
+    const h = (e: MediaQueryListEvent) => setMobile(e.matches);
+    mq.addEventListener("change", h);
+    return () => mq.removeEventListener("change", h);
+  }, [breakpoint]);
+  return mobile;
+}
+
 // ── Animated headline word by word ──────────────────────────────────────────
 function AnimWord({ word, delay }: { word: string; delay: number }) {
   return (
@@ -48,7 +61,7 @@ const accentMap: Record<string, string> = {
   pantrychef: "#4ade80",
 };
 
-function ProjectRow({ project, index, onSelect }: { project: typeof projects[0]; index: number; onSelect: () => void }) {
+function ProjectRow({ project, index, onSelect, mobile }: { project: typeof projects[0]; index: number; onSelect: () => void; mobile: boolean }) {
   const [hovered, setHovered] = useState(false);
   const num = String(index + 1).padStart(2, "0");
 
@@ -65,26 +78,28 @@ function ProjectRow({ project, index, onSelect }: { project: typeof projects[0];
       <motion.div
         style={{
           borderBottom: "1px solid var(--border)",
-          padding: "28px 0",
+          padding: mobile ? "20px 0" : "28px 0",
           display: "grid",
-          gridTemplateColumns: "60px 1fr auto",
+          gridTemplateColumns: mobile ? "1fr auto" : "60px 1fr auto",
           alignItems: "center",
-          gap: 24,
+          gap: mobile ? 12 : 24,
           transition: "padding .3s ease",
-          paddingLeft: hovered ? 20 : 0,
-          paddingRight: hovered ? 8 : 0,
+          paddingLeft: !mobile && hovered ? 20 : 0,
+          paddingRight: !mobile && hovered ? 8 : 0,
         }}
       >
-        {/* Number */}
-        <span style={{ fontSize: "0.72rem", letterSpacing: "0.08em", color: "var(--text-muted)", fontVariantNumeric: "tabular-nums" }}>
-          {num}
-        </span>
+        {/* Number (hidden on mobile) */}
+        {!mobile && (
+          <span style={{ fontSize: "0.72rem", letterSpacing: "0.08em", color: "var(--text-muted)", fontVariantNumeric: "tabular-nums" }}>
+            {num}
+          </span>
+        )}
 
         {/* Title + tags */}
         <div>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 16, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: mobile ? 8 : 16, flexWrap: "wrap" }}>
             <span style={{
-              fontSize: "clamp(1.3rem, 2.5vw, 1.8rem)",
+              fontSize: "clamp(1.1rem, 2.5vw, 1.8rem)",
               fontWeight: 700,
               letterSpacing: "-0.02em",
               color: hovered ? accentMap[project.slug] ?? "var(--accent)" : "var(--text-primary)",
@@ -92,12 +107,14 @@ function ProjectRow({ project, index, onSelect }: { project: typeof projects[0];
             }}>
               {project.title}
             </span>
-            <span style={{ fontSize: "0.78rem", color: "var(--text-secondary)", fontWeight: 400 }}>
-              {project.tagline}
-            </span>
+            {!mobile && (
+              <span style={{ fontSize: "0.78rem", color: "var(--text-secondary)", fontWeight: 400 }}>
+                {project.tagline}
+              </span>
+            )}
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
-            {project.tags.slice(0, 4).map(tag => (
+            {project.tags.slice(0, mobile ? 3 : 4).map(tag => (
               <span key={tag} style={{ fontSize: "0.65rem", letterSpacing: "0.06em", textTransform: "uppercase", padding: "2px 8px", borderRadius: 100, background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>
                 {tag}
               </span>
@@ -106,23 +123,26 @@ function ProjectRow({ project, index, onSelect }: { project: typeof projects[0];
         </div>
 
         {/* Arrow + status */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6, minWidth: 120 }}>
-          <motion.div
-            animate={{ x: hovered ? 0 : -6, opacity: hovered ? 1 : 0 }}
-            transition={{ duration: 0.2 }}
-            style={{ display: "flex", alignItems: "center", gap: 4 }}
-          >
-            <span style={{ fontSize: "0.78rem", color: accentMap[project.slug] ?? "var(--accent)", fontWeight: 600 }}>
-              Case study
-            </span>
-            <ArrowUpRight size={14} color={accentMap[project.slug] ?? "var(--accent)"} />
-          </motion.div>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6, minWidth: mobile ? 0 : 120 }}>
+          {!mobile && (
+            <motion.div
+              animate={{ x: hovered ? 0 : -6, opacity: hovered ? 1 : 0 }}
+              transition={{ duration: 0.2 }}
+              style={{ display: "flex", alignItems: "center", gap: 4 }}
+            >
+              <span style={{ fontSize: "0.78rem", color: accentMap[project.slug] ?? "var(--accent)", fontWeight: 600 }}>
+                Case study
+              </span>
+              <ArrowUpRight size={14} color={accentMap[project.slug] ?? "var(--accent)"} />
+            </motion.div>
+          )}
           <span style={{
             fontSize: "0.65rem", letterSpacing: "0.07em", textTransform: "uppercase",
             color: project.status === "live" ? "#4ade80" : project.status === "ios" ? "#a78bfa" : "var(--accent)",
           }}>
             {project.statusLabel}
           </span>
+          {mobile && <ArrowUpRight size={14} color={accentMap[project.slug] ?? "var(--accent)"} />}
         </div>
       </motion.div>
     </div>
@@ -173,7 +193,7 @@ const FadeUp = ({ children, delay = 0, style = {} }: { children: React.ReactNode
   </motion.div>
 );
 
-function CaseStudyOverlay({ project, onClose, onSelectProject }: { project: Project; onClose: () => void; onSelectProject: (slug: string) => void }) {
+function CaseStudyOverlay({ project, onClose, onSelectProject, mobile }: { project: Project; onClose: () => void; onSelectProject: (slug: string) => void; mobile: boolean }) {
   const accent = accentColors[project.slug] ?? "var(--accent)";
   const overlayRef = useRef<HTMLDivElement>(null);
 
@@ -191,7 +211,7 @@ function CaseStudyOverlay({ project, onClose, onSelectProject }: { project: Proj
       style={{ position: "fixed", inset: 0, zIndex: 900, background: "var(--bg)", overflowY: "auto", overflowX: "hidden" }}
     >
       {/* ── Full-bleed hero ── */}
-      <section style={{ position: "relative", minHeight: "70vh", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "0 40px 72px", overflow: "hidden" }}>
+      <section style={{ position: "relative", minHeight: mobile ? "60vh" : "70vh", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: mobile ? "0 20px 48px" : "0 40px 72px", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 55% 0%, ${accent}18 0%, transparent 60%)`, pointerEvents: "none" }} />
         <div style={{ position: "absolute", right: -20, top: "50%", transform: "translateY(-60%)", fontSize: "clamp(160px,25vw,320px)", fontWeight: 900, letterSpacing: "-0.05em", color: `${accent}08`, pointerEvents: "none", userSelect: "none", lineHeight: 1 }}>
           {String(["apthunt","chatbot","concierge","pantrychef"].indexOf(project.slug) + 1).padStart(2,"0")}
@@ -236,10 +256,10 @@ function CaseStudyOverlay({ project, onClose, onSelectProject }: { project: Proj
 
       {/* ── Stats strip ── */}
       <div style={{ borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", background: "var(--bg-card)" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 40px", display: "flex" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: mobile ? "0 20px" : "0 40px", display: "flex", flexWrap: mobile ? "wrap" : "nowrap" }}>
           {project.stats.map((stat, i) => (
             <motion.div key={stat.label} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 + i * 0.07 }}
-              style={{ flex: 1, padding: "28px 24px", borderLeft: i > 0 ? "1px solid var(--border)" : "none" }}>
+              style={{ flex: mobile ? "1 1 50%" : 1, padding: mobile ? "20px 16px" : "28px 24px", borderLeft: mobile ? (i % 2 === 1 ? "1px solid var(--border)" : "none") : (i > 0 ? "1px solid var(--border)" : "none"), borderTop: mobile && i >= 2 ? "1px solid var(--border)" : "none" }}>
               <div style={{ fontSize: "clamp(1.4rem, 2.5vw, 2.2rem)", fontWeight: 700, color: accent, letterSpacing: "-0.025em", lineHeight: 1 }}>{stat.value}</div>
               <div style={{ fontSize: "0.68rem", letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--text-muted)", marginTop: 5 }}>{stat.label}</div>
             </motion.div>
@@ -248,7 +268,7 @@ function CaseStudyOverlay({ project, onClose, onSelectProject }: { project: Proj
       </div>
 
       {/* ── Body ── */}
-      <article style={{ maxWidth: 860, margin: "0 auto", padding: "80px 40px 120px" }}>
+      <article style={{ maxWidth: 860, margin: "0 auto", padding: mobile ? "48px 20px 80px" : "80px 40px 120px" }}>
         <motion.section initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} style={{ marginBottom: 72 }}>
           <p style={{ fontSize: "0.7rem", letterSpacing: "0.12em", textTransform: "uppercase", color: accent, marginBottom: 18 }}>Overview</p>
           <p style={{ fontSize: "1.15rem", lineHeight: 1.9, color: "var(--text-secondary)" }}>{project.overview}</p>
@@ -271,7 +291,7 @@ function CaseStudyOverlay({ project, onClose, onSelectProject }: { project: Proj
             {project.features.map((f, i) => (
               <motion.div key={i}
                 initial={{ opacity: 0, x: -16 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.06 }}
-                style={{ padding: "28px 32px", borderRadius: 14, background: "var(--bg-card)", border: "1px solid var(--border)", borderLeft: `3px solid ${accent}`, position: "relative", overflow: "hidden" }}>
+                style={{ padding: mobile ? "20px 18px" : "28px 32px", borderRadius: 14, background: "var(--bg-card)", border: "1px solid var(--border)", borderLeft: `3px solid ${accent}`, position: "relative", overflow: "hidden" }}>
                 <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", background: `linear-gradient(135deg, ${accent}05 0%, transparent 50%)`, pointerEvents: "none" }} />
                 <h3 style={{ fontSize: "0.95rem", fontWeight: 600, color: "var(--text-primary)", margin: "0 0 10px" }}>{f.title}</h3>
                 <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", lineHeight: 1.8, margin: 0 }}>{f.body}</p>
@@ -286,7 +306,7 @@ function CaseStudyOverlay({ project, onClose, onSelectProject }: { project: Proj
           <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} style={{ fontSize: "0.7rem", letterSpacing: "0.12em", textTransform: "uppercase", color: accent, marginBottom: 32 }}>
             Tech Stack
           </motion.p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}>
             {project.techStack.map((group, i) => (
               <motion.div key={group.category} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.07 }}
                 style={{ padding: "20px", borderRadius: 12, background: "var(--bg-card)", border: "1px solid var(--border)" }}>
@@ -323,10 +343,10 @@ function CaseStudyOverlay({ project, onClose, onSelectProject }: { project: Proj
       </article>
 
       {/* ── Next project ── */}
-      <section style={{ borderTop: "1px solid var(--border)", padding: "80px 40px" }}>
+      <section style={{ borderTop: "1px solid var(--border)", padding: mobile ? "48px 20px" : "80px 40px" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <p style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 32 }}>Next project</p>
-          <div style={{ display: "grid", gridTemplateColumns: `repeat(${projects.filter(p => p.slug !== project.slug).length > 2 ? 3 : projects.filter(p => p.slug !== project.slug).length}, 1fr)`, gap: 1, background: "var(--border)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : `repeat(${projects.filter(p => p.slug !== project.slug).length > 2 ? 3 : projects.filter(p => p.slug !== project.slug).length}, 1fr)`, gap: 1, background: "var(--border)" }}>
             {projects.filter(p => p.slug !== project.slug).map((p) => {
               const nextAccent = accentColors[p.slug] ?? "var(--accent)";
               return (
@@ -360,6 +380,7 @@ export default function Home() {
   const [sent, setSent] = useState(false);
   const [formError, setFormError] = useState("");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const mobile = useIsMobile();
   const words = ["Software", "engineer.", "Intelligent", "systems.", "Delivered."];
 
   // Lock body scroll when overlay is open
@@ -402,6 +423,7 @@ export default function Home() {
             key={selectedProject.slug}
             project={selectedProject}
             onClose={() => setSelectedProject(null)}
+            mobile={mobile}
             onSelectProject={(slug) => {
               const p = projects.find(pr => pr.slug === slug);
               if (p) setSelectedProject(p);
@@ -412,7 +434,7 @@ export default function Home() {
 
       <main>
         {/* ── Hero ── */}
-        <section style={{ minHeight: "100svh", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "100px 40px 80px", maxWidth: 1200, margin: "0 auto" }}>
+        <section style={{ minHeight: "100svh", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: mobile ? "80px 20px 48px" : "100px 40px 80px", maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ position: "fixed", top: "-10%", right: "-5%", width: 700, height: 700, borderRadius: "50%", background: "radial-gradient(circle, rgba(232,150,12,0.06) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
 
           <div style={{ position: "relative", zIndex: 1 }}>
@@ -471,7 +493,7 @@ export default function Home() {
         <Marquee />
 
         {/* ── Projects ── */}
-        <section id="projects" style={{ padding: "100px 40px", maxWidth: 1200, margin: "0 auto" }}>
+        <section id="projects" style={{ padding: mobile ? "60px 20px" : "100px 40px", maxWidth: 1200, margin: "0 auto" }}>
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -497,14 +519,14 @@ export default function Home() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.07 }}
               >
-                <ProjectRow project={project} index={i} onSelect={() => setSelectedProject(project)} />
+                <ProjectRow project={project} index={i} onSelect={() => setSelectedProject(project)} mobile={mobile} />
               </motion.div>
             ))}
           </div>
         </section>
 
         {/* ── Other Work ── */}
-        <section style={{ padding: "0 40px 100px", maxWidth: 1200, margin: "0 auto" }}>
+        <section style={{ padding: mobile ? "0 20px 60px" : "0 40px 100px", maxWidth: 1200, margin: "0 auto" }}>
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -516,7 +538,7 @@ export default function Home() {
             <h2 style={{ fontSize: "clamp(22px, 3vw, 36px)", fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>More projects.</h2>
           </motion.div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 1, background: "var(--border)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "repeat(auto-fill, minmax(300px, 1fr))", gap: 1, background: "var(--border)" }}>
             {secondaryProjects.map((sp, i) => (
               <motion.div
                 key={sp.title}
@@ -545,7 +567,7 @@ export default function Home() {
         </section>
 
         {/* ── Philosophy ── */}
-        <section style={{ padding: "120px 40px", borderTop: "1px solid var(--border)" }}>
+        <section style={{ padding: mobile ? "60px 20px" : "120px 40px", borderTop: "1px solid var(--border)" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
             <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
               style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 48 }}>
@@ -576,14 +598,14 @@ export default function Home() {
 
         {/* ── Stats ── */}
         <section style={{ borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", background: "var(--bg-card)" }}>
-          <div style={{ maxWidth: 1200, margin: "0 auto", padding: "60px 40px", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 0 }}>
+          <div style={{ maxWidth: 1200, margin: "0 auto", padding: mobile ? "40px 20px" : "60px 40px", display: "grid", gridTemplateColumns: mobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: 0 }}>
             {[
               { value: 14700, suffix: "+", label: "NYC listings analysed" },
               { value: 15, label: "Quality dimensions per listing" },
               { value: 4, label: "AI model integrations" },
               { value: 4, label: "Products in production" },
             ].map((s, i) => (
-              <div key={i} style={{ borderLeft: i > 0 ? "1px solid var(--border)" : "none", paddingLeft: i > 0 ? 40 : 0 }}>
+              <div key={i} style={{ borderLeft: mobile ? (i % 2 === 1 ? "1px solid var(--border)" : "none") : (i > 0 ? "1px solid var(--border)" : "none"), paddingLeft: mobile ? (i % 2 === 1 ? 24 : 0) : (i > 0 ? 40 : 0), borderTop: mobile && i >= 2 ? "1px solid var(--border)" : "none", paddingTop: mobile && i >= 2 ? 16 : 0 }}>
                 <Stat value={s.value} suffix={s.suffix} label={s.label} />
               </div>
             ))}
@@ -591,13 +613,13 @@ export default function Home() {
         </section>
 
         {/* ── Process ── */}
-        <section style={{ padding: "100px 40px", borderTop: "1px solid var(--border)" }}>
+        <section style={{ padding: mobile ? "60px 20px" : "100px 40px", borderTop: "1px solid var(--border)" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
             <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
               style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 48 }}>
               Process
             </motion.p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 1, background: "var(--border)" }}>
+            <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "repeat(4, 1fr)", gap: 1, background: "var(--border)" }}>
               {[
                 { num: "01", title: "Research", desc: "Understand the domain deeply. Study existing solutions, identify gaps, map user behaviour. Nothing gets built until the territory is clear." },
                 { num: "02", title: "Architect", desc: "Design the system before writing a single line of code. Define boundaries, data flow, and interfaces. Every structural decision is deliberate and documented." },
@@ -620,8 +642,8 @@ export default function Home() {
         </section>
 
         {/* ── About ── */}
-        <section id="about" style={{ padding: "100px 40px", maxWidth: 1200, margin: "0 auto" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }}>
+        <section id="about" style={{ padding: mobile ? "60px 20px" : "100px 40px", maxWidth: 1200, margin: "0 auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr", gap: mobile ? 40 : 80, alignItems: "start" }}>
             <div>
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
                 <p style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 16 }}>About</p>
@@ -651,10 +673,10 @@ export default function Home() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.45, delay: 0.1 + i * 0.07 }}
-                    style={{ display: "flex", justifyContent: "space-between", padding: "18px 0", borderBottom: "1px solid var(--border)", gap: 24 }}
+                    style={{ display: "flex", justifyContent: "space-between", padding: "18px 0", borderBottom: "1px solid var(--border)", gap: 24, flexDirection: mobile ? "column" : "row" }}
                   >
                     <span style={{ fontSize: "0.72rem", letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--text-muted)", flexShrink: 0 }}>{label}</span>
-                    <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", textAlign: "right" }}>{value}</span>
+                    <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", textAlign: mobile ? "left" : "right" }}>{value}</span>
                   </motion.div>
                 ))}
               </motion.div>
@@ -663,7 +685,7 @@ export default function Home() {
         </section>
 
         {/* ── Contact ── */}
-        <section id="contact" style={{ borderTop: "1px solid var(--border)", padding: "100px 40px 120px" }}>
+        <section id="contact" style={{ borderTop: "1px solid var(--border)", padding: mobile ? "60px 20px 80px" : "100px 40px 120px" }}>
           <div style={{ maxWidth: 640, margin: "0 auto" }}>
             <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} style={{ textAlign: "center", marginBottom: 52 }}>
               <p style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 16 }}>Contact</p>
@@ -677,7 +699,7 @@ export default function Home() {
               </motion.div>
             ) : (
               <form onSubmit={handleContact} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr", gap: 12 }}>
                   {[["name","Name","text"],["email","Email","email"]].map(([field, ph, type]) => (
                     <input key={field} required type={type} placeholder={ph}
                       value={contactForm[field as keyof typeof contactForm]}
@@ -718,7 +740,7 @@ export default function Home() {
         </section>
 
         {/* ── Footer ── */}
-        <footer style={{ padding: "24px 40px", borderTop: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <footer style={{ padding: mobile ? "24px 20px" : "24px 40px", borderTop: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>&copy; {new Date().getFullYear()} Tinashe Osewe</span>
           <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", letterSpacing: "0.05em" }}>Built with Next.js</span>
         </footer>
