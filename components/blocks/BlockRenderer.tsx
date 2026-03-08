@@ -101,11 +101,25 @@ function ProjectCardBlock({ slug, emphasis }: { slug: string; emphasis: string }
   if (!project) return null;
 
   return (
-    <a
-      href={project.liveUrl || `#projects`}
-      target={project.liveUrl ? "_blank" : undefined}
-      rel="noopener noreferrer"
+    <div
       className="cmd-block-project-card"
+      role="button"
+      tabIndex={0}
+      style={{ cursor: "pointer" }}
+      onClick={() => {
+        // Close palette, then open the case-study overlay on the main page
+        const w = window as unknown as { __closeCommandPalette?: () => void; __selectProject?: (slug: string) => void };
+        w.__closeCommandPalette?.();
+        w.__selectProject?.(slug);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          const w = window as unknown as { __closeCommandPalette?: () => void; __selectProject?: (slug: string) => void };
+          w.__closeCommandPalette?.();
+          w.__selectProject?.(slug);
+        }
+      }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
         <div>
@@ -142,7 +156,7 @@ function ProjectCardBlock({ slug, emphasis }: { slug: string; emphasis: string }
           → {emphasis}
         </p>
       )}
-    </a>
+    </div>
   );
 }
 

@@ -1,8 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Linkedin, Menu, X, Sun, Moon } from "lucide-react";
 
-const NAV_LINKS: [string, string][] = [["#projects","Work"],["#about","About"],["#contact","Contact"]];
+const NAV_LINKS: [string, string][] = [["/#projects","Work"],["/#about","About"],["/#contact","Contact"]];
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -53,18 +54,18 @@ export default function Nav() {
         backdropFilter: scrolled || menuOpen ? "blur(20px)" : "none",
       }}>
         <nav style={{ maxWidth: 1200, margin: "0 auto", padding: "0 20px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <a href="#" style={{ fontWeight: 700, fontSize: "0.95rem", letterSpacing: "0.05em", textDecoration: "none", color: "var(--text-primary)", zIndex: 810 }}>
+          <Link href="/" style={{ fontWeight: 700, fontSize: "0.95rem", letterSpacing: "0.05em", textDecoration: "none", color: "var(--text-primary)", zIndex: 810 }}>
             TO<span style={{ color: "var(--accent)" }}>.</span>
-          </a>
+          </Link>
 
           {/* ── Desktop nav ── */}
           <div className="nav-desktop" style={{ display: "flex", gap: 36, alignItems: "center" }}>
             {NAV_LINKS.map(([href, label]) => (
-              <a key={href} href={href} style={{ fontSize: "0.8rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text-muted)", textDecoration: "none", transition: "color .2s" }}
+              <Link key={href} href={href} style={{ fontSize: "0.8rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text-muted)", textDecoration: "none", transition: "color .2s" }}
                 onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
                 onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}>
                 {label}
-              </a>
+              </Link>
             ))}
             <a href="https://www.linkedin.com/in/tinasheosewe/" target="_blank" rel="noopener noreferrer"
               style={{ color: "var(--text-muted)", textDecoration: "none", transition: "color .2s", display: "flex", alignItems: "center" }}
@@ -121,10 +122,10 @@ export default function Nav() {
         }}
       >
         {NAV_LINKS.map(([href, label]) => (
-          <a key={href} href={href} onClick={() => setMenuOpen(false)}
+          <Link key={href} href={href} onClick={() => setMenuOpen(false)}
             style={{ fontSize: "1.6rem", fontWeight: 700, letterSpacing: "-0.01em", color: "var(--text-primary)", textDecoration: "none" }}>
             {label}
-          </a>
+          </Link>
         ))}
         <div style={{ display: "flex", gap: 24, marginTop: 16, alignItems: "center" }}>
           <a href="https://www.linkedin.com/in/tinasheosewe/" target="_blank" rel="noopener noreferrer"

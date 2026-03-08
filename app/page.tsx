@@ -436,6 +436,19 @@ export default function Home() {
   const mobile = useIsMobile();
   const words = ["Software", "engineer.", "Intelligent", "systems.", "Delivered."];
 
+  // Expose project selector globally so the command palette can open overlays
+  useEffect(() => {
+    (window as unknown as { __selectProject?: (slug: string) => void }).__selectProject = (slug: string) => {
+      const p = projects.find(pr => pr.slug === slug);
+      if (p) {
+        setSelectedProject(p);
+        // Scroll #projects into view so the overlay is visible
+        document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
+      }
+    };
+    return () => { delete (window as unknown as { __selectProject?: unknown }).__selectProject; };
+  }, []);
+
   // Lock body scroll when overlay is open
   useEffect(() => {
     if (selectedProject) {

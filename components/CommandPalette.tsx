@@ -187,7 +187,7 @@ export default function CommandPalette() {
   return (
     <>
       {/* ── Trigger — expose global open function ── */}
-      <CmdKGlobal onOpen={() => setOpen(true)} />
+      <CmdKGlobal onOpen={() => setOpen(true)} onClose={() => setOpen(false)} />
 
       <AnimatePresence>
         {open && (
@@ -335,10 +335,12 @@ export default function CommandPalette() {
   );
 }
 
-/* ── Expose open function globally for Nav/Hero hints ── */
-function CmdKGlobal({ onOpen }: { onOpen: () => void }) {
+/* ── Expose open/close functions globally for Nav/Hero/BlockRenderer ── */
+function CmdKGlobal({ onOpen, onClose }: { onOpen: () => void; onClose: () => void }) {
   useEffect(() => {
-    (window as unknown as { __openCommandPalette: () => void }).__openCommandPalette = onOpen;
-  }, [onOpen]);
+    const w = window as unknown as { __openCommandPalette: () => void; __closeCommandPalette: () => void };
+    w.__openCommandPalette = onOpen;
+    w.__closeCommandPalette = onClose;
+  }, [onOpen, onClose]);
   return null;
 }

@@ -206,13 +206,13 @@ export const projects: Project[] = [
     ],
     heroGradient: "from-emerald-500/20 via-transparent to-transparent",
     overview:
-      "PantryChef is a native iOS app that bridges the gap between what’s in your kitchen and what ends up on your table. It combines Apple’s on-device intelligence (Vision for text recognition, Speech for hands-free control) with LLM-powered reasoning (GPT-4o, Claude, Gemini) to turn a photo of your fridge into a dinner plan. The architecture is production-ready — database migrations written, service layer abstracted, build system automated.",
+      "PantryChef is a native iOS app that bridges the gap between what’s in your kitchen and what ends up on your table. It combines Apple’s on-device intelligence (Vision for text recognition, Speech for hands-free control) with LLM-powered reasoning to turn a photo of your fridge into a dinner plan. The architecture is production-ready — database migrations written, service layer abstracted, build system automated.",
     problem:
       "Most recipe apps ignore what you already have. PantryChef inverts the model — it starts from your actual pantry, surfaces recipes ranked by ingredient match, flags items approaching expiry, and lets AI suggest what to do with what’s left.",
     features: [
       {
         title: "Intelligent ingredient capture",
-        body: "Add ingredients manually, by barcode scan (Open Food Facts API), or by photographing receipts and cookbooks via on-device text recognition. Expiry date tracking with visual urgency indicators. Every recipe card shows a pantry match percentage.",
+        body: "Add ingredients manually, by barcode scan, or by photographing receipts and cookbooks via on-device text recognition. Expiry date tracking with visual urgency indicators. Every recipe card shows a pantry match percentage.",
       },
       {
         title: "AI-powered recipe intelligence",
@@ -268,7 +268,7 @@ export const secondaryProjects: SecondaryProject[] = [
     accent: "#f472b6",
   },
   {
-    title: "Archetype",
+    title: "Persona",
     description: "Connects to Spotify, analyses your listening patterns across audio features, and maps them to a personality archetype with colour, aesthetic, and soundtrack.",
     tags: ["Python", "FastAPI", "Spotify API", "NumPy", "OAuth 2.0"],
     accent: "#a3e635",
