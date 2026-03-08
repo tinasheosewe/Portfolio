@@ -22,7 +22,7 @@ function AnimWord({ word, delay }: { word: string; delay: number }) {
 }
 
 // ── Marquee strip ────────────────────────────────────────────────────────────
-const MARQUEE_ITEMS = ["FastAPI","Next.js","LangGraph","Swift","RAG","ChromaDB","PostgreSQL","Framer Motion","Python","TypeScript","GPT-4o","LangChain","SQLAlchemy","Docker"];
+const MARQUEE_ITEMS = ["FastAPI","Next.js","LangGraph","Swift","RAG","ChromaDB","PostgreSQL","Python","TypeScript","Claude Opus","GPT-4o","Gemini 2.5 Pro","LangChain","Django","Flask","MongoDB","Embeddings","Semantic Search","Docker","Angular","NestJS"];
 
 function Marquee() {
   const items = [...MARQUEE_ITEMS, ...MARQUEE_ITEMS];
@@ -516,7 +516,7 @@ export default function Home() {
             <h2 style={{ fontSize: "clamp(22px, 3vw, 36px)", fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>More projects.</h2>
           </motion.div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 1, background: "var(--border)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 1, background: "var(--border)" }}>
             {secondaryProjects.map((sp, i) => (
               <motion.div
                 key={sp.title}
@@ -639,11 +639,11 @@ export default function Home() {
             <div>
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.15 }}>
                 {[
-                  { label: "Languages", value: "Python \u00b7 TypeScript \u00b7 Swift" },
-                  { label: "Frameworks", value: "FastAPI \u00b7 Next.js \u00b7 SwiftUI \u00b7 LangChain" },
-                  { label: "AI / ML", value: "LangGraph \u00b7 RAG \u00b7 ChromaDB \u00b7 BM25 \u00b7 GPT-4o" },
-                  { label: "Data", value: "PostgreSQL \u00b7 SQLite \u00b7 SQLAlchemy" },
-                  { label: "Infrastructure", value: "Docker \u00b7 Render \u00b7 Vercel \u00b7 XcodeGen" },
+                  { label: "Languages", value: "Python · TypeScript · JavaScript · Swift · Java · C++ · C · SQL · Dart · MATLAB" },
+                  { label: "Frameworks", value: "FastAPI · Next.js · React · Angular · Flask · Django · NestJS · SwiftUI · LangChain · Flutter" },
+                  { label: "AI / ML", value: "GPT · Claude · Gemini · RAG · Prompt Engineering · Embeddings · LangGraph · Guardrails" },
+                  { label: "Data", value: "PostgreSQL · MongoDB · SQLite · Cloud Firestore · SQLAlchemy · Neo4j" },
+                  { label: "Infrastructure", value: "Docker · Git · CI/CD · Render · Heroku · Vercel · XcodeGen" },
                 ].map(({ label, value }, i) => (
                   <motion.div
                     key={label}

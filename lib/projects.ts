@@ -207,7 +207,7 @@ export const projects: Project[] = [
     ],
     heroGradient: "from-emerald-500/20 via-transparent to-transparent",
     overview:
-      "PantryChef is a native iOS app that bridges the gap between what\u2019s in your kitchen and what ends up on your table. It combines Apple\u2019s on-device intelligence (Vision for text recognition, Speech for hands-free control) with GPT-4o to turn a photo of your fridge into a dinner plan. The architecture is production-ready\u2009\u2014\u2009database migrations written, service layer abstracted, build system automated.",
+      "PantryChef is a native iOS app that bridges the gap between what\u2019s in your kitchen and what ends up on your table. It combines Apple\u2019s on-device intelligence (Vision for text recognition, Speech for hands-free control) with LLM-powered reasoning (GPT-4o, Claude, Gemini) to turn a photo of your fridge into a dinner plan. The architecture is production-ready\u2009\u2014\u2009database migrations written, service layer abstracted, build system automated.",
     problem:
       "Most recipe apps ignore what you already have. PantryChef inverts the model\u2009\u2014\u2009it starts from your actual pantry, surfaces recipes ranked by ingredient match, flags items approaching expiry, and lets AI suggest what to do with what\u2019s left.",
     features: [
@@ -244,6 +244,18 @@ export const projects: Project[] = [
 ];
 
 export const secondaryProjects: SecondaryProject[] = [
+  {
+    title: "Movie Recommender",
+    description: "Recommender system encoding films as high-dimensional vectors with nested embeddings for director and actor filmographies. Applies nearest-neighbour similarity search across text, numeric, and categorical features.",
+    tags: ["Python", "Embeddings", "Nearest-Neighbour Search", "Vector Similarity"],
+    accent: "#f59e0b",
+  },
+  {
+    title: "AI Writing Assistant",
+    description: "Cloud-based text editor leveraging RAG, embeddings, semantic search, and caching for context-aware editing and feedback. Overlapping chunking with TTL-based eviction and a debounced UI to minimise redundant API calls.",
+    tags: ["RAG", "Semantic Search", "Embeddings", "Knowledge Graphs", "Caching"],
+    accent: "#818cf8",
+  },
   {
     title: "TravelAgent",
     description: "Flight comparison engine that resolves airports, dispatches searches across multiple booking platforms, and scores offers by value, duration, and layover quality.",
