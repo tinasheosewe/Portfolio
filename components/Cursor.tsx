@@ -43,9 +43,12 @@ export default function Cursor() {
       const { x, y } = mouse.current;
       const isText = textHov.current;
       const isBtn = hov.current;
+      // Dot lags behind (lerp), ring follows mouse directly
+      rp.current.x = lerp(rp.current.x, x, 0.08);
+      rp.current.y = lerp(rp.current.y, y, 0.08);
       if (dot.current) {
         if (isText) {
-          // Morph dot into a thin caret line
+          // Morph dot into a thin caret line — snap to mouse directly
           dot.current.style.width = "2px";
           dot.current.style.height = "24px";
           dot.current.style.borderRadius = "1px";
@@ -60,26 +63,24 @@ export default function Cursor() {
           dot.current.style.background = "var(--accent)";
           dot.current.style.mixBlendMode = "normal";
           const dotSize = isBtn ? 6 : 8;
-          dot.current.style.transform = `translate(${x - dotSize / 2}px,${y - dotSize / 2}px) scale(${isBtn ? 0.5 : 1})`;
+          dot.current.style.transform = `translate(${rp.current.x - dotSize / 2}px,${rp.current.y - dotSize / 2}px) scale(${isBtn ? 0.5 : 1})`;
           dot.current.style.opacity = isBtn ? "0" : "1";
         }
       }
       if (ring.current) {
-        rp.current.x = lerp(rp.current.x, x, 0.08);
-        rp.current.y = lerp(rp.current.y, y, 0.08);
         if (isText) {
           // Collapse ring to nothing for text fields
           ring.current.style.width = "0px";
           ring.current.style.height = "0px";
           ring.current.style.opacity = "0";
-          ring.current.style.transform = `translate(${rp.current.x}px,${rp.current.y}px)`;
+          ring.current.style.transform = `translate(${x}px,${y}px)`;
           ring.current.style.borderColor = "transparent";
           ring.current.style.background = "transparent";
           ring.current.style.backdropFilter = "none";
         } else {
           ring.current.style.opacity = "1";
           const s = isBtn ? 64 : 32;
-          ring.current.style.transform = `translate(${rp.current.x - s / 2}px,${rp.current.y - s / 2}px)`;
+          ring.current.style.transform = `translate(${x - s / 2}px,${y - s / 2}px)`;
           ring.current.style.width = s + "px";
           ring.current.style.height = s + "px";
           ring.current.style.borderColor = isBtn ? "var(--accent)" : "var(--cursor-ring)";
