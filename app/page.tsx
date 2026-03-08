@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, ArrowLeft, ExternalLink, Linkedin } from "lucide-react";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { ArrowUpRight, ArrowLeft, ExternalLink, Linkedin, Github } from "lucide-react";
 import { projects, secondaryProjects } from "@/lib/projects";
 import type { Project } from "@/lib/projects";
+import MagneticButton from "@/components/MagneticButton";
 
 // ── Mobile hook ──────────────────────────────────────────────────────────────
 function useIsMobile(breakpoint = 768) {
@@ -16,6 +17,26 @@ function useIsMobile(breakpoint = 768) {
     return () => mq.removeEventListener("change", h);
   }, [breakpoint]);
   return mobile;
+}
+
+// ── Split-text character reveal ─────────────────────────────────────────────
+function SplitText({ text, delay = 0, style, className }: { text: string; delay?: number; style?: React.CSSProperties; className?: string }) {
+  return (
+    <span className={className} style={{ ...style, display: "inline-block" }}>
+      {text.split("").map((char, i) => (
+        <motion.span
+          key={i}
+          initial={{ opacity: 0, y: 40, rotateX: -60 }}
+          whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: delay + i * 0.025, ease: [0.16, 1, 0.3, 1] }}
+          style={{ display: "inline-block", transformOrigin: "bottom", whiteSpace: char === " " ? "pre" : undefined }}
+        >
+          {char === " " ? "\u00A0" : char}
+        </motion.span>
+      ))}
+    </span>
+  );
 }
 
 // ── Animated headline word by word ──────────────────────────────────────────
@@ -61,9 +82,18 @@ const accentMap: Record<string, string> = {
   pantrychef: "#4ade80",
 };
 
+// Gradient mockups per project (appears on hover)
+const thumbGradients: Record<string, string> = {
+  apthunt: "linear-gradient(135deg, #e8960c22 0%, #e8960c08 40%, transparent 70%)",
+  chatbot: "linear-gradient(135deg, #a78bfa22 0%, #a78bfa08 40%, transparent 70%)",
+  concierge: "linear-gradient(135deg, #e8960c22 0%, #e8960c08 40%, transparent 70%)",
+  pantrychef: "linear-gradient(135deg, #4ade8022 0%, #4ade8008 40%, transparent 70%)",
+};
+
 function ProjectRow({ project, index, onSelect, mobile }: { project: typeof projects[0]; index: number; onSelect: () => void; mobile: boolean }) {
   const [hovered, setHovered] = useState(false);
   const num = String(index + 1).padStart(2, "0");
+  const thumbGrad = thumbGradients[project.slug] ?? "transparent";
 
   return (
     <div
@@ -83,9 +113,11 @@ function ProjectRow({ project, index, onSelect, mobile }: { project: typeof proj
           gridTemplateColumns: mobile ? "1fr auto" : "60px 1fr auto",
           alignItems: "center",
           gap: mobile ? 12 : 24,
-          transition: "padding .3s ease",
+          transition: "padding .3s ease, background .4s ease",
           paddingLeft: !mobile && hovered ? 20 : 0,
           paddingRight: !mobile && hovered ? 8 : 0,
+          background: hovered ? thumbGrad : "transparent",
+          position: "relative",
         }}
       >
         {/* Number (hidden on mobile) */}
@@ -166,21 +198,71 @@ const FadeUp = ({ children, delay = 0, style = {} }: { children: React.ReactNode
 function CaseStudyOverlay({ project, onClose, onSelectProject, mobile }: { project: Project; onClose: () => void; onSelectProject: (slug: string) => void; mobile: boolean }) {
   const accent = accentColors[project.slug] ?? "var(--accent)";
   const overlayRef = useRef<HTMLDivElement>(null);
+  const [activeSection, setActiveSection] = useState(0);
+
+  const sectionIds = ["overview", "problem", "features", "techstack", "lessons"];
+  const sectionLabels = ["Overview", "Problem", "Built", "Stack", "Lessons"];
 
   useEffect(() => {
     if (overlayRef.current) overlayRef.current.scrollTop = 0;
   }, [project.slug]);
 
+  // Track active section in case study
+  useEffect(() => {
+    const container = overlayRef.current;
+    if (!container) return;
+    const handleScroll = () => {
+      const sections = sectionIds.map(id => container.querySelector(`[data-section="${id}"]`));
+      let current = 0;
+      sections.forEach((el, i) => {
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top < window.innerHeight * 0.5) current = i;
+        }
+      });
+      setActiveSection(current);
+    };
+    container.addEventListener("scroll", handleScroll, { passive: true });
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [project.slug]);
+
+  const scrollToSection = (id: string) => {
+    const el = overlayRef.current?.querySelector(`[data-section="${id}"]`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <motion.div
       ref={overlayRef}
       data-lenis-prevent
-      initial={{ opacity: 0, y: 40 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 40 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      initial={{ clipPath: "circle(0% at 50% 50%)" }}
+      animate={{ clipPath: "circle(150% at 50% 50%)" }}
+      exit={{ clipPath: "circle(0% at 50% 50%)" }}
+      transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
       style={{ position: "fixed", inset: 0, zIndex: 900, background: "var(--bg)", overflowY: "auto", overflowX: "hidden" }}
     >
+      {/* ── Sticky section dots (desktop only) ── */}
+      {!mobile && (
+        <div style={{ position: "fixed", right: 24, top: "50%", transform: "translateY(-50%)", zIndex: 950, display: "flex", flexDirection: "column", gap: 12, alignItems: "center" }}>
+          {sectionLabels.map((label, i) => (
+            <button
+              key={label}
+              onClick={() => scrollToSection(sectionIds[i])}
+              title={label}
+              style={{
+                width: activeSection === i ? 10 : 6,
+                height: activeSection === i ? 10 : 6,
+                borderRadius: "50%",
+                background: activeSection === i ? accent : "var(--border-mid)",
+                border: "none",
+                padding: 0,
+                transition: "all .3s ease",
+                opacity: activeSection === i ? 1 : 0.5,
+              }}
+            />
+          ))}
+        </div>
+      )}
       {/* ── Full-bleed hero ── */}
       <section style={{ position: "relative", minHeight: mobile ? "60vh" : "70vh", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: mobile ? "0 20px 48px" : "0 40px 72px", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 55% 0%, ${accent}18 0%, transparent 60%)`, pointerEvents: "none" }} />
@@ -240,21 +322,21 @@ function CaseStudyOverlay({ project, onClose, onSelectProject, mobile }: { proje
 
       {/* ── Body ── */}
       <article style={{ maxWidth: 860, margin: "0 auto", padding: mobile ? "48px 20px 80px" : "80px 40px 120px" }}>
-        <motion.section initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} style={{ marginBottom: 72 }}>
+        <motion.section data-section="overview" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} style={{ marginBottom: 72 }}>
           <p style={{ fontSize: "0.7rem", letterSpacing: "0.12em", textTransform: "uppercase", color: accent, marginBottom: 18 }}>Overview</p>
           <p style={{ fontSize: "1.15rem", lineHeight: 1.9, color: "var(--text-secondary)" }}>{project.overview}</p>
         </motion.section>
 
         <div style={{ margin: "0 0 72px", borderTop: "1px solid var(--border)" }} />
 
-        <motion.section initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} style={{ marginBottom: 72 }}>
+        <motion.section data-section="problem" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} style={{ marginBottom: 72 }}>
           <p style={{ fontSize: "0.7rem", letterSpacing: "0.12em", textTransform: "uppercase", color: accent, marginBottom: 18 }}>The Problem</p>
           <p style={{ fontSize: "1rem", lineHeight: 1.9, color: "var(--text-secondary)" }}>{project.problem}</p>
         </motion.section>
 
         <div style={{ margin: "0 0 72px", borderTop: "1px solid var(--border)" }} />
 
-        <section style={{ marginBottom: 72 }}>
+        <section data-section="features" style={{ marginBottom: 72 }}>
           <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} style={{ fontSize: "0.7rem", letterSpacing: "0.12em", textTransform: "uppercase", color: accent, marginBottom: 36 }}>
             What I Built
           </motion.p>
@@ -273,7 +355,7 @@ function CaseStudyOverlay({ project, onClose, onSelectProject, mobile }: { proje
 
         <div style={{ margin: "0 0 72px", borderTop: "1px solid var(--border)" }} />
 
-        <section style={{ marginBottom: 72 }}>
+        <section data-section="techstack" style={{ marginBottom: 72 }}>
           <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} style={{ fontSize: "0.7rem", letterSpacing: "0.12em", textTransform: "uppercase", color: accent, marginBottom: 32 }}>
             Tech Stack
           </motion.p>
@@ -294,7 +376,7 @@ function CaseStudyOverlay({ project, onClose, onSelectProject, mobile }: { proje
 
         <div style={{ margin: "0 0 72px", borderTop: "1px solid var(--border)" }} />
 
-        <motion.section initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} style={{ marginBottom: 72 }}>
+        <motion.section data-section="lessons" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} style={{ marginBottom: 72 }}>
           <p style={{ fontSize: "0.7rem", letterSpacing: "0.12em", textTransform: "uppercase", color: accent, marginBottom: 18 }}>Lessons Learned</p>
           <p style={{ fontSize: "1rem", lineHeight: 1.9, color: "var(--text-secondary)" }}>{project.lessons}</p>
         </motion.section>
@@ -405,8 +487,23 @@ export default function Home() {
 
       <main>
         {/* ── Hero ── */}
-        <section style={{ minHeight: "100svh", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: mobile ? "80px 20px 48px" : "100px 40px 80px", maxWidth: 1200, margin: "0 auto" }}>
-          <div style={{ position: "fixed", top: "-10%", right: "-5%", width: 700, height: 700, borderRadius: "50%", background: "radial-gradient(circle, rgba(232,150,12,0.06) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
+        <section style={{ minHeight: "100svh", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: mobile ? "80px 20px 48px" : "100px 40px 80px", maxWidth: 1200, margin: "0 auto", position: "relative", overflow: "hidden" }}>
+          {/* ── Animated gradient orbs ── */}
+          <motion.div
+            animate={{ x: [0, 30, -20, 0], y: [0, -40, 20, 0], scale: [1, 1.15, 0.95, 1] }}
+            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+            style={{ position: "fixed", top: "-15%", right: "-10%", width: 700, height: 700, borderRadius: "50%", background: "radial-gradient(circle, rgba(232,150,12,0.07) 0%, transparent 65%)", pointerEvents: "none", zIndex: 0, filter: "blur(40px)" }}
+          />
+          <motion.div
+            animate={{ x: [0, -25, 15, 0], y: [0, 30, -25, 0], scale: [1, 0.9, 1.1, 1] }}
+            transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            style={{ position: "fixed", top: "20%", left: "-12%", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(167,139,250,0.04) 0%, transparent 65%)", pointerEvents: "none", zIndex: 0, filter: "blur(50px)" }}
+          />
+          <motion.div
+            animate={{ x: [0, 20, -15, 0], y: [0, -20, 30, 0] }}
+            transition={{ duration: 26, repeat: Infinity, ease: "easeInOut", delay: 5 }}
+            style={{ position: "fixed", bottom: "5%", right: "15%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(232,150,12,0.04) 0%, transparent 65%)", pointerEvents: "none", zIndex: 0, filter: "blur(60px)" }}
+          />
 
           <div style={{ position: "relative", zIndex: 1 }}>
             <h1 style={{ fontSize: "clamp(48px, 8.5vw, 120px)", fontWeight: 700, lineHeight: 1.0, letterSpacing: "-0.03em", margin: "0 0 32px" }}>
@@ -434,14 +531,14 @@ export default function Home() {
               transition={{ delay: 0.85 }}
               style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}
             >
-              <a href="#projects"
-                style={{ padding: "13px 28px", borderRadius: 100, background: "var(--accent)", color: "#080808", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.04em", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <MagneticButton href="#projects"
+                style={{ padding: "13px 28px", borderRadius: 100, background: "var(--accent)", color: "#080808", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.04em", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, border: "none" }}>
                 View work <ArrowUpRight size={15} />
-              </a>
-              <a href="#contact"
-                style={{ padding: "13px 24px", borderRadius: 100, border: "1px solid var(--border-mid)", color: "var(--text-secondary)", fontSize: "0.85rem", textDecoration: "none" }}>
+              </MagneticButton>
+              <MagneticButton href="#contact"
+                style={{ padding: "13px 24px", borderRadius: 100, border: "1px solid var(--border-mid)", color: "var(--text-secondary)", fontSize: "0.85rem", textDecoration: "none", background: "none" }}>
                 Get in touch
-              </a>
+              </MagneticButton>
             </motion.div>
 
             <motion.div
@@ -497,55 +594,78 @@ export default function Home() {
         </section>
 
         {/* ── Other Work ── */}
-        <section style={{ padding: mobile ? "0 20px 60px" : "0 40px 100px", maxWidth: 1200, margin: "0 auto" }}>
+        <section style={{ padding: mobile ? "0 20px 60px" : "0 0 100px", maxWidth: mobile ? 1200 : "none", margin: "0 auto" }}>
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            style={{ marginBottom: 40 }}
+            style={{ maxWidth: 1200, margin: "0 auto 40px", paddingLeft: mobile ? 0 : 40, paddingRight: mobile ? 0 : 40 }}
           >
             <p style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 10 }}>Other Work</p>
             <h2 className="velocity-skew" style={{ fontSize: "clamp(22px, 3vw, 36px)", fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>More projects.</h2>
           </motion.div>
 
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
-            {secondaryProjects.map((sp, i) => {
-              const isTopRow = i < 3;
-              const col = i % 3;
-              return (
-              <motion.div
-                key={sp.title}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.08 }}
-                style={{
-                  padding: "32px 28px",
-                  background: "var(--bg)",
-                  width: mobile ? "100%" : "calc(33.333%)",
-                  flexShrink: 0,
-                  borderTop: (!mobile && !isTopRow) || (mobile && i > 0) ? "1px solid var(--border)" : "none",
-                  borderLeft: !mobile && col > 0 ? "1px solid var(--border)" : "none",
-                }}
-              >
-                <h3 style={{ fontSize: "1.15rem", fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 10px", color: "var(--text-primary)" }}>
-                  {sp.title}<span style={{ color: sp.accent }}>.</span>
-                </h3>
-                <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", lineHeight: 1.7, margin: "0 0 16px" }}>
-                  {sp.description}
-                </p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                  {sp.tags.map(tag => (
-                    <span key={tag} style={{ fontSize: "0.6rem", letterSpacing: "0.06em", textTransform: "uppercase", padding: "2px 7px", borderRadius: 100, background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </motion.div>
-              );
-            })}
-          </div>
+          {mobile ? (
+            /* Mobile: vertical stack */
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              {secondaryProjects.map((sp, i) => (
+                <motion.div
+                  key={sp.title}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.08 }}
+                  style={{ padding: "32px 0", borderTop: i > 0 ? "1px solid var(--border)" : "none" }}
+                >
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 10px", color: "var(--text-primary)" }}>
+                    {sp.title}<span style={{ color: sp.accent }}>.</span>
+                  </h3>
+                  <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", lineHeight: 1.7, margin: "0 0 16px" }}>
+                    {sp.description}
+                  </p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                    {sp.tags.map(tag => (
+                      <span key={tag} style={{ fontSize: "0.6rem", letterSpacing: "0.06em", textTransform: "uppercase", padding: "2px 7px", borderRadius: 100, background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            /* Desktop: horizontal scroll strip */
+            <div className="h-scroll-wrapper" style={{ display: "flex", gap: 1, background: "var(--border)", paddingLeft: 40 }}>
+              {secondaryProjects.map((sp, i) => (
+                <motion.div
+                  key={sp.title}
+                  className="h-scroll-card"
+                  initial={{ opacity: 0, x: 40 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  style={{ width: 360, minWidth: 360, padding: "40px 36px", background: "var(--bg)", borderLeft: i > 0 ? "none" : undefined }}
+                >
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 10px", color: "var(--text-primary)" }}>
+                    {sp.title}<span style={{ color: sp.accent }}>.</span>
+                  </h3>
+                  <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", lineHeight: 1.7, margin: "0 0 16px" }}>
+                    {sp.description}
+                  </p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                    {sp.tags.map(tag => (
+                      <span key={tag} style={{ fontSize: "0.6rem", letterSpacing: "0.06em", textTransform: "uppercase", padding: "2px 7px", borderRadius: 100, background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+              {/* Spacer to ensure last card is fully visible */}
+              <div style={{ minWidth: 40, flexShrink: 0, background: "var(--bg)" }} />
+            </div>
+          )}
         </section>
 
         {/* ── Philosophy ── */}
@@ -556,17 +676,12 @@ export default function Home() {
               Philosophy
             </motion.p>
             <div style={{ maxWidth: 900 }}>
-              {["I don\u2019t build features.", "I build systems."].map((line, i) => (
-                <motion.h2 key={i}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.7, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] }}
-                  className="velocity-skew"
-                  style={{ fontSize: "clamp(32px, 6vw, 72px)", fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1.1, margin: 0, color: i === 1 ? "var(--accent)" : "var(--text-primary)" }}>
-                  {line}
-                </motion.h2>
-              ))}
+              <h2 className="velocity-skew" style={{ fontSize: "clamp(32px, 6vw, 72px)", fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1.1, margin: 0, color: "var(--text-primary)" }}>
+                <SplitText text="I don't build features." delay={0} />
+              </h2>
+              <h2 className="velocity-skew" style={{ fontSize: "clamp(32px, 6vw, 72px)", fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1.1, margin: 0, color: "var(--accent)" }}>
+                <SplitText text="I build systems." delay={0.3} />
+              </h2>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -711,9 +826,9 @@ export default function Home() {
                   onBlur={e => (e.target.style.borderColor = "var(--border)")}
                 />
                 {formError && <p style={{ fontSize: "0.8rem", color: "#f87171" }}>{formError}</p>}
-                <button type="submit" disabled={sending} style={{ marginTop: 4, padding: "15px 32px", borderRadius: 100, background: "var(--accent)", color: "#080808", fontWeight: 700, fontSize: "0.875rem", border: "none", transition: "opacity .2s", opacity: sending ? 0.65 : 1 }}>
+                <MagneticButton type="submit" disabled={sending} style={{ marginTop: 4, padding: "15px 32px", borderRadius: 100, background: "var(--accent)", color: "#080808", fontWeight: 700, fontSize: "0.875rem", border: "none", transition: "opacity .2s", opacity: sending ? 0.65 : 1 }}>
                   {sending ? "Sending\u2026" : "Send message"}
-                </button>
+                </MagneticButton>
               </form>
             )}
 
@@ -728,9 +843,64 @@ export default function Home() {
         </section>
 
         {/* ── Footer ── */}
-        <footer style={{ padding: mobile ? "24px 20px" : "24px 40px", borderTop: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>&copy; {new Date().getFullYear()} Tinashe Osewe</span>
-          <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", letterSpacing: "0.05em" }}>Built with Next.js</span>
+        <footer style={{ borderTop: "1px solid var(--border)", padding: mobile ? "48px 20px 32px" : "64px 40px 40px" }}>
+          <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+            {/* Large footer tagline */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              style={{ marginBottom: mobile ? 40 : 56 }}
+            >
+              <h3 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1.15, margin: 0 }}>
+                Let&apos;s build<br />something great<span style={{ color: "var(--accent)" }}>.</span>
+              </h3>
+            </motion.div>
+
+            {/* Footer grid */}
+            <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr auto auto", gap: mobile ? 28 : 60, alignItems: "end", paddingBottom: mobile ? 24 : 32, borderBottom: "1px solid var(--border)" }}>
+              <div>
+                <span style={{ fontWeight: 700, fontSize: "0.95rem", letterSpacing: "0.05em", color: "var(--text-primary)" }}>
+                  TO<span style={{ color: "var(--accent)" }}>.</span>
+                </span>
+                <p style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginTop: 10, lineHeight: 1.6 }}>
+                  Software engineer building intelligent<br />systems from architecture to interface.
+                </p>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <span style={{ fontSize: "0.65rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)" }}>Navigation</span>
+                {[["#projects","Work"],["#about","About"],["#contact","Contact"]].map(([href, label]) => (
+                  <a key={href} href={href} style={{ fontSize: "0.82rem", color: "var(--text-secondary)", textDecoration: "none", transition: "color .2s" }}
+                    onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
+                    onMouseLeave={e => (e.currentTarget.style.color = "var(--text-secondary)")}>
+                    {label}
+                  </a>
+                ))}
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <span style={{ fontSize: "0.65rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)" }}>Connect</span>
+                <a href="https://www.linkedin.com/in/tinasheosewe/" target="_blank" rel="noopener noreferrer"
+                  style={{ fontSize: "0.82rem", color: "var(--text-secondary)", textDecoration: "none", transition: "color .2s", display: "flex", alignItems: "center", gap: 6 }}
+                  onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
+                  onMouseLeave={e => (e.currentTarget.style.color = "var(--text-secondary)")}>
+                  <Linkedin size={13} /> LinkedIn
+                </a>
+                <a href="https://github.com/tinasheosewe" target="_blank" rel="noopener noreferrer"
+                  style={{ fontSize: "0.82rem", color: "var(--text-secondary)", textDecoration: "none", transition: "color .2s", display: "flex", alignItems: "center", gap: 6 }}
+                  onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
+                  onMouseLeave={e => (e.currentTarget.style.color = "var(--text-secondary)")}>
+                  <Github size={13} /> GitHub
+                </a>
+              </div>
+            </div>
+
+            {/* Bottom bar */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 20, flexWrap: "wrap", gap: 12 }}>
+              <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>&copy; {new Date().getFullYear()} Tinashe Osewe</span>
+              <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", letterSpacing: "0.04em" }}>Designed &amp; built from scratch with Next.js</span>
+            </div>
+          </div>
         </footer>
       </main>
     </>

@@ -1,12 +1,28 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Linkedin, Menu, X } from "lucide-react";
+import { Linkedin, Menu, X, Sun, Moon } from "lucide-react";
 
 const NAV_LINKS: [string, string][] = [["#projects","Work"],["#about","About"],["#contact","Contact"]];
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("theme") as "dark" | "light" | null;
+    if (saved) {
+      setTheme(saved);
+      document.documentElement.setAttribute("data-theme", saved);
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem("theme", next);
+  };
 
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 40);
@@ -32,7 +48,7 @@ export default function Nav() {
       <header style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 800,
         transition: "background .4s ease, border-color .4s ease",
-        background: scrolled || menuOpen ? "rgba(8,8,8,0.88)" : "transparent",
+        background: scrolled || menuOpen ? (theme === "dark" ? "rgba(8,8,8,0.88)" : "rgba(245,242,238,0.88)") : "transparent",
         borderBottom: `1px solid ${scrolled ? "var(--border)" : "transparent"}`,
         backdropFilter: scrolled || menuOpen ? "blur(20px)" : "none",
       }}>
@@ -56,6 +72,15 @@ export default function Nav() {
               onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}>
               <Linkedin size={16} />
             </a>
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              style={{ background: "none", border: "none", padding: 4, color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color .2s" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
+              onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}
+            >
+              {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
+            </button>
           </div>
 
           {/* ── Hamburger button (mobile only) ── */}
@@ -75,7 +100,7 @@ export default function Nav() {
         className="nav-mobile-overlay"
         style={{
           position: "fixed", inset: 0, zIndex: 799,
-          background: "rgba(8,8,8,0.96)",
+          background: theme === "dark" ? "rgba(8,8,8,0.96)" : "rgba(245,242,238,0.96)",
           backdropFilter: "blur(24px)",
           display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 32,
           transition: "opacity .3s ease, visibility .3s ease",
@@ -90,12 +115,19 @@ export default function Nav() {
             {label}
           </a>
         ))}
-        <div style={{ display: "flex", gap: 24, marginTop: 16 }}>
+        <div style={{ display: "flex", gap: 24, marginTop: 16, alignItems: "center" }}>
           <a href="https://www.linkedin.com/in/tinasheosewe/" target="_blank" rel="noopener noreferrer"
             onClick={() => setMenuOpen(false)}
             style={{ color: "var(--text-muted)", textDecoration: "none", display: "flex", alignItems: "center", gap: 6, fontSize: "0.85rem" }}>
             <Linkedin size={16} /> LinkedIn
           </a>
+          <button
+            onClick={() => { toggleTheme(); setMenuOpen(false); }}
+            style={{ background: "none", border: "none", padding: 4, color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 6, fontSize: "0.85rem" }}
+          >
+            {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+            {theme === "dark" ? "Light" : "Dark"}
+          </button>
         </div>
       </div>
 

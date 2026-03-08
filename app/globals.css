@@ -14,6 +14,24 @@
   --accent-glow: rgba(232,150,12,0.25);
 }
 
+/* ── Light theme ──────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg: #f5f2ee;
+  --bg-card: #eae6e1;
+  --bg-card-hover: #e0dbd5;
+  --border: #d6d0c8;
+  --border-mid: #c4bcb2;
+  --text-primary: #1a1816;
+  --text-secondary: #5a5650;
+  --text-muted: #a09a92;
+  --accent: #c47e0a;
+  --accent-dim: rgba(196,126,10,0.12);
+  --accent-glow: rgba(196,126,10,0.20);
+}
+[data-theme="light"] .grain::after { opacity: 0.022; }
+[data-theme="light"] ::-webkit-scrollbar-track { background: var(--bg); }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--border-mid); }
+
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; cursor: none; }
 body {
@@ -101,3 +119,21 @@ a, button, [role='button'], [data-cursor], input, textarea, select { cursor: non
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   transform: translateY(calc(var(--scroll-velocity, 0) * -0.5px));
 }
+
+/* ── Horizontal scroll section ────────────────────────────────────── */
+.h-scroll-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.h-scroll-wrapper::-webkit-scrollbar { display: none; }
+.h-scroll-card {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* ── Theme toggle transition ──────────────────────────────────────── */
+html { transition: background 0.5s ease, color 0.4s ease; }
+body { transition: background 0.5s ease, color 0.4s ease; }
