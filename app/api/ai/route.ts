@@ -159,8 +159,8 @@ AVAILABLE BLOCK TYPES:
 2. metricRow \u2014 Big stat numbers
    { "type": "metricRow", "items": [{"label": "Active listings", "value": "14,700"}] }
 
-3. diagram \u2014 Mermaid architecture diagram (use valid Mermaid syntax)
-   { "type": "diagram", "mermaid": "graph TD\\n  A[Client] --> B[API]", "caption": "System architecture" }
+3. diagram \u2014 Mermaid architecture diagram (use valid Mermaid syntax, NEVER use parentheses inside node labels — use square brackets like A[Label] instead of A(Label))
+   { "type": "diagram", "mermaid": "graph TD\n  A[Client] --> B[API Gateway]\n  B --> C[Database]", "caption": "System architecture" }
 
 4. codeBlock \u2014 Syntax-highlighted code
    { "type": "codeBlock", "language": "python", "code": "def score(listing):\\n  ...", "caption": "Scoring engine" }

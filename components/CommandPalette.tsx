@@ -152,6 +152,7 @@ export default function CommandPalette() {
       } finally {
         setLoading(false);
         setQuery("");
+        setTimeout(() => inputRef.current?.focus(), 0);
       }
     },
     [query, loading, history, prose]
@@ -173,6 +174,7 @@ export default function CommandPalette() {
         {open && (
           <motion.div
             className="cmd-overlay"
+            data-lenis-prevent
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -205,7 +207,6 @@ export default function CommandPalette() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  disabled={loading}
                   autoComplete="off"
                   spellCheck={false}
                 />
@@ -289,7 +290,7 @@ export default function CommandPalette() {
               {/* ── Footer ── */}
               <div className="cmd-footer">
                 <span>
-                  Powered by AI \u00b7 Responses may vary
+                  Powered by AI · Responses may vary
                 </span>
               </div>
             </motion.div>

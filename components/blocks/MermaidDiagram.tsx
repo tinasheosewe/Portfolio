@@ -6,6 +6,31 @@ interface MermaidDiagramProps {
   caption?: string;
 }
 
+/**
+ * Sanitize Mermaid syntax to avoid common parse errors:
+ * - Replace parentheses inside node labels (e.g. `A(Foo (bar))` → `A[Foo - bar]`)
+ * - Use square brackets for all node shapes to be safe
+ */
+function sanitizeMermaid(raw: string): string {
+  return raw
+    .split("\n")
+    .map((line) => {
+      // Replace node definitions like A(Label with (parens)) or A[Label (parens)]
+      return line.replace(
+        /([A-Za-z0-9_]+)\s*([\[\(\{])(.+?)([\]\)\}])/g,
+        (_match, id: string, open: string, label: string, close: string) => {
+          // Replace inner parens with dashes in the label text
+          const cleaned = label.replace(/[()]/g, (ch: string) => (ch === "(" ? "- " : ""));
+          // Normalize shape brackets to square brackets for safety
+          const safeOpen = open === "{" ? "{" : "[";
+          const safeClose = close === "}" ? "}" : "]";
+          return `${id}${safeOpen}${cleaned.trim()}${safeClose}`;
+        }
+      );
+    })
+    .join("\n");
+}
+
 export default function MermaidDiagram({ chart, caption }: MermaidDiagramProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [svg, setSvg] = useState<string>("");
@@ -31,8 +56,11 @@ export default function MermaidDiagram({ chart, caption }: MermaidDiagramProps) 
           },
         });
 
+        // Sanitize: replace parentheses inside bracket labels with safe chars
+        const sanitized = sanitizeMermaid(chart);
+
         const id = `mermaid-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-        const { svg: rendered } = await mermaid.render(id, chart);
+        const { svg: rendered } = await mermaid.render(id, sanitized);
         if (!cancelled) setSvg(rendered);
       } catch (e) {
         console.error("[Mermaid]", e);

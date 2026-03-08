@@ -97,8 +97,8 @@ export default function Cursor() {
 
   return (
     <>
-      <div ref={dot} style={{ position:"fixed",top:0,left:0,width:8,height:8,borderRadius:"50%",background:"var(--accent)",pointerEvents:"none",zIndex:9999,transition:"opacity .25s ease, transform .15s ease, width .3s cubic-bezier(.23,1,.32,1), height .3s cubic-bezier(.23,1,.32,1), border-radius .3s ease" }} />
-      <div ref={ring} style={{ position:"fixed",top:0,left:0,width:32,height:32,borderRadius:"50%",border:"1.5px solid var(--cursor-ring)",pointerEvents:"none",zIndex:9998,transition:"width .4s cubic-bezier(.23,1,.32,1),height .4s cubic-bezier(.23,1,.32,1),border-color .3s ease,background .3s ease,backdrop-filter .3s ease,opacity .3s ease" }} />
+      <div ref={dot} style={{ position:"fixed",top:0,left:0,width:8,height:8,borderRadius:"50%",background:"var(--accent)",pointerEvents:"none",zIndex:10001,transition:"opacity .25s ease, transform .15s ease, width .3s cubic-bezier(.23,1,.32,1), height .3s cubic-bezier(.23,1,.32,1), border-radius .3s ease" }} />
+      <div ref={ring} style={{ position:"fixed",top:0,left:0,width:32,height:32,borderRadius:"50%",border:"1.5px solid var(--cursor-ring)",pointerEvents:"none",zIndex:10000,transition:"width .4s cubic-bezier(.23,1,.32,1),height .4s cubic-bezier(.23,1,.32,1),border-color .3s ease,background .3s ease,backdrop-filter .3s ease,opacity .3s ease" }} />
     </>
   );
 }
