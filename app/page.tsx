@@ -118,9 +118,63 @@ const MARQUEE_ITEMS = ["FastAPI","Next.js","LangGraph","Swift","RAG","ChromaDB",
 
 function Marquee() {
   const items = [...MARQUEE_ITEMS, ...MARQUEE_ITEMS];
+  const trackRef = useRef<HTMLDivElement>(null);
+  const offset = useRef(0);
+  const velocity = useRef(0);
+  const prevScroll = useRef(0);
+  const baseSpeed = -0.5; // px per frame, negative = leftward
+
+  useEffect(() => {
+    prevScroll.current = window.scrollY;
+    let halfWidth = 0;
+
+    const measure = () => {
+      if (trackRef.current) halfWidth = trackRef.current.scrollWidth / 2;
+    };
+    measure();
+    window.addEventListener("resize", measure);
+
+    const onScroll = () => {
+      const delta = window.scrollY - prevScroll.current;
+      prevScroll.current = window.scrollY;
+      // Map scroll delta to marquee velocity (positive delta = scroll down = move right)
+      velocity.current += delta * 0.3;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    let raf: number;
+    const tick = () => {
+      // Decay velocity toward zero
+      velocity.current *= 0.92;
+      // Clamp to avoid runaway
+      velocity.current = Math.max(-60, Math.min(60, velocity.current));
+
+      // Combine base drift with scroll-driven velocity
+      offset.current += baseSpeed + velocity.current;
+
+      // Wrap around seamlessly
+      if (halfWidth > 0) {
+        if (offset.current <= -halfWidth) offset.current += halfWidth;
+        if (offset.current >= 0) offset.current -= halfWidth;
+      }
+
+      if (trackRef.current) {
+        trackRef.current.style.transform = `translateX(${offset.current}px)`;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+
   return (
     <div style={{ overflow: "hidden", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", padding: "14px 0", background: "var(--bg-card)" }}>
-      <div className="marquee-track">
+      <div ref={trackRef} className="marquee-track" style={{ willChange: "transform" }}>
         {items.map((item, i) => (
           <span key={i} style={{ padding: "0 28px", fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-muted)", borderRight: "1px solid var(--border)", display: "inline-flex", alignItems: "center", gap: 10, whiteSpace: "nowrap" }}>
             <span style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--accent)", display: "inline-block" }} />

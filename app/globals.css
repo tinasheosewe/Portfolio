@@ -122,18 +122,11 @@ a, button, [role='button'], [data-cursor], input, textarea, select { cursor: non
   --scroll-direction: 1;
 }
 
-/* Horizontal marquee — speed responds to scroll velocity */
+/* Horizontal marquee — JS-driven via rAF, no CSS animation */
 .marquee-track {
   display: flex;
   gap: 0;
-  animation: marquee 22s linear infinite;
   white-space: nowrap;
-  /* Accelerate marquee proportional to scroll speed */
-  animation-duration: calc(22s / (1 + var(--scroll-velocity, 0) * 0.3));
-}
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
 }
 
 /* Scroll-velocity skew — lean text into the scroll direction */
