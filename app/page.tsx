@@ -233,17 +233,21 @@ function ProjectRow({ project, index, onSelect, mobile }: { project: typeof proj
           paddingLeft: !mobile && hovered ? 20 : 0,
           paddingRight: !mobile && hovered ? 8 : 0,
           position: "relative",
+          overflow: "visible",
         }}
       >
-        {/* Faded highlight background */}
+        {/* Faded highlight background — bleeds beyond row edges */}
         <div style={{
           position: "absolute",
-          inset: 0,
+          top: 0,
+          bottom: 0,
+          left: -40,
+          right: -40,
           background: thumbGrad,
           opacity: hovered ? 1 : 0,
           transition: "opacity .4s ease",
-          maskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
+          maskImage: "linear-gradient(to right, transparent 0%, black 40px, black calc(100% - 40px), transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 40px, black calc(100% - 40px), transparent 100%)",
           pointerEvents: "none",
           borderRadius: 4,
         }} />
