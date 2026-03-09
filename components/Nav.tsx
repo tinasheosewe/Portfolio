@@ -73,6 +73,7 @@ export default function Nav() {
               </Link>
             ))}
             <a href="https://www.linkedin.com/in/tinasheosewe/" target="_blank" rel="noopener noreferrer"
+              aria-label="LinkedIn profile"
               style={{ color: "var(--text-muted)", textDecoration: "none", transition: "color .2s", display: "flex", alignItems: "center" }}
               onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
               onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}>
@@ -134,6 +135,7 @@ export default function Nav() {
         ))}
         <div style={{ display: "flex", gap: 24, marginTop: 16, alignItems: "center" }}>
           <a href="https://www.linkedin.com/in/tinasheosewe/" target="_blank" rel="noopener noreferrer"
+            aria-label="LinkedIn profile"
             onClick={() => setMenuOpen(false)}
             style={{ color: "var(--text-muted)", textDecoration: "none", display: "flex", alignItems: "center", gap: 6, fontSize: "0.85rem" }}>
             <Linkedin size={16} /> LinkedIn

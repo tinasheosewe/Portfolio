@@ -11,12 +11,18 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://tinasheosewe.dev"),
   title: "Tinashe Osewe — Software Engineer",
   description: "Software engineer building AI-powered products end to end.",
   openGraph: {
     title: "Tinashe Osewe — Software Engineer",
     description: "Software engineer. AI products. Shipped.",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tinashe Osewe — Software Engineer",
+    description: "Software engineer building AI-powered products end to end.",
   },
 };
 

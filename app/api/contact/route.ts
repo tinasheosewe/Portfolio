@@ -1,7 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 
+/* ── Simple in-memory rate limiter ── */
+const submissions = new Map<string, number[]>();
+const RATE_LIMIT = 3;          // max submissions
+const RATE_WINDOW = 60 * 1000; // per 60 seconds
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const timestamps = (submissions.get(ip) || []).filter((t) => now - t < RATE_WINDOW);
+  if (timestamps.length >= RATE_LIMIT) return true;
+  timestamps.push(now);
+  submissions.set(ip, timestamps);
+  return false;
+}
+
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    if (isRateLimited(ip)) {
+      return NextResponse.json({ error: "Too many submissions. Please try again later." }, { status: 429 });
+    }
+
     const { name, email, message } = await req.json();
     if (!name || !email || !message) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
