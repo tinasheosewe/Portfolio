@@ -29,7 +29,7 @@ export const projects: Project[] = [
     title: "AptHunt",
     tagline: "NYC apartment intelligence. Only the listings worth seeing.",
     description:
-      "An apartment intelligence platform that aggregates NYC rental listings from public data sources, scores each one across fifteen quality dimensions — from transit access to flood risk — and surfaces only the results worth your attention.",
+      "An apartment intelligence platform that scores NYC rental listings across fifteen quality dimensions — from transit access to flood risk — and surfaces only the results worth seeing.",
     liveUrl: "https://apthunt-web.onrender.com/",
     status: "live",
     statusLabel: "Live",
@@ -41,33 +41,33 @@ export const projects: Project[] = [
     ],
     heroGradient: "from-amber-500/20 via-transparent to-transparent",
     overview:
-      "AptHunt is built around one principle: decision compression. New York's rental market is adversarial — paid placements, stale listings, information overload. AptHunt cuts through all of it by aggregating public listing data, evaluating each one across fifteen quality dimensions, and surfacing only the ones that warrant serious consideration.",
+      "New York's rental market rewards time spent scrolling, not good judgment. AptHunt changes that — it pulls in rental data from public sources, scores every listing across fifteen quality dimensions, and shows you only the ones worth seeing. The result is a dramatically smaller, higher-quality set of options so renters can make confident decisions in hours, not weeks.",
     problem:
-      "Finding an apartment in New York is overwhelming by design. Listings are manipulated, data decays quickly, and every platform is optimised to maximise engagement rather than match quality. AptHunt inverts that model — fewer results, dramatically higher signal.",
+      "Finding a good apartment in New York shouldn't require weeks of searching. Listings go stale fast, prices tell you nothing without context, and every platform is designed to keep you scrolling. AptHunt gives renters an objective way to evaluate any listing — and filters out everything that doesn't meet the bar.",
     features: [
       {
         title: "Automated data pipeline",
-        body: "Aggregates active rental listings from public NYC data sources with automated scheduling and built-in resilience — exponential backoff, request deduplication, and incremental sync.",
+        body: "Listing data stays current without manual intervention. The pipeline syncs from public NYC data sources on a schedule, retries on failure with exponential backoff, and skips listings it's already processed — keeping results fresh and accurate at all times.",
       },
       {
         title: "Multi-dimensional quality scoring",
-        body: "Each listing is scored across fifteen independent quality signals — value relative to neighbourhood comparables, transit access, crime exposure, noise levels, building violations, parks, schools, rent stabilisation status, flood risk, and more. The scoring engine is pluggable: adding a new signal means writing one function.",
+        body: "Every listing gets a quality score across fifteen real-world factors: price relative to neighbourhood comparables, subway proximity, crime rates, noise levels, building violations, park access, school quality, and more. The scoring engine is pluggable — adding a new dimension is a single function.",
       },
       {
         title: "Personalised ranking",
-        body: "Users set their own priorities across five quality categories. Higher-priority groups carry more weight in the final score. The scoring pipeline runs once; personalisation is applied per user on the fly.",
+        body: "Different renters care about different things. Users weight five quality categories by importance and results re-rank in real time. The scoring pipeline runs once — personalisation is applied per user on the fly, so the system stays fast regardless of scale.",
       },
       {
         title: "Intelligent comparables",
-        body: "Recommends similar listings using vector similarity across quality dimensions, blended with geographic and price proximity. A separate ‘Also Consider’ engine finds listings that match on four dimensions but excel in a fifth — surfacing options the user wouldn’t have found otherwise.",
+        body: "Surfaces similar listings for easy comparison, plus an 'Also Consider' engine that finds options matching on four quality dimensions but outperforming on a fifth — helping users discover great apartments they'd otherwise never find.",
       },
       {
         title: "Neighbourhood quality index",
-        body: "Pre-computes neighbourhood quality at block level (~153m cells). Aggregates crime, noise complaints, building violations, park access, flood risk, and development trends per cell from NYC open data APIs.",
+        body: "Maps neighbourhood quality at block level across the entire city. Crime density, noise complaints, building violations, park proximity, flood risk, and development trends are aggregated per ~153 m cell — giving users a street-level picture of any location before they visit.",
       },
       {
         title: "Unified data model",
-        body: "Every data field in the system feeds at least one scoring model — cosmetic fields are excluded by design. Listings normalise into one canonical schema, making the intelligence layer source-agnostic.",
+        body: "Every data field in the system serves a scoring function — cosmetic data is excluded by design. Listings from any source normalise into one canonical schema, so the intelligence layer is completely source-agnostic and new sources plug in without changes.",
       },
     ],
     techStack: [
@@ -83,9 +83,9 @@ export const projects: Project[] = [
   {
     slug: "persona",
     title: "Persona",
-    tagline: "Conversational AI with deep memory. Provider-agnostic by design.",
+    tagline: "Give it someone's documents. It becomes them.",
     description:
-      "A production-grade conversational AI platform with persistent memory, structured knowledge ingestion, and zero provider lock-in. Users interact through a streaming interface while the system maintains context across sessions using a four-tier memory architecture.",
+      "A conversational AI platform that builds a digital persona from someone's documents. Feed it notes, writing, records — anything about a person — and the AI adopts their knowledge, patterns, and voice. It doesn't just retrieve facts; it embodies the person.",
     liveUrl: "https://chatbot-ui-rn18.onrender.com/",
     status: "live",
     statusLabel: "Live",
@@ -98,17 +98,17 @@ export const projects: Project[] = [
     ],
     heroGradient: "from-violet-500/20 via-transparent to-transparent",
     overview:
-      "Persona is three systems working in concert: a conversational AI backend with hybrid memory retrieval, a knowledge graph pipeline that transforms raw documents into structured and queryable data, and a real-time streaming interface. Together they form a production-grade conversational platform with no dependency on any single AI provider.",
+      "Persona turns a collection of documents about someone into a living, conversational version of that person. Upload their writing, notes, records, communications — anything that captures who they are — and the system extracts people, events, relationships, and patterns into a structured knowledge graph. The AI doesn't just answer questions about the person; it responds as them — their knowledge becomes its memory, their patterns shape its behaviour, their voice comes through in how it speaks.",
     problem:
-      "Most conversational AI demos are locked to one provider, lose context after a few exchanges, and can’t incorporate custom knowledge without a complete rebuild. Persona solves all three — switch providers in one line, maintain recall across entire session histories, and ingest any document into a queryable knowledge structure.",
+      "Building a realistic AI persona requires more than a prompt and a PDF. Off-the-shelf chatbots retrieve facts but don't embody a person — they sound generic regardless of input. Persona bridges that gap: structured knowledge extraction gives the AI genuine understanding of who someone is, and four layers of memory ensure it stays in character across entire conversations.",
     features: [
       {
         title: "Provider-independent AI layer",
-        body: "Supports OpenAI, Anthropic, Ollama, and Google Gemini through a common interface. Switching providers is a one-line change. The reasoning layer can use a separate, cost-optimised model for retrieval decisions — zero vendor lock-in at every level.",
+        body: "Works with OpenAI, Anthropic, Google Gemini, and Ollama through a common interface. Switching providers is a one-line change. The retrieval and generation layers can use different models independently — so you can optimise for cost and quality separately.",
       },
       {
         title: "Hybrid memory retrieval",
-        body: "Combines two retrieval methods — semantic similarity (understanding meaning) and keyword matching (exact recall) — and interleaves the results. The hybrid approach consistently outperforms either method alone in conversational recall.",
+        body: "Recalls past conversations using two complementary methods — semantic similarity for meaning-based recall and keyword matching for exact details — then blends the results. The hybrid approach consistently outperforms either method alone.",
       },
       {
         title: "Four-tier contextual memory",
@@ -116,15 +116,15 @@ export const projects: Project[] = [
       },
       {
         title: "Structured knowledge ingestion",
-        body: "Upload any document and the system extracts structured knowledge — people, places, events, concepts, and the relationships between them. Processing is concurrent and idempotent, so re-uploading is always safe. The extracted knowledge feeds directly into the retrieval layer.",
+        body: "Upload documents about a person — writing, records, notes, anything — and the system extracts people, events, concepts, and relationships into a knowledge graph. These become the persona's memories: they shape how it responds, what it references, and how it speaks. Processing is concurrent and idempotent, so adding more material over time is seamless.",
       },
       {
-        title: "Self-correcting context retrieval",
-        body: "A reasoning layer that evaluates whether the initial retrieval was sufficient before generating a response. If context is lacking, it retrieves again with a refined query. The reasoning model is decoupled from the generation model, enabling independent cost and quality optimisation.",
+        title: "Self-correcting retrieval",
+        body: "Before generating an answer, a separate reasoning layer evaluates whether the retrieved context is actually sufficient. If it’s not, the system retrieves again with a refined query — reducing the chance of a confident but wrong response.",
       },
       {
         title: "Real-time streaming interface",
-        body: "The frontend consumes a server-sent event stream for token-by-token rendering. Includes a full document management dashboard: upload (blocks until processing completes), delete (triggers automatic index rebuild), and browse with metadata.",
+        body: "Responses stream token-by-token via server-sent events for a responsive, natural feel. Includes a full document management dashboard — upload, delete with automatic index rebuild, and browse with metadata.",
       },
     ],
     techStack: [
@@ -142,7 +142,7 @@ export const projects: Project[] = [
     title: "Concierge",
     tagline: "Tell it what you want. It finds the table.",
     description:
-      "An AI-powered dining assistant that turns natural-language preferences into reservation plans. Describe your ideal dinner — neighbourhood, party size, time window — and the agent interprets your constraints, evaluates options, and handles the rest.",
+      "An AI dining assistant that turns a natural-language request — 'dinner for two in the West Village, not too late' — into a reservation plan. Describe what you want and the agent handles the rest.",
     liveUrl: "https://resy-polling-api.onrender.com/",
     status: "live",
     statusLabel: "Live",
@@ -155,29 +155,29 @@ export const projects: Project[] = [
     ],
     heroGradient: "from-amber-500/20 via-transparent to-transparent",
     overview:
-      "Concierge removes the friction from dining out. Instead of manually searching, filtering, and refreshing, you describe what you want in plain English — 'dinner for two in the West Village, Friday or Saturday, not too late' — and the AI agent interprets your constraints, evaluates your options, and works to make it happen.",
+      "Concierge removes the effort from finding a table. Instead of searching, filtering, and refreshing, you describe what you want in plain English — 'dinner for two, Friday or Saturday, somewhere in the West Village' — and an AI agent interprets your constraints, evaluates options, and works to secure a reservation.",
     problem:
-      "Finding a table at a sought-after restaurant is tedious. Availability shifts constantly, preferences are nuanced, and the process rewards manual effort over clear intent. Concierge replaces all of that with an intelligent agent that understands what you actually want.",
+      "Getting a table at a popular restaurant is tedious. Availability changes constantly, personal preferences are hard to express in filters, and the process rewards manual effort over clear intent. Concierge replaces all of that with an agent that understands what you actually want and acts on it.",
     features: [
       {
         title: "Conversational AI agent",
-        body: "A full reasoning loop powered by GPT-4.1-mini that maintains conversation history across exchanges. The agent understands follow-ups, remembers context, and asks clarifying questions when a request is ambiguous — the same way a human concierge would.",
+        body: "Understands follow-ups, remembers what you’ve said, and asks clarifying questions when a request is ambiguous — the same way a human concierge would. Powered by GPT-4.1-mini with full conversation history across exchanges.",
       },
       {
         title: "Natural language scheduling",
-        body: "Parses free-form requests into structured rules — weekday preferences, date ranges, time windows, and explicit exceptions. Handles complex constraints like 'any Friday or Saturday except next weekend, between 7 and 9' without requiring forms or filters.",
+        body: "Handles complex scheduling in plain English. 'Any Friday or Saturday except next weekend, between 7 and 9' gets parsed into structured constraints — weekday preferences, date ranges, time windows, and exceptions — without requiring forms or filters.",
       },
       {
         title: "Autonomous tool use",
-        body: "The agent has access to six specialised tool functions it can call on its own during a conversation — searching venues, resolving scheduling conflicts, checking constraints, and refining results. It decides which tools to invoke based on what the conversation needs.",
+        body: "The agent decides which actions to take during a conversation — searching for venues, checking availability, resolving scheduling conflicts, refining results — using six specialised tool functions it selects on its own based on what the conversation needs.",
       },
       {
         title: "Conversation reliability",
-        body: "Long-running conversations can accumulate broken exchange sequences that cause AI failures. A structured message sanitiser runs before every inference call — stripping orphan messages, resolving broken pairs — keeping the agent stable over extended sessions.",
+        body: "Stays stable over long, multi-turn conversations. A message sanitiser runs before every inference call, repairing broken exchange sequences and stripping orphan messages that would otherwise cause the AI to fail or drift.",
       },
       {
         title: "Production-grade backend",
-        body: "FastAPI with SQLAlchemy for persistent state. Encrypted storage for sensitive data. Jobs persist across service restarts via database-backed management. One-click deploy with Docker and Render.",
+        body: "FastAPI with SQLAlchemy for persistent state. Encrypted storage for sensitive data. Jobs survive service restarts via database-backed management. One-click deploy with Docker and Render.",
       },
     ],
     techStack: [
@@ -194,7 +194,7 @@ export const projects: Project[] = [
     title: "PantryChef",
     tagline: "Scan your pantry. AI tells you what to cook.",
     description:
-      "A native iOS kitchen companion. Capture ingredients via receipt scanning, barcode lookup, or camera — then let AI suggest recipes, substitutions, and meal plans based on what you actually have on hand.",
+      "A native iOS kitchen companion. Scan what’s in your pantry — via receipts, barcodes, or camera — and get AI-powered recipe suggestions, substitutions, and meal plans based on what you actually have.",
     status: "ios",
     statusLabel: "iOS App — TestFlight Coming Soon",
     tags: ["Swift", "SwiftUI", "GPT-4o", "Vision OCR", "SFSpeechRecognizer", "iOS 17", "Supabase"],
@@ -206,29 +206,29 @@ export const projects: Project[] = [
     ],
     heroGradient: "from-emerald-500/20 via-transparent to-transparent",
     overview:
-      "PantryChef is a native iOS app that bridges the gap between what’s in your kitchen and what ends up on your table. It combines Apple’s on-device intelligence (Vision for text recognition, Speech for hands-free control) with LLM-powered reasoning to turn a photo of your fridge into a dinner plan. The architecture is production-ready — database migrations written, service layer abstracted, build system automated.",
+      "PantryChef starts from what’s already in your kitchen. Snap a photo of your fridge, scan a receipt, or scan a barcode — the app builds your pantry inventory, then uses AI to suggest recipes you can actually make right now. It tracks expiry dates, generates shopping lists, and lets you cook hands-free with voice-guided step-by-step instructions.",
     problem:
-      "Most recipe apps ignore what you already have. PantryChef inverts the model — it starts from your actual pantry, surfaces recipes ranked by ingredient match, flags items approaching expiry, and lets AI suggest what to do with what’s left.",
+      "Recipe apps tell you what to buy. PantryChef tells you what to cook. It starts from your actual ingredients, ranks recipes by how closely they match what you have, flags items approaching expiry, and helps you use what’s already there — reducing waste and unnecessary grocery trips.",
     features: [
       {
         title: "Intelligent ingredient capture",
-        body: "Add ingredients manually, by barcode scan, or by photographing receipts and cookbooks via on-device text recognition. Expiry date tracking with visual urgency indicators. Every recipe card shows a pantry match percentage.",
+        body: "Four ways to build your pantry: type it in, scan a barcode, photograph a receipt, or snap a cookbook page. Expiry tracking with visual urgency indicators ensures nothing goes to waste. Every recipe card shows what percentage of ingredients you already have.",
       },
       {
         title: "AI-powered recipe intelligence",
-        body: "Substitution suggestions with confidence ratings. Natural language queries — ‘What can I make with what I have?’, ‘Use up what’s expiring’, ‘What can I do with last night’s leftovers?’ Recipe import from any URL with structured extraction.",
+        body: "Ask natural questions — 'What can I make tonight?', 'Use up what’s expiring', 'What can I do with leftover chicken?' — and get recipe suggestions matched to your pantry. Includes substitution suggestions with confidence ratings and recipe import from any URL.",
       },
       {
         title: "Hands-free Cook Mode",
-        body: "Full-screen step-by-step guided cooking with per-step timers. Voice readout via system speech synthesis. Voice commands (‘next’, ‘repeat’, ‘start timer’) via on-device speech recognition. Dark interface designed for kitchen conditions — readable with wet hands.",
+        body: "Full-screen, step-by-step cooking with per-step timers, voice readout, and voice commands — 'next', 'repeat', 'start timer'. The dark interface is designed for kitchen conditions: readable at arm’s length with wet hands.",
       },
       {
         title: "Meal planning and waste reduction",
-        body: "Weekly calendar view with breakfast, lunch, and dinner slots. Auto-generates a complete shopping list from the week’s meal plan. Plans against what you already have to minimise waste and redundant purchases.",
+        body: "Plan your week with a breakfast, lunch, and dinner calendar. Shopping lists auto-generate from the plan, accounting for what’s already in your pantry — so you buy only what you need.",
       },
       {
         title: "Production-grade architecture",
-        body: "MVVM with centralised application state. The storage layer is protocol-based — swapping from in-memory to Supabase is a single-file change. Database migration SQL already written. Automated build via XcodeGen. TestFlight distribution ready.",
+        body: "MVVM with centralised state management. The storage layer is protocol-based — swapping from in-memory to Supabase requires changing a single file. Database migrations already written, automated builds via XcodeGen, and ready for TestFlight distribution.",
       },
     ],
     techStack: [
