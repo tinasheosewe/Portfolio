@@ -1,7 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Linkedin, Menu, X, Sun, Moon } from "lucide-react";
+import { Linkedin, Menu, X, Sun, Moon, Gamepad2 } from "lucide-react";
+
+const SnakeGame = dynamic(() => import("@/components/SnakeGame"), { ssr: false });
 
 const NAV_LINKS: [string, string][] = [["projects","Work"],["about","About"],["contact","Contact"]];
 
@@ -13,6 +16,7 @@ function scrollToSection(id: string) {
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [gameOpen, setGameOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
 
   useEffect(() => {
@@ -37,11 +41,19 @@ export default function Nav() {
 
 
 
-  // Lock body scroll when menu open
+  // Lock body scroll when menu or game open
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : "";
+    document.body.style.overflow = menuOpen || gameOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
-  }, [menuOpen]);
+  }, [menuOpen, gameOpen]);
+
+  // Close game on Escape
+  useEffect(() => {
+    if (!gameOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setGameOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [gameOpen]);
 
   return (
     <>
@@ -66,6 +78,11 @@ export default function Nav() {
                 {label}
               </button>
             ))}
+            <button onClick={() => setGameOpen(true)} style={{ display: "flex", alignItems: "center", gap: 4, background: "none", border: "none", padding: 0, fontSize: "0.8rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text-muted)", textDecoration: "none", transition: "color .2s", cursor: "pointer" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
+              onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}>
+              <Gamepad2 size={14} /> Play
+            </button>
             <a href="https://www.linkedin.com/in/tinasheosewe/" target="_blank" rel="noopener noreferrer"
               aria-label="LinkedIn profile"
               style={{ color: "var(--text-muted)", textDecoration: "none", transition: "color .2s", display: "flex", alignItems: "center" }}
@@ -127,6 +144,10 @@ export default function Nav() {
             {label}
           </button>
         ))}
+        <button onClick={() => { setGameOpen(true); setMenuOpen(false); }}
+          style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", padding: 0, fontSize: "1.6rem", fontWeight: 700, letterSpacing: "-0.01em", color: "var(--text-primary)", textDecoration: "none", cursor: "pointer" }}>
+          <Gamepad2 size={20} /> Play
+        </button>
         <div style={{ display: "flex", gap: 24, marginTop: 16, alignItems: "center" }}>
           <a href="https://www.linkedin.com/in/tinasheosewe/" target="_blank" rel="noopener noreferrer"
             aria-label="LinkedIn profile"
@@ -141,6 +162,35 @@ export default function Nav() {
             {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
             {theme === "dark" ? "Light" : "Dark"}
           </button>
+        </div>
+      </div>
+
+      {/* ── Game overlay ── */}
+      <div style={{
+        position: "fixed", inset: 0, zIndex: 900,
+        background: theme === "dark" ? "rgba(8,8,8,0.97)" : "rgba(245,242,238,0.97)",
+        backdropFilter: "blur(24px)",
+        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+        padding: "24px",
+        transition: "opacity .3s ease, visibility .3s ease",
+        opacity: gameOpen ? 1 : 0,
+        visibility: gameOpen ? "visible" : "hidden",
+        pointerEvents: gameOpen ? "auto" : "none",
+      }}>
+        <div style={{ width: "100%", maxWidth: 440 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+            <div>
+              <h2 style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--text-primary)", margin: 0, letterSpacing: "-0.02em" }}>Snake</h2>
+              <p style={{ color: "var(--text-muted)", fontSize: "0.75rem", margin: "2px 0 0", fontFamily: "var(--font-mono, monospace)" }}>Take a break.</p>
+            </div>
+            <button onClick={() => setGameOpen(false)} aria-label="Close game"
+              style={{ background: "none", border: "none", padding: 4, color: "var(--text-muted)", cursor: "pointer", transition: "color .2s" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
+              onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}>
+              <X size={20} />
+            </button>
+          </div>
+          {gameOpen && <SnakeGame />}
         </div>
       </div>
 
