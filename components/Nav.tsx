@@ -3,7 +3,12 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Linkedin, Menu, X, Sun, Moon } from "lucide-react";
 
-const NAV_LINKS: [string, string][] = [["/#projects","Work"],["/#about","About"],["/#contact","Contact"]];
+const NAV_LINKS: [string, string][] = [["projects","Work"],["about","About"],["contact","Contact"]];
+
+function scrollToSection(id: string) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: "smooth" });
+}
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -30,12 +35,7 @@ export default function Nav() {
     return () => window.removeEventListener("scroll", h);
   }, []);
 
-  // Close menu on hash change
-  useEffect(() => {
-    const close = () => setMenuOpen(false);
-    window.addEventListener("hashchange", close);
-    return () => window.removeEventListener("hashchange", close);
-  }, []);
+
 
   // Lock body scroll when menu open
   useEffect(() => {
@@ -59,12 +59,12 @@ export default function Nav() {
 
           {/* ── Desktop nav ── */}
           <div className="nav-desktop" style={{ display: "flex", gap: 36, alignItems: "center" }}>
-            {NAV_LINKS.map(([href, label]) => (
-              <Link key={href} href={href} style={{ fontSize: "0.8rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text-muted)", textDecoration: "none", transition: "color .2s" }}
+            {NAV_LINKS.map(([id, label]) => (
+              <button key={id} onClick={() => scrollToSection(id)} style={{ background: "none", border: "none", padding: 0, fontSize: "0.8rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text-muted)", textDecoration: "none", transition: "color .2s" }}
                 onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
                 onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}>
                 {label}
-              </Link>
+              </button>
             ))}
             <a href="https://www.linkedin.com/in/tinasheosewe/" target="_blank" rel="noopener noreferrer"
               aria-label="LinkedIn profile"
@@ -121,11 +121,11 @@ export default function Nav() {
           pointerEvents: menuOpen ? "auto" : "none",
         }}
       >
-        {NAV_LINKS.map(([href, label]) => (
-          <Link key={href} href={href} onClick={() => setMenuOpen(false)}
-            style={{ fontSize: "1.6rem", fontWeight: 700, letterSpacing: "-0.01em", color: "var(--text-primary)", textDecoration: "none" }}>
+        {NAV_LINKS.map(([id, label]) => (
+          <button key={id} onClick={() => { scrollToSection(id); setMenuOpen(false); }}
+            style={{ background: "none", border: "none", padding: 0, fontSize: "1.6rem", fontWeight: 700, letterSpacing: "-0.01em", color: "var(--text-primary)", textDecoration: "none" }}>
             {label}
-          </Link>
+          </button>
         ))}
         <div style={{ display: "flex", gap: 24, marginTop: 16, alignItems: "center" }}>
           <a href="https://www.linkedin.com/in/tinasheosewe/" target="_blank" rel="noopener noreferrer"

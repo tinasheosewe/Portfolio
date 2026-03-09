@@ -57,7 +57,7 @@
 [data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--border-mid); }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; cursor: none; }
+html { cursor: none; }
 body {
   background: var(--bg);
   color: var(--text-primary);
