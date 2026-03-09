@@ -12,15 +12,9 @@ export default function Nav() {
 
   useEffect(() => {
     const saved = localStorage.getItem("theme") as "dark" | "light" | null;
-    if (saved) {
-      setTheme(saved);
-      document.documentElement.setAttribute("data-theme", saved);
-    } else {
-      const hour = new Date().getHours();
-      const timeDefault = hour >= 6 && hour < 18 ? "light" : "dark";
-      setTheme(timeDefault);
-      document.documentElement.setAttribute("data-theme", timeDefault);
-    }
+    const initial = saved ?? "dark";
+    setTheme(initial);
+    document.documentElement.setAttribute("data-theme", initial);
   }, []);
 
   const toggleTheme = () => {
