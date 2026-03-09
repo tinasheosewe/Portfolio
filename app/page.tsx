@@ -695,12 +695,12 @@ export default function Home() {
               transition={{ delay: 0.85 }}
               style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}
             >
-              <MagneticButton href="#projects" className="glow-btn"
-                style={{ padding: "13px 28px", borderRadius: 100, background: "var(--accent)", color: "var(--btn-face)", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.04em", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, border: "none" }}>
+              <MagneticButton onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })} className="glow-btn"
+                style={{ padding: "13px 28px", borderRadius: 100, background: "var(--accent)", color: "var(--btn-face)", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.04em", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, border: "none", cursor: "pointer" }}>
                 View work <ArrowUpRight size={15} />
               </MagneticButton>
-              <MagneticButton href="#contact"
-                style={{ padding: "13px 24px", borderRadius: 100, border: "1px solid var(--border-mid)", color: "var(--text-secondary)", fontSize: "0.85rem", textDecoration: "none", background: "none" }}>
+              <MagneticButton onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                style={{ padding: "13px 24px", borderRadius: 100, border: "1px solid var(--border-mid)", color: "var(--text-secondary)", fontSize: "0.85rem", textDecoration: "none", background: "none", cursor: "pointer" }}>
                 Get in touch
               </MagneticButton>
               <button
@@ -1061,12 +1061,12 @@ export default function Home() {
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <span style={{ fontSize: "0.65rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)" }}>Navigation</span>
-                {[["#projects","Work"],["#about","About"],["#contact","Contact"]].map(([href, label]) => (
-                  <a key={href} href={href} style={{ fontSize: "0.82rem", color: "var(--text-secondary)", textDecoration: "none", transition: "color .2s" }}
+                {[["projects","Work"],["about","About"],["contact","Contact"]].map(([id, label]) => (
+                  <button key={id} onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })} style={{ background: "none", border: "none", padding: 0, fontSize: "0.82rem", color: "var(--text-secondary)", textDecoration: "none", transition: "color .2s", cursor: "pointer", textAlign: "left" }}
                     onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
                     onMouseLeave={e => (e.currentTarget.style.color = "var(--text-secondary)")}>
                     {label}
-                  </a>
+                  </button>
                 ))}
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
