@@ -103,6 +103,10 @@ a, button, [role='button'], [data-cursor], input, textarea, select { cursor: non
   80%{transform:translate(3%,-3%)}
   90%{transform:translate(-1%,2%)}
 }
+/* Disable grain animation on mobile to save GPU */
+@media (pointer: coarse) {
+  .grain::after { animation: none !important; opacity: 0 !important; }
+}
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 5px; }
