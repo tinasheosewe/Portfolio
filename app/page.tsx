@@ -122,7 +122,7 @@ function Marquee() {
   const offset = useRef(0);
   const velocity = useRef(0);
   const prevScroll = useRef(0);
-  const baseSpeed = -0.5; // px per frame, negative = leftward
+  const baseSpeed = useRef(-0.5); // px per frame; sign flips with scroll direction
 
   useEffect(() => {
     prevScroll.current = window.scrollY;
@@ -137,7 +137,10 @@ function Marquee() {
     const onScroll = () => {
       const delta = window.scrollY - prevScroll.current;
       prevScroll.current = window.scrollY;
-      // Map scroll delta to marquee velocity (positive delta = scroll down = move right)
+      // Flip base drift direction to match scroll direction
+      if (delta > 0) baseSpeed.current = 0.5;   // scroll down → drift right
+      if (delta < 0) baseSpeed.current = -0.5;   // scroll up   → drift left
+      // Map scroll delta to marquee velocity burst
       velocity.current += delta * 0.3;
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -150,7 +153,7 @@ function Marquee() {
       velocity.current = Math.max(-60, Math.min(60, velocity.current));
 
       // Combine base drift with scroll-driven velocity
-      offset.current += baseSpeed + velocity.current;
+      offset.current += baseSpeed.current + velocity.current;
 
       // Wrap around seamlessly
       if (halfWidth > 0) {
