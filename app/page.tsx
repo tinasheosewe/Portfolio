@@ -522,7 +522,7 @@ function CaseStudyOverlay({ project, onClose, onSelectProject, mobile }: { proje
             </MagneticButton>
           )}
           <MagneticButton onClick={onClose}
-            style={{ padding: "13px 26px", borderRadius: 100, border: "1px solid var(--border-mid)", background: "none", color: "var(--text-secondary)", fontSize: "0.85rem", display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
+            style={{ padding: "13px 26px", borderRadius: 100, border: "1px solid var(--border-mid)", background: "none", color: "var(--text-secondary)", fontSize: "0.85rem", display: "inline-flex", alignItems: "center", gap: 6 }}>
             <ArrowLeft size={14} /> All projects
           </MagneticButton>
         </div>
@@ -696,11 +696,11 @@ export default function Home() {
               style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}
             >
               <MagneticButton onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })} className="glow-btn"
-                style={{ padding: "13px 28px", borderRadius: 100, background: "var(--accent)", color: "var(--btn-face)", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.04em", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, border: "none", cursor: "pointer" }}>
+                style={{ padding: "13px 28px", borderRadius: 100, background: "var(--accent)", color: "var(--btn-face)", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.04em", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, border: "none" }}>
                 View work <ArrowUpRight size={15} />
               </MagneticButton>
               <MagneticButton onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-                style={{ padding: "13px 24px", borderRadius: 100, border: "1px solid var(--border-mid)", color: "var(--text-secondary)", fontSize: "0.85rem", textDecoration: "none", background: "none", cursor: "pointer" }}>
+                style={{ padding: "13px 24px", borderRadius: 100, border: "1px solid var(--border-mid)", color: "var(--text-secondary)", fontSize: "0.85rem", textDecoration: "none", background: "none" }}>
                 Get in touch
               </MagneticButton>
               <button
@@ -711,7 +711,7 @@ export default function Home() {
                   border: "1px solid var(--accent-glow)",
                   borderRadius: 100, padding: "11px 22px",
                   color: "var(--accent)", fontSize: "0.8rem", fontWeight: 500,
-                  letterSpacing: "0.01em", cursor: "pointer",
+                  letterSpacing: "0.01em",
                   transition: "all .3s ease",
                 }}
                 onMouseEnter={e => {
@@ -1062,7 +1062,7 @@ export default function Home() {
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <span style={{ fontSize: "0.65rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)" }}>Navigation</span>
                 {[["projects","Work"],["about","About"],["contact","Contact"]].map(([id, label]) => (
-                  <button key={id} onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })} style={{ background: "none", border: "none", padding: 0, fontSize: "0.82rem", color: "var(--text-secondary)", textDecoration: "none", transition: "color .2s", cursor: "pointer", textAlign: "left" }}
+                  <button key={id} onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })} style={{ background: "none", border: "none", padding: 0, fontSize: "0.82rem", color: "var(--text-secondary)", textDecoration: "none", transition: "color .2s", textAlign: "left" }}
                     onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
                     onMouseLeave={e => (e.currentTarget.style.color = "var(--text-secondary)")}>
                     {label}
