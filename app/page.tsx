@@ -229,13 +229,24 @@ function ProjectRow({ project, index, onSelect, mobile }: { project: typeof proj
           gridTemplateColumns: mobile ? "1fr auto" : "60px 1fr auto",
           alignItems: "center",
           gap: mobile ? 12 : 24,
-          transition: "padding .3s ease, background .4s ease",
+          transition: "padding .3s ease",
           paddingLeft: !mobile && hovered ? 20 : 0,
           paddingRight: !mobile && hovered ? 8 : 0,
-          background: hovered ? thumbGrad : "transparent",
           position: "relative",
         }}
       >
+        {/* Faded highlight background */}
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          background: thumbGrad,
+          opacity: hovered ? 1 : 0,
+          transition: "opacity .4s ease",
+          maskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
+          pointerEvents: "none",
+          borderRadius: 4,
+        }} />
         {/* Number (hidden on mobile) */}
         {!mobile && (
           <span style={{ fontSize: "0.72rem", letterSpacing: "0.08em", color: "var(--text-muted)", fontVariantNumeric: "tabular-nums" }}>
