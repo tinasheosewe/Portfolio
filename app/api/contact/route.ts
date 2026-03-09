@@ -7,6 +7,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
 
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const cleanEmail = String(email).trim();
+    if (!emailRegex.test(cleanEmail)) {
+      return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
+    }
+
     // Using Resend for email delivery
     const RESEND_API_KEY = process.env.RESEND_API_KEY;
     if (!RESEND_API_KEY) {
@@ -22,15 +29,19 @@ export async function POST(req: NextRequest) {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Portfolio Contact <contact@tinasheosewe.dev>",
+        from: "Portfolio Contact <onboarding@resend.dev>",
         to: ["t.osewe1@gmail.com"],
         subject: `Portfolio contact from ${name}`,
-        text: `From: ${name} <${email}>\n\n${message}`,
-        reply_to: email,
+        text: `From: ${name} <${cleanEmail}>\n\n${message}`,
+        reply_to: cleanEmail,
       }),
     });
 
-    if (!res.ok) throw new Error("Resend error");
+    if (!res.ok) {
+      const body = await res.text();
+      console.error("Resend API error:", res.status, body);
+      throw new Error("Resend error");
+    }
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error(err);
