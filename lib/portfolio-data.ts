@@ -7,7 +7,7 @@ const experience = {
     company: "Goldman Sachs",
     role: "Asset Management Technology Strategist",
     previousRole: "Asset Management Technology Intern (2021)",
-    duration: "2021 – Present (intern 2021, full-time 2022+)",
+    duration: "2021 – Present (intern 2021, full-time since 2022). Over 4 years at the firm.",
     highlights: [
       "Enterprise generative AI platform development",
       "Multi-LLM pipeline integration and orchestration",
