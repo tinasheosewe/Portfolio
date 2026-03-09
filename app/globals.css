@@ -163,6 +163,194 @@ html { transition: background 0.5s ease, color 0.4s ease; }
 body { transition: background 0.5s ease, color 0.4s ease; }
 
 /* ══════════════════════════════════════════════════════════════════════
+   ✨ Shimmer & Glow Effects
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Hero text shimmer gradient ────────────────────────────────────── */
+.hero-shimmer {
+  background: linear-gradient(
+    105deg,
+    var(--text-primary) 0%,
+    var(--text-primary) 35%,
+    var(--accent) 50%,
+    var(--text-primary) 65%,
+    var(--text-primary) 100%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 6s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0%, 100% { background-position: 100% 50%; }
+  50% { background-position: 0% 50%; }
+}
+
+/* ── Animated gradient border button ──────────────────────────────── */
+.glow-btn {
+  position: relative;
+  z-index: 0;
+}
+.glow-btn::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--glow-angle, 0deg),
+    var(--accent),
+    transparent 30%,
+    transparent 70%,
+    var(--accent)
+  );
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  animation: glow-spin 3s linear infinite;
+}
+.glow-btn:hover::before {
+  opacity: 1;
+}
+.glow-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--bg-card);
+  z-index: -1;
+}
+@keyframes glow-spin {
+  to { --glow-angle: 360deg; }
+}
+@property --glow-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ── Project row glow on hover ────────────────────────────────────── */
+.project-row-glow {
+  position: relative;
+  transition: all 0.3s ease;
+}
+.project-row-glow::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.project-row-glow:hover::after {
+  opacity: 1;
+}
+
+/* ── Available badge pulse ─────────────────────────────────────────── */
+.available-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1px solid rgba(74, 222, 128, 0.25);
+  background: rgba(74, 222, 128, 0.06);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: #4ade80;
+  text-transform: uppercase;
+  animation: badge-glow 3s ease-in-out infinite;
+}
+.available-badge .pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4ade80;
+  position: relative;
+}
+.available-badge .pulse-dot::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1px solid #4ade80;
+  animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes badge-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(74, 222, 128, 0.05); }
+  50% { box-shadow: 0 0 20px rgba(74, 222, 128, 0.12); }
+}
+@keyframes ping {
+  0% { transform: scale(1); opacity: 0.75; }
+  75%, 100% { transform: scale(2.2); opacity: 0; }
+}
+[data-theme="light"] .available-badge {
+  border-color: rgba(21, 128, 61, 0.3);
+  background: rgba(21, 128, 61, 0.06);
+  color: #15803d;
+}
+[data-theme="light"] .available-badge .pulse-dot { background: #15803d; }
+[data-theme="light"] .available-badge .pulse-dot::before { border-color: #15803d; }
+
+/* ── Mouse spotlight (full-viewport layer) ────────────────────────── */
+.hero-spotlight {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: visible;
+}
+.hero-spotlight-inner {
+  position: absolute;
+  width: 700px;
+  height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,150,12,0.18) 0%, rgba(232,150,12,0.04) 40%, transparent 70%);
+  filter: blur(60px);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+[data-theme="light"] .hero-spotlight-inner {
+  background: radial-gradient(circle, rgba(10,16,69,0.14) 0%, rgba(10,16,69,0.04) 40%, transparent 70%);
+  filter: blur(50px);
+}
+
+/* ── Blur-in reveal for sections ──────────────────────────────────── */
+.reveal-blur {
+  filter: blur(8px);
+  opacity: 0;
+  transform: translateY(24px);
+  transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-blur.revealed {
+  filter: blur(0);
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Stat counter glow ─────────────────────────────────────────────── */
+.stat-value {
+  position: relative;
+  display: inline-block;
+}
+.stat-value::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  border-radius: 1px;
+  opacity: 0.4;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
    ⌘K Command Palette
    ══════════════════════════════════════════════════════════════════════ */
 

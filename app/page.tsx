@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform, useInView } from "framer-motion";
 import { ArrowUpRight, ArrowLeft, ExternalLink, Linkedin, Github } from "lucide-react";
 import { projects, secondaryProjects } from "@/lib/projects";
 import type { Project } from "@/lib/projects";
@@ -17,6 +17,64 @@ function useIsMobile(breakpoint = 768) {
     return () => mq.removeEventListener("change", h);
   }, [breakpoint]);
   return mobile;
+}
+
+// ── CountUp display component ────────────────────────────────────────────────
+function CountUpValue({ value, suffix = "", prefix = "" }: { value: string; suffix?: string; prefix?: string }) {
+  // Extract numeric part from string like "4.2M" → 4.2, "98%" → 98
+  const numMatch = value.match(/^([<>~]?)([\d.]+)(.*)/);
+  if (!numMatch) return <span>{value}</span>;
+
+  const [, modifier, numStr, rest] = numMatch;
+  const num = parseFloat(numStr);
+  const isDecimal = numStr.includes(".");
+  const decimalPlaces = isDecimal ? numStr.split(".")[1].length : 0;
+
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const [displayNum, setDisplayNum] = useState(0);
+  const hasStarted = useRef(false);
+
+  useEffect(() => {
+    if (!isInView || hasStarted.current) return;
+    hasStarted.current = true;
+    const duration = 1800;
+    const startTime = performance.now();
+    const tick = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(2, -10 * progress);
+      setDisplayNum(eased * num);
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [isInView, num]);
+
+  const displayed = isDecimal ? displayNum.toFixed(decimalPlaces) : Math.round(displayNum).toString();
+
+  return (
+    <span ref={ref} className="stat-value">
+      {prefix}{modifier}{displayed}{rest}{suffix}
+    </span>
+  );
+}
+
+// ── Blur-in reveal wrapper ───────────────────────────────────────────────────
+function BlurReveal({ children, delay = 0, style = {} }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
+      animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+      transition={{ duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] }}
+      style={style}
+    >
+      {children}
+    </motion.div>
+  );
 }
 
 // ── Split-text character reveal ─────────────────────────────────────────────
@@ -97,6 +155,7 @@ function ProjectRow({ project, index, onSelect, mobile }: { project: typeof proj
 
   return (
     <div
+      className="project-row-glow"
       role="button"
       tabIndex={0}
       onClick={onSelect}
@@ -313,7 +372,9 @@ function CaseStudyOverlay({ project, onClose, onSelectProject, mobile }: { proje
           {project.stats.map((stat, i) => (
             <motion.div key={stat.label} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 + i * 0.07 }}
               style={{ flex: mobile ? "1 1 50%" : 1, padding: mobile ? "20px 16px" : "28px 24px", borderLeft: mobile ? (i % 2 === 1 ? "1px solid var(--border)" : "none") : (i > 0 ? "1px solid var(--border)" : "none"), borderTop: mobile && i >= 2 ? "1px solid var(--border)" : "none" }}>
-              <div style={{ fontSize: "clamp(1.4rem, 2.5vw, 2.2rem)", fontWeight: 700, color: accent, letterSpacing: "-0.025em", lineHeight: 1 }}>{stat.value}</div>
+              <div style={{ fontSize: "clamp(1.4rem, 2.5vw, 2.2rem)", fontWeight: 700, color: accent, letterSpacing: "-0.025em", lineHeight: 1 }}>
+                <CountUpValue value={stat.value} />
+              </div>
               <div style={{ fontSize: "0.68rem", letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--text-muted)", marginTop: 5 }}>{stat.label}</div>
             </motion.div>
           ))}
@@ -499,8 +560,26 @@ export default function Home() {
       </AnimatePresence>
 
       <main>
+        {/* ── Mouse spotlight (full-viewport, follows cursor in hero area) ── */}
+        <div className="hero-spotlight" id="hero-spotlight-container">
+          <div className="hero-spotlight-inner" id="hero-spotlight-dot" />
+        </div>
+
         {/* ── Hero ── */}
-        <section id="hero" style={{ minHeight: "100svh", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: mobile ? "80px 20px 48px" : "100px 40px 80px", maxWidth: 1200, margin: "0 auto", position: "relative", overflow: "hidden" }}>
+        <section id="hero" style={{ minHeight: "100svh", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: mobile ? "80px 20px 48px" : "100px 40px 80px", maxWidth: 1200, margin: "0 auto", position: "relative", overflow: "hidden" }}
+          onMouseMove={e => {
+            const el = document.getElementById('hero-spotlight-dot');
+            if (el) {
+              el.style.left = `${e.clientX}px`;
+              el.style.top = `${e.clientY}px`;
+              el.style.opacity = '1';
+            }
+          }}
+          onMouseLeave={() => {
+            const el = document.getElementById('hero-spotlight-dot');
+            if (el) el.style.opacity = '0';
+          }}
+        >
           {/* ── Animated gradient orbs ── */}
           <motion.div
             animate={{ x: [0, 30, -20, 0], y: [0, -40, 20, 0], scale: [1, 1.15, 0.95, 1] }}
@@ -519,11 +598,11 @@ export default function Home() {
           />
 
           <div style={{ position: "relative", zIndex: 1 }}>
-            <h1 style={{ fontSize: "clamp(48px, 8.5vw, 120px)", fontWeight: 700, lineHeight: 1.0, letterSpacing: "-0.03em", margin: "0 0 32px" }}>
+            <h1 className="hero-shimmer" style={{ fontSize: "clamp(48px, 8.5vw, 120px)", fontWeight: 700, lineHeight: 1.0, letterSpacing: "-0.03em", margin: "0 0 32px" }}>
               <div>{words.slice(0, 2).map((w, i) => <AnimWord key={i} word={w} delay={0.35 + i * 0.08} />)}</div>
               <div>
                 {words.slice(2, 4).map((w, i) => <AnimWord key={i} word={w} delay={0.5 + i * 0.08} />)}
-                <span style={{ color: "var(--accent)" }}>
+                <span style={{ WebkitTextFillColor: "var(--accent)" }}>
                   <AnimWord word={words[4]} delay={0.68} />
                 </span>
               </div>
@@ -544,7 +623,7 @@ export default function Home() {
               transition={{ delay: 0.85 }}
               style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}
             >
-              <MagneticButton href="#projects"
+              <MagneticButton href="#projects" className="glow-btn"
                 style={{ padding: "13px 28px", borderRadius: 100, background: "var(--accent)", color: "var(--btn-face)", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.04em", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, border: "none" }}>
                 View work <ArrowUpRight size={15} />
               </MagneticButton>
@@ -712,10 +791,11 @@ export default function Home() {
         {/* ── Philosophy ── */}
         <section style={{ padding: mobile ? "60px 20px" : "120px 40px", borderTop: "1px solid var(--border)" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-            <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-              style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 48 }}>
-              Philosophy
-            </motion.p>
+            <BlurReveal>
+              <p style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 48 }}>
+                Philosophy
+              </p>
+            </BlurReveal>
             <div style={{ maxWidth: 900 }}>
               <h2 className="velocity-skew" style={{ fontSize: "clamp(32px, 6vw, 72px)", fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1.1, margin: 0, color: "var(--text-primary)" }}>
                 <SplitText text="I don't build features." delay={0} />
@@ -723,14 +803,11 @@ export default function Home() {
               <h2 className="velocity-skew" style={{ fontSize: "clamp(32px, 6vw, 72px)", fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1.1, margin: 0, color: "var(--accent)" }}>
                 <SplitText text="I build systems." delay={0.3} />
               </h2>
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.25 }}
-                style={{ fontSize: "1.05rem", lineHeight: 1.85, color: "var(--text-secondary)", maxWidth: 600, marginTop: 36 }}>
-                Every project begins with the structure underneath — how data flows, where boundaries belong, what the system needs to endure over time. I write software I&#39;d want to inherit two years from now.
-              </motion.p>
+              <BlurReveal delay={0.25}>
+                <p style={{ fontSize: "1.05rem", lineHeight: 1.85, color: "var(--text-secondary)", maxWidth: 600, marginTop: 36 }}>
+                  Every project begins with the structure underneath — how data flows, where boundaries belong, what the system needs to endure over time. I write software I&#39;d want to inherit two years from now.
+                </p>
+              </BlurReveal>
             </div>
           </div>
         </section>
@@ -764,10 +841,11 @@ export default function Home() {
         {/* ── Process ── */}
         <section style={{ padding: mobile ? "60px 20px" : "100px 40px", borderTop: "1px solid var(--border)" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-            <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-              style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 48 }}>
-              Process
-            </motion.p>
+            <BlurReveal>
+              <p style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 48 }}>
+                Process
+              </p>
+            </BlurReveal>
             <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "repeat(4, 1fr)", gap: 1, background: "var(--border)" }}>
               {[
                 { num: "01", title: "Research", desc: "Understand the domain deeply. Study existing solutions, identify gaps, map user behaviour. Nothing gets built until the territory is clear." },
@@ -839,7 +917,7 @@ export default function Home() {
             <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} style={{ textAlign: "center", marginBottom: 52 }}>
               <p style={{ fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 16 }}>Contact</p>
               <h2 className="velocity-skew" style={{ fontSize: "clamp(28px, 4vw, 52px)", fontWeight: 700, letterSpacing: "-0.025em", margin: "0 0 14px" }}>Let&#39;s talk.</h2>
-              <p style={{ color: "var(--text-secondary)", lineHeight: 1.7 }}>Open to compelling opportunities, collaborations, and consulting engagements.</p>
+              <p style={{ color: "var(--text-secondary)", lineHeight: 1.7 }}>Have a project in mind? Let&#39;s discuss how I can help.</p>
             </motion.div>
 
             {sent ? (
