@@ -65,13 +65,6 @@ export default function CommandPalette() {
     };
   }, [open]);
 
-  /* ── Auto-scroll results ── */
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [prose, blocks, status]);
-
   /* ── Submit query ── */
   const submit = useCallback(
     async (text?: string) => {
@@ -91,6 +84,9 @@ export default function CommandPalette() {
       setBlocks([]);
       setError("");
       setHasResult(false);
+
+      // Reset scroll to top for the new response
+      if (scrollRef.current) scrollRef.current.scrollTop = 0;
 
       try {
         const res = await fetch("/api/ai", {
