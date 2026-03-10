@@ -78,7 +78,7 @@ export default function Nav() {
                 {label}
               </button>
             ))}
-            <button className="nav-play-btn" onClick={() => setGameOpen(true)} style={{ display: "flex", alignItems: "center", gap: 4, background: "none", border: "none", padding: 0, fontSize: "0.8rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text-muted)", textDecoration: "none", transition: "color .2s", cursor: "pointer" }}
+            <button className="nav-play-btn" onClick={() => setGameOpen(true)} style={{ display: "flex", alignItems: "center", gap: 4, background: "none", border: "none", padding: 0, fontSize: "0.8rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text-muted)", textDecoration: "none", transition: "color .2s" }}
               onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
               onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}>
               <Gamepad2 size={14} /> Play
@@ -180,7 +180,7 @@ export default function Nav() {
               <p style={{ color: "var(--text-muted)", fontSize: "0.75rem", margin: "2px 0 0", fontFamily: "var(--font-mono, monospace)" }}>Take a break.</p>
             </div>
             <button onClick={() => setGameOpen(false)} aria-label="Close game"
-              style={{ background: "none", border: "none", padding: 4, color: "var(--text-muted)", cursor: "pointer", transition: "color .2s" }}
+              style={{ background: "none", border: "none", padding: 4, color: "var(--text-muted)", transition: "color .2s" }}
               onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
               onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}>
               <X size={20} />

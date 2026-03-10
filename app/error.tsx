@@ -15,7 +15,6 @@ export default function Error({ reset }: { error: Error; reset: () => void }) {
           border: "1px solid var(--border-mid)",
           background: "var(--bg-card)",
           color: "var(--text-primary)",
-          cursor: "pointer",
           fontSize: "0.9rem",
           fontWeight: 500,
         }}

@@ -311,7 +311,7 @@ export default function SnakeGame() {
                   marginTop: 16, padding: "8px 20px", borderRadius: 6,
                   border: "1px solid var(--accent)", background: "transparent",
                   color: "var(--accent)", fontWeight: 600, fontSize: "0.85rem",
-                  cursor: "pointer", transition: "background .2s",
+                  transition: "background .2s",
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = "var(--accent-dim)")}
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}

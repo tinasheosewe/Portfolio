@@ -105,7 +105,7 @@ function ProjectCardBlock({ slug, emphasis }: { slug: string; emphasis: string }
       className="cmd-block-project-card"
       role="button"
       tabIndex={0}
-      style={{ cursor: "pointer" }}
+      style={{}}
       onClick={() => {
         // Close palette, then open the case-study overlay on the main page
         const w = window as unknown as { __closeCommandPalette?: () => void; __selectProject?: (slug: string) => void };
